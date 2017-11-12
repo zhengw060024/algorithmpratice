@@ -1,0 +1,11 @@
+{
+  "name": "chaper1program",
+  "version": "1.0.0",
+  "description": "算法导论测试",
+  "main": "chapter1program",
+  "scripts": {
+    "test": "node chapter1program.js"
+  },
+  "author": "zhengwei",
+  "license": "ISC"
+}
