@@ -10,16 +10,17 @@ import utilityTools from './utilitytools'
  */
 function checkSequence(ArrayInput: Array<number>, ArrayOutput: Array<number>) {
     const objTemp: any = {};
-    ArrayInput.forEach((value, indxe) => {
+
+    ArrayInput.forEach((value, index) => {
         if (objTemp[value]) {
             ++objTemp[value];
         } else {
             objTemp[value] = 1;
         }
     });
-    for (let i = 0; i < ArrayOutput.length - 1; ++i) {
+    for (let i = 0; i < ArrayOutput.length; ++i) {
         if (objTemp[ArrayOutput[i]]) {
-            --objTemp[ArrayOutput[i]];
+            objTemp[ArrayOutput[i]] = objTemp[ArrayOutput[i]] - 1;
         } else {
             return false;
         }
@@ -29,9 +30,11 @@ function checkSequence(ArrayInput: Array<number>, ArrayOutput: Array<number>) {
             return false;
         }
     }
+
     // 检查是否从小到大
     for (let i = 0; i < ArrayOutput.length - 1; ++i) {
         if (ArrayOutput[i] > ArrayOutput[i + 1]) {
+            console.log('!!!!!!333')
             return false;
         }
     }
@@ -47,7 +50,7 @@ function checkSeqUseStdSort(ArrayInput: Array<number>, ArrayOutput: Array<number
         return false;
     }
     const ArrayToSort = ArrayInput.concat([]);
-    ArrayToSort.sort();
+    ArrayToSort.sort((a, b) => (a - b));
     for (let i = 0; i < ArrayToSort.length; ++i) {
         if (ArrayToSort[i] !== ArrayOutput[i]) {
             return false;
@@ -199,6 +202,54 @@ function binarySearchRecursion(ArraySorted: Array<number>, NumberSearch: number,
         return - 1;
     }
 }
+function testCaseBinarySearch() {
+    const ArrayTest = utilityTools.generateRandomArray(1, 100, 20);
+    console.log(`testCaseBinarySearch Orgin ArrayTest = ${ArrayTest}`);
+    ArrayTest.sort((value1, value2) => {
+        return value1 - value2;
+    });
+    console.log(`testCaseBinarySearch sorted ArrayTest = ${ArrayTest}`);
+    const testNum = utilityTools.generateRandom(1, 100);
+    const index1 = binarySearchIteration(ArrayTest, testNum);
+    const index2 = binarySearchRecursion(ArrayTest, testNum, 0, ArrayTest.length - 1);
+    let bErr1: boolean = false;
+    let bErr2 = false;
+    if (index1 === -1) {
+        for (let i = 0; i < ArrayTest.length - 1; ++i) {
+            if (ArrayTest[i] === testNum) {
+                bErr1 = true;
+                break;
+            }
+        }
+    } else {
+        if (ArrayTest[index1] !== testNum) {
+            bErr1 = true;
+        }
+    }
+    if (bErr1) {
+        console.log('testCaseBinarySearch  binarySearchIteration error!!!!!!');
+    } else {
+        console.log('testCaseBinarySearch  binarySearchIteration success!!!!!!');
+    }
+
+    if (index2 === -1) {
+        for (let i = 0; i < ArrayTest.length - 1; ++i) {
+            if (ArrayTest[i] === testNum) {
+                bErr2 = true;
+                break;
+            }
+        }
+    } else {
+        if (ArrayTest[index2] !== testNum) {
+            bErr2 = true;
+        }
+    }
+    if (bErr2) {
+        console.log('testCaseBinarySearch  binarySearchIteration error!!!!!!');
+    } else {
+        console.log('testCaseBinarySearch  binarySearchIteration success!!!!!!');
+    }
+}
 ////////////////////////////////////////////////////////////////
 //////////习题2.3.7在n个整数集合中判断是否有两个数之和等于x的元素
 ////////////////////////////////////////////////////////////////
@@ -207,27 +258,106 @@ function binarySearchRecursion(ArraySorted: Array<number>, NumberSearch: number,
 /////排除过数据数组的最大和最小序列对即可。二最方便的测试是将该序列排序，然后测试
 //////最大最小，不断排除。算法是o(n) + n*lg(n),至于有没有更好的算法，关键还是在于
 //////怎样组织出最大最小测试序列对。
+function checkArraySum(ArrayInput: Array<number>, sumX: number) {
+    mergeSort(ArrayInput, 0, ArrayInput.length - 1);
+    console.log('sorted array is' ,ArrayInput);
+    let i = 0, j = ArrayInput.length - 1;
+    let temp = 0;
+    while (i < j) {
+        temp = ArrayInput[i] + ArrayInput[j];
+        if (temp < sumX) {
+            // 排除a[i],如果有a[i] 则其他任何一个a[k](k < j,a[k] < a[j]),
+            // a[i] + a[k] < a[i] + a[j] < sumX
+            ++i;
+        } else if (temp > sumX) {
+            --j;
+        } else {
+            return {
+                minIndex: i,
+                maxIndex: j,
+                firstNum: ArrayInput[i],
+                secondNum: ArrayInput[j]
+            };
+        }
+    }
+    return {
+        minIndex: -1,
+        maxIndex: -1,
+        firstNum: 0,
+        secondNum: 0
+    }
+}
+//////////////////////////////////////////////
+///////暴搜寻找
+//////////////////////////////////////////////
+function checkArraySumBrute(ArrayInput: Array<number>, sumX: number) {
+    for (let i = 0; i < ArrayInput.length - 1; ++i) {
+        for (let j = i + 1; j < ArrayInput.length - 1; ++j) {
+            if (ArrayInput[i] + ArrayInput[j] === sumX) {
+                return {
+                    minIndex: i,
+                    maxIndex: j,
+                    firstNum: ArrayInput[i],
+                    secondNum: ArrayInput[j]
+                };
+            }
+        }
+    }
+    return {
+        minIndex: -1,
+        maxIndex: -1,
+        firstNum: 0,
+        secondNum: 0
+    };
+}
+function testCaseSumSearch() {
+    const ArrayTest = utilityTools.generateRandomArray(1, 100, 20);
+    console.log(`testCaseSum Orgin ArrayTest = ${ArrayTest}`);
+    const testSum = utilityTools.generateRandom(1, 200);
+    const result = checkArraySum(ArrayTest.concat([]), testSum);
+    console.log('testCaseSumSearch  get', result, testSum);
+    if (result.minIndex !== -1) {
+        const bResult = result.firstNum + result.secondNum === testSum;
+        console.log(`checkArraySum is ${bResult}`);
+    } else {
+        const result2 = checkArraySumBrute(ArrayTest, testSum);
+        if (result2.maxIndex !== -1) {
+            console.log('checkArraySum is false');
+        }
+    }
+}
 
-/////测试----------
-console.log(insertSort([3, 5, 1, 8, 1, 5, 0, 12, 1, 3, 4, 5, 7, 8]));
-const ArrayMerge = [3, 5, 1, 8, 1, 5, 0, 12, 1, 3, 4, 5, 7, 8];
-const ArrayMerge2 = [3, 5, 1, 8, 1, 5, 0, 12, 1, 3, 4, 5, 7, 8];
-
-ArrayMerge2.sort((a, b) => {
-    return a - b;
-});
-console.log(`standard sort ${ArrayMerge2}`);
-const ArrayMerge3 = [3, 5, 1, 8, 1, 5, 0, 12, 1, 3, 4, 5, 7, 8];
-insertSortRecursion(ArrayMerge3, ArrayMerge3.length - 1);
-console.log(`insert sort ${ArrayMerge3}`);
-
-mergeSort(ArrayMerge, 0, ArrayMerge.length - 1);
-console.log(ArrayMerge);
-console.log('binarySearchIteration test', binarySearchIteration(ArrayMerge, 12));
-console.log('binarySearchRecursion test', binarySearchRecursion(ArrayMerge, 12, 0, ArrayMerge.length - 1));
+/////排序测试----------
 function testCaseInsertSort() {
     const ArrayTest = utilityTools.generateRandomArray(1, 100, 20);
-    console.log(`orgin sequence is ${ArrayTest}`);
-    insertSort(ArrayTest);
-    console.log(`sequence sorted is ${ArrayTest}`);
+    const ArrayToSort = ArrayTest.concat([]);
+    console.log(`orgin sequence is ${ArrayToSort}`);
+    insertSort(ArrayToSort);
+    console.log(`sequence sorted is ${ArrayToSort}`);
+    checkSequence(ArrayTest, ArrayToSort);
+    console.log('insertsort  testcase is ', checkSequence(ArrayTest, ArrayToSort));
 }
+function testCaseInsertSortRecur() {
+    const ArrayTest = utilityTools.generateRandomArray(1, 100, 20);
+    const ArrayToSort = ArrayTest.concat([]);
+    console.log(`orgin sequence is ${ArrayToSort}`);
+    insertSortRecursion(ArrayToSort, ArrayToSort.length - 1);
+    console.log(`sequence sorted is ${ArrayToSort}`);
+    checkSequence(ArrayTest, ArrayToSort);
+    console.log('InsertSortRecur  testcase is ', checkSequence(ArrayTest, ArrayToSort));
+}
+
+function testCaseMergeSort() {
+    const ArrayTest = utilityTools.generateRandomArray(1, 100, 20);
+    const ArrayToSort = ArrayTest.concat([]);
+    console.log(`orgin sequence is ${ArrayToSort}`);
+    mergeSort(ArrayToSort, 0, ArrayToSort.length - 1);
+    console.log(`sequence sorted is ${ArrayToSort}`);
+    checkSequence(ArrayTest, ArrayToSort);
+    console.log('mergesort  testcase is ', checkSequence(ArrayTest, ArrayToSort));
+}
+testCaseBinarySearch();
+testCaseInsertSort();
+testCaseInsertSortRecur();
+testCaseMergeSort();
+testCaseSumSearch();
