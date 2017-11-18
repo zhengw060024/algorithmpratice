@@ -3,61 +3,20 @@
  * 2017.11.11
  */
 import utilityTools from './utilitytools'
-/**
- * 排序校验 不使用标准排序方法
- * @param ArrayInput 
- * @param ArrayOutput 
- */
-function checkSequence(ArrayInput: Array<number>, ArrayOutput: Array<number>) {
-    const objTemp: any = {};
-
-    ArrayInput.forEach((value, index) => {
-        if (objTemp[value]) {
-            ++objTemp[value];
-        } else {
-            objTemp[value] = 1;
-        }
-    });
-    for (let i = 0; i < ArrayOutput.length; ++i) {
-        if (objTemp[ArrayOutput[i]]) {
-            objTemp[ArrayOutput[i]] = objTemp[ArrayOutput[i]] - 1;
-        } else {
-            return false;
-        }
+class sortProgramTest {
+    constructor() {
+        
     }
-    for (let key in objTemp) {
-        if (objTemp[key] !== 0) {
-            return false;
-        }
+    runTest(){
+        testCaseBinarySearch();
+        testCaseInsertSort();
+        testCaseInsertSortRecur();
+        testCaseMergeSort();
+        testCaseSumSearch();
     }
-
-    // 检查是否从小到大
-    for (let i = 0; i < ArrayOutput.length - 1; ++i) {
-        if (ArrayOutput[i] > ArrayOutput[i + 1]) {
-            console.log('!!!!!!333')
-            return false;
-        }
-    }
-    return true;
 }
-/**
- * 排序检测，使用标准排序准则
- * @param ArrayInput 
- * @param ArrayOutput 
- */
-function checkSeqUseStdSort(ArrayInput: Array<number>, ArrayOutput: Array<number>) {
-    if (ArrayInput.length !== ArrayOutput.length) {
-        return false;
-    }
-    const ArrayToSort = ArrayInput.concat([]);
-    ArrayToSort.sort((a, b) => (a - b));
-    for (let i = 0; i < ArrayToSort.length; ++i) {
-        if (ArrayToSort[i] !== ArrayOutput[i]) {
-            return false;
-        }
-    }
-    return true;
-}
+const sortProgramRunTest = new sortProgramTest();
+export default sortProgramRunTest;
 ///////////////////////////////////////////////////////////////////
 ////////////插入排序
 ///////////////////////////////////////////////////////////////////
@@ -105,39 +64,7 @@ function insertSortRecursion(ArrayInput: Array<number>, nNumToSort: number) {
 //////////////////////////////////////////////////////////
 ////////////归并排序
 //////////////////////////////////////////////////////////
-/**
- * 归并排序归并过程
- * @param ArrayInput 
- * @param start 
- * @param middle 
- * @param end 
- */
-function merge(ArrayInput: Array<number>, start: number, middle: number, end: number) {
-    const ArrayFirst = ArrayInput.slice(start, middle + 1);
-    const ArraySecond = ArrayInput.slice(middle + 1, end + 1);
-    let i = 0, j = 0, k = 0;
-    for (; i < ArrayFirst.length && j < ArraySecond.length; ++k) {
-        if (ArrayFirst[i] < ArraySecond[j]) {
-            ArrayInput[start + k] = ArrayFirst[i];
-            ++i;
-        } else {
-            ArrayInput[start + k] = ArraySecond[j];
-            ++j;
-        }
-    }
-    if (i < ArrayFirst.length) {
-        for (; i < ArrayFirst.length; ++i) {
-            ArrayInput[start + k] = ArrayFirst[i];
-            ++k;
-        }
-    }
-    if (j < ArraySecond.length) {
-        for (; j < ArraySecond.length; ++j) {
-            ArrayInput[start + k] = ArraySecond[j];
-            ++k;
-        }
-    }
-}
+
 /**
  * 归并排序
  * @param ArrayInput 
@@ -149,7 +76,7 @@ function mergeSort(ArrayInput: Array<number>, start: number, end: number) {
         const middle = Math.floor((start + end) / 2);
         mergeSort(ArrayInput, start, middle);
         mergeSort(ArrayInput, middle + 1, end);
-        merge(ArrayInput, start, middle, end);
+        utilityTools.merge(ArrayInput, start, middle, end);
     }
     return ArrayInput;
 }
@@ -260,7 +187,7 @@ function testCaseBinarySearch() {
 //////怎样组织出最大最小测试序列对。
 function checkArraySum(ArrayInput: Array<number>, sumX: number) {
     mergeSort(ArrayInput, 0, ArrayInput.length - 1);
-    console.log('sorted array is' ,ArrayInput);
+    console.log('sorted array is', ArrayInput);
     let i = 0, j = ArrayInput.length - 1;
     let temp = 0;
     while (i < j) {
@@ -323,41 +250,41 @@ function testCaseSumSearch() {
         const result2 = checkArraySumBrute(ArrayTest, testSum);
         if (result2.maxIndex !== -1) {
             console.log('checkArraySum is false');
+        }else {
+            console.log('checkArraySum is true');
         }
     }
 }
 
 /////排序测试----------
 function testCaseInsertSort() {
-    const ArrayTest = utilityTools.generateRandomArray(1, 100, 20);
+    const sortNum = utilityTools.generateRandom(20, 70);
+    const ArrayTest = utilityTools.generateRandomArray(1, 100, sortNum);
     const ArrayToSort = ArrayTest.concat([]);
     console.log(`orgin sequence is ${ArrayToSort}`);
     insertSort(ArrayToSort);
     console.log(`sequence sorted is ${ArrayToSort}`);
-    checkSequence(ArrayTest, ArrayToSort);
-    console.log('insertsort  testcase is ', checkSequence(ArrayTest, ArrayToSort));
+    //utilityTools.checkSequence(ArrayTest, ArrayToSort);
+    console.log('insertsort  testcase is ', utilityTools.checkSequence(ArrayTest, ArrayToSort));
 }
 function testCaseInsertSortRecur() {
-    const ArrayTest = utilityTools.generateRandomArray(1, 100, 20);
+    const sortNum = utilityTools.generateRandom(20, 70);
+    const ArrayTest = utilityTools.generateRandomArray(1, 100, sortNum);
     const ArrayToSort = ArrayTest.concat([]);
     console.log(`orgin sequence is ${ArrayToSort}`);
     insertSortRecursion(ArrayToSort, ArrayToSort.length - 1);
     console.log(`sequence sorted is ${ArrayToSort}`);
-    checkSequence(ArrayTest, ArrayToSort);
-    console.log('InsertSortRecur  testcase is ', checkSequence(ArrayTest, ArrayToSort));
+    //utilityTools.checkSequence(ArrayTest, ArrayToSort);
+    console.log('InsertSortRecur  testcase is ', utilityTools.checkSequence(ArrayTest, ArrayToSort));
 }
 
 function testCaseMergeSort() {
-    const ArrayTest = utilityTools.generateRandomArray(1, 100, 20);
+    const sortNum = utilityTools.generateRandom(20, 70);
+    const ArrayTest = utilityTools.generateRandomArray(1, 100, sortNum);
     const ArrayToSort = ArrayTest.concat([]);
     console.log(`orgin sequence is ${ArrayToSort}`);
     mergeSort(ArrayToSort, 0, ArrayToSort.length - 1);
     console.log(`sequence sorted is ${ArrayToSort}`);
-    checkSequence(ArrayTest, ArrayToSort);
-    console.log('mergesort  testcase is ', checkSequence(ArrayTest, ArrayToSort));
+    //utilityTools.checkSequence(ArrayTest, ArrayToSort);
+    console.log('mergesort  testcase is ', utilityTools.checkSequence(ArrayTest, ArrayToSort));
 }
-testCaseBinarySearch();
-testCaseInsertSort();
-testCaseInsertSortRecur();
-testCaseMergeSort();
-testCaseSumSearch();

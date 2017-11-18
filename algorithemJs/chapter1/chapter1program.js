@@ -5,61 +5,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * 2017.11.11
  */
 var utilitytools_1 = require("./utilitytools");
-/**
- * 排序校验 不使用标准排序方法
- * @param ArrayInput
- * @param ArrayOutput
- */
-function checkSequence(ArrayInput, ArrayOutput) {
-    var objTemp = {};
-    ArrayInput.forEach(function (value, index) {
-        if (objTemp[value]) {
-            ++objTemp[value];
-        }
-        else {
-            objTemp[value] = 1;
-        }
-    });
-    for (var i = 0; i < ArrayOutput.length; ++i) {
-        if (objTemp[ArrayOutput[i]]) {
-            objTemp[ArrayOutput[i]] = objTemp[ArrayOutput[i]] - 1;
-        }
-        else {
-            return false;
-        }
+var sortProgramTest = /** @class */ (function () {
+    function sortProgramTest() {
     }
-    for (var key in objTemp) {
-        if (objTemp[key] !== 0) {
-            return false;
-        }
-    }
-    // 检查是否从小到大
-    for (var i = 0; i < ArrayOutput.length - 1; ++i) {
-        if (ArrayOutput[i] > ArrayOutput[i + 1]) {
-            console.log('!!!!!!333');
-            return false;
-        }
-    }
-    return true;
-}
-/**
- * 排序检测，使用标准排序准则
- * @param ArrayInput
- * @param ArrayOutput
- */
-function checkSeqUseStdSort(ArrayInput, ArrayOutput) {
-    if (ArrayInput.length !== ArrayOutput.length) {
-        return false;
-    }
-    var ArrayToSort = ArrayInput.concat([]);
-    ArrayToSort.sort(function (a, b) { return (a - b); });
-    for (var i = 0; i < ArrayToSort.length; ++i) {
-        if (ArrayToSort[i] !== ArrayOutput[i]) {
-            return false;
-        }
-    }
-    return true;
-}
+    sortProgramTest.prototype.runTest = function () {
+        testCaseBinarySearch();
+        testCaseInsertSort();
+        testCaseInsertSortRecur();
+        testCaseMergeSort();
+        testCaseSumSearch();
+    };
+    return sortProgramTest;
+}());
+var sortProgramRunTest = new sortProgramTest();
+exports.default = sortProgramRunTest;
 ///////////////////////////////////////////////////////////////////
 ////////////插入排序
 ///////////////////////////////////////////////////////////////////
@@ -109,40 +68,6 @@ function insertSortRecursion(ArrayInput, nNumToSort) {
 ////////////归并排序
 //////////////////////////////////////////////////////////
 /**
- * 归并排序归并过程
- * @param ArrayInput
- * @param start
- * @param middle
- * @param end
- */
-function merge(ArrayInput, start, middle, end) {
-    var ArrayFirst = ArrayInput.slice(start, middle + 1);
-    var ArraySecond = ArrayInput.slice(middle + 1, end + 1);
-    var i = 0, j = 0, k = 0;
-    for (; i < ArrayFirst.length && j < ArraySecond.length; ++k) {
-        if (ArrayFirst[i] < ArraySecond[j]) {
-            ArrayInput[start + k] = ArrayFirst[i];
-            ++i;
-        }
-        else {
-            ArrayInput[start + k] = ArraySecond[j];
-            ++j;
-        }
-    }
-    if (i < ArrayFirst.length) {
-        for (; i < ArrayFirst.length; ++i) {
-            ArrayInput[start + k] = ArrayFirst[i];
-            ++k;
-        }
-    }
-    if (j < ArraySecond.length) {
-        for (; j < ArraySecond.length; ++j) {
-            ArrayInput[start + k] = ArraySecond[j];
-            ++k;
-        }
-    }
-}
-/**
  * 归并排序
  * @param ArrayInput
  * @param start
@@ -153,7 +78,7 @@ function mergeSort(ArrayInput, start, end) {
         var middle = Math.floor((start + end) / 2);
         mergeSort(ArrayInput, start, middle);
         mergeSort(ArrayInput, middle + 1, end);
-        merge(ArrayInput, start, middle, end);
+        utilitytools_1.default.merge(ArrayInput, start, middle, end);
     }
     return ArrayInput;
 }
@@ -338,38 +263,39 @@ function testCaseSumSearch() {
         if (result2.maxIndex !== -1) {
             console.log('checkArraySum is false');
         }
+        else {
+            console.log('checkArraySum is true');
+        }
     }
 }
 /////排序测试----------
 function testCaseInsertSort() {
-    var ArrayTest = utilitytools_1.default.generateRandomArray(1, 100, 20);
+    var sortNum = utilitytools_1.default.generateRandom(20, 70);
+    var ArrayTest = utilitytools_1.default.generateRandomArray(1, 100, sortNum);
     var ArrayToSort = ArrayTest.concat([]);
     console.log("orgin sequence is " + ArrayToSort);
     insertSort(ArrayToSort);
     console.log("sequence sorted is " + ArrayToSort);
-    checkSequence(ArrayTest, ArrayToSort);
-    console.log('insertsort  testcase is ', checkSequence(ArrayTest, ArrayToSort));
+    //utilityTools.checkSequence(ArrayTest, ArrayToSort);
+    console.log('insertsort  testcase is ', utilitytools_1.default.checkSequence(ArrayTest, ArrayToSort));
 }
 function testCaseInsertSortRecur() {
-    var ArrayTest = utilitytools_1.default.generateRandomArray(1, 100, 20);
+    var sortNum = utilitytools_1.default.generateRandom(20, 70);
+    var ArrayTest = utilitytools_1.default.generateRandomArray(1, 100, sortNum);
     var ArrayToSort = ArrayTest.concat([]);
     console.log("orgin sequence is " + ArrayToSort);
     insertSortRecursion(ArrayToSort, ArrayToSort.length - 1);
     console.log("sequence sorted is " + ArrayToSort);
-    checkSequence(ArrayTest, ArrayToSort);
-    console.log('InsertSortRecur  testcase is ', checkSequence(ArrayTest, ArrayToSort));
+    //utilityTools.checkSequence(ArrayTest, ArrayToSort);
+    console.log('InsertSortRecur  testcase is ', utilitytools_1.default.checkSequence(ArrayTest, ArrayToSort));
 }
 function testCaseMergeSort() {
-    var ArrayTest = utilitytools_1.default.generateRandomArray(1, 100, 20);
+    var sortNum = utilitytools_1.default.generateRandom(20, 70);
+    var ArrayTest = utilitytools_1.default.generateRandomArray(1, 100, sortNum);
     var ArrayToSort = ArrayTest.concat([]);
     console.log("orgin sequence is " + ArrayToSort);
     mergeSort(ArrayToSort, 0, ArrayToSort.length - 1);
     console.log("sequence sorted is " + ArrayToSort);
-    checkSequence(ArrayTest, ArrayToSort);
-    console.log('mergesort  testcase is ', checkSequence(ArrayTest, ArrayToSort));
+    //utilityTools.checkSequence(ArrayTest, ArrayToSort);
+    console.log('mergesort  testcase is ', utilitytools_1.default.checkSequence(ArrayTest, ArrayToSort));
 }
-testCaseBinarySearch();
-testCaseInsertSort();
-testCaseInsertSortRecur();
-testCaseMergeSort();
-testCaseSumSearch();
