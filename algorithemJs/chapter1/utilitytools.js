@@ -14,8 +14,8 @@ function generateRandomArray(min, max, itemNum) {
 }
 /**
  * 排序校验 不使用标准排序方法
- * @param ArrayInput
- * @param ArrayOutput
+ * @param ArrayInput 原始输入数组
+ * @param ArrayOutput 待校验的排序完成数组
  */
 function checkSequence(ArrayInput, ArrayOutput) {
     var objTemp = {};
@@ -51,8 +51,8 @@ function checkSequence(ArrayInput, ArrayOutput) {
 }
 /**
  * 排序检测，使用标准排序准则
- * @param ArrayInput
- * @param ArrayOutput
+ * @param ArrayInput 原始输入数组
+ * @param ArrayOutput 待校验的排序完成数组
  */
 function checkSeqUseStdSort(ArrayInput, ArrayOutput) {
     if (ArrayInput.length !== ArrayOutput.length) {

@@ -63,12 +63,35 @@ class TestCaseQuestion {
         console.log(`sequence sorted is ${ArrayToSort}`);
         console.log('ShakerSort  testcase is ', utilityTools.checkSeqUseStdSort(ArrayTest, ArrayToSort));
     }
+    ////霍纳多项式计算测试
+    testCaseHuona() {
+        const ArrayLenth = utilityTools.generateRandom(2, 9);
+        const ArrayTest = utilityTools.generateRandomArray(1, 6, ArrayLenth);
+        const xNum = utilityTools.generateRandom(1, 6);
+        const result1 = polyValueHuona(ArrayTest, xNum);
+        const result2 = polyValueNative(ArrayTest, xNum);
+        console.log(`Array is ${ArrayTest},x is ${xNum},huo na poly result is ${result1},native poly result is ${result2},testcase is ${result1 === result2}`);
+    }
+    ////计算逆序数测试
+    testCaseInversion(){
+        const nNum = utilityTools.generateRandom(20, 70);
+        console.log('zhengwei test testCaseInversion', nNum);
+        const ArrayTest = utilityTools.generateRandomArray(1, 100, nNum);
+        console.log(`orgin sequence is ${ArrayTest}`);
+        const ArrayTemp = ArrayTest.concat([]);
+        const result1 = inversionNum(ArrayTest);
+        const result2 = mergeSortInversionWrap(ArrayTemp);
+        console.log(`sorted sequence is ${ArrayTemp}`);
+        console.log(`native result is ${result1}, mergeSortInversionWrap result is ${result2},testcase is ${result1 === result2}`);
+    }
     runTest() {
         this.testCasemergeSequenceSort();
         this.testCaseMergeSortMinSeqKWrap();
         this.testCaseBubbleSort();
         this.testCaseBubbleSortImprove();
         this.testCaseShakerSort();
+        this.testCaseHuona();
+        this.testCaseInversion();
     }
 }
 const questionTestCase = new TestCaseQuestion();
@@ -188,9 +211,10 @@ function bubbleSortImprove(ArrayInput: Array<number>) {
 function ShakerSort(ArrayInput: Array<number>) {
     let left = 0;
     let right = ArrayInput.length - 1;
-    let rightCpFlat = -1;
-    let leftCpFlat = -1;
+
     while (left < right) {
+        let rightCpFlat = -1;
+        let leftCpFlat = -1;
         for (let j = left; j < right; ++j) {
             if (ArrayInput[j] > ArrayInput[j + 1]) {
                 const Temp = ArrayInput[j];
@@ -217,3 +241,112 @@ function ShakerSort(ArrayInput: Array<number>) {
         left = leftCpFlat;
     }
 }
+
+//////////////////////////////////////
+////霍纳规则计算多项式
+//////////////////////////////////////
+function polyValueHuona(ArrayPoly: Array<number>, xValue: number) {
+    let yResult = 0;
+    for (let i = ArrayPoly.length - 1; i >= 0; --i) {
+        yResult = yResult * xValue + ArrayPoly[i];
+    }
+    return yResult;
+}
+// 朴素多项式计算
+function polyValueNative(ArrayPoly: Array<number>, xValue: number) {
+    let yResult = 0;
+    for (let i = 0; i < ArrayPoly.length; ++i) {
+        let xTemp = 1;
+        for (let j = 0; j < i; ++j) {
+            xTemp *= xValue;
+        }
+        yResult += ArrayPoly[i] * xTemp;
+    }
+    return yResult;
+}
+// const ArrayTest2 = [27,14,92,83,61,80,95,11,7,46,44,60,67,14,86,96,25,55,29,59,48,64,58];
+// ShakerSort(ArrayTest2);
+// console.log(`sequence sorted is ${ArrayTest2}`);
+
+//////////////////////////////////////
+//// 逆序对 算法导论2-4
+//////////////////////////////////////
+//逆序对原始算法
+function inversionNum(ArrayInput: Array<number>): number {
+    let inversionNum: number = 0;
+    for (let i = 0; i < ArrayInput.length; ++i) {
+        for (let j = i + 1; j < ArrayInput.length; ++j) {
+            if (ArrayInput[i] > ArrayInput[j]) {
+                ++inversionNum;
+            }
+        }
+    }
+    return inversionNum;
+}
+//逆序队归并算法，在归并排序过程中增加计数器，计算逆序队数目。
+function mergeSortInversionWrap(ArrayInput: Array<number>) {
+    return mergeSortInversion(ArrayInput, 0, ArrayInput.length - 1);
+}
+/**
+ * 归并排序计算逆序对
+ * @param ArrayInput 
+ * @param start 
+ * @param end 
+ */
+function mergeSortInversion(ArrayInput: Array<number>, start: number, end: number) {
+    let nNumReturn = 0;
+    if (start < end) {
+        const middle = Math.floor((start + end) / 2);
+        nNumReturn += mergeSortInversion(ArrayInput, start, middle);
+        nNumReturn += mergeSortInversion(ArrayInput, middle + 1, end);
+        nNumReturn += mergeInversion(ArrayInput, start, middle, end);
+    }
+    return nNumReturn;
+}
+/**
+ * 归并排序归并过程,并计算逆序数
+ * @param ArrayInput 
+ * @param start 
+ * @param middle 
+ * @param end 
+ */
+function mergeInversion(ArrayInput: Array<number>, start: number, middle: number, end: number) {
+    let nNumInversion = 0;
+    const ArrayFirst = ArrayInput.slice(start, middle + 1);
+    const ArraySecond = ArrayInput.slice(middle + 1, end + 1);
+    let i = 0, j = 0, k = 0;
+    for (; i < ArrayFirst.length && j < ArraySecond.length; ++k) {
+        if (ArraySecond[j] < ArrayFirst[i]) {
+            ArrayInput[start + k] = ArraySecond[j];
+            ++j;
+
+        } else {
+            // 当插入ArrayFirst的数据时，判断当前有多少逆序
+            // 被插入的数据中含有j个比当前ArrayFirst[i]小的数据
+            ArrayInput[start + k] = ArrayFirst[i];
+            ++i;
+            nNumInversion = nNumInversion + j;
+
+        }
+    }
+    if (i < ArrayFirst.length) {
+        for (; i < ArrayFirst.length; ++i) {
+            ArrayInput[start + k] = ArrayFirst[i];
+            //ArrayFirst i之后的每一个值对ArraySecond来说都是逆序
+            nNumInversion += ArraySecond.length;
+            ++k;
+        }
+    }
+    if (j < ArraySecond.length) {
+        for (; j < ArraySecond.length; ++j) {
+            ArrayInput[start + k] = ArraySecond[j];
+            ++k;
+        }
+    }
+    return nNumInversion;
+}
+
+// const ArrayTest1 = [27, 14, 92, 7, 7, 61, 80, 95, 11, 7, 46, 44, 60, 67, 14, 86, 96, 25, 155, 29, 59, 48, 64, 58];
+// const ArrayTest1 = [1,1,1,1,1,1,1,1,1];
+// console.log(inversionNum(ArrayTest1));
+// console.log(mergeSortInversionWrap(ArrayTest1.splice(0, ArrayTest1.length)));
