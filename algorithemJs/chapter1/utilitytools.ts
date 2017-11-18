@@ -13,8 +13,8 @@ function generateRandomArray(min: number, max: number, itemNum: number) {
 
 /**
  * 排序校验 不使用标准排序方法
- * @param ArrayInput 
- * @param ArrayOutput 
+ * @param ArrayInput 原始输入数组
+ * @param ArrayOutput 待校验的排序完成数组
  */
 function checkSequence(ArrayInput: Array<number>, ArrayOutput: Array<number>) {
     const objTemp: any = {};
@@ -50,8 +50,8 @@ function checkSequence(ArrayInput: Array<number>, ArrayOutput: Array<number>) {
 }
 /**
  * 排序检测，使用标准排序准则
- * @param ArrayInput 
- * @param ArrayOutput 
+ * @param ArrayInput 原始输入数组
+ * @param ArrayOutput 待校验的排序完成数组
  */
 function checkSeqUseStdSort(ArrayInput: Array<number>, ArrayOutput: Array<number>) {
     if (ArrayInput.length !== ArrayOutput.length) {

@@ -31,9 +31,45 @@ var TestCaseQuestion = /** @class */ (function () {
         //utilityTools.checkSeqUseStdSort(ArrayTest, ArrayToSort);
         console.log('testCaseMergeSortMinSeqKWrap  testcase is ', utilitytools_1.default.checkSeqUseStdSort(ArrayTest, ArrayToSort));
     };
+    ////冒泡排序测试
+    TestCaseQuestion.prototype.testCaseBubbleSort = function () {
+        var sortNum = utilitytools_1.default.generateRandom(20, 70);
+        console.log('zhengwei test bubbleSort', sortNum);
+        var ArrayTest = utilitytools_1.default.generateRandomArray(1, 100, sortNum);
+        var ArrayToSort = ArrayTest.concat([]);
+        console.log("orgin sequence is " + ArrayToSort);
+        bubbleSort(ArrayToSort);
+        console.log("sequence sorted is " + ArrayToSort);
+        console.log('bubbleSort  testcase is ', utilitytools_1.default.checkSeqUseStdSort(ArrayTest, ArrayToSort));
+    };
+    ////冒泡排序优化版
+    TestCaseQuestion.prototype.testCaseBubbleSortImprove = function () {
+        var sortNum = utilitytools_1.default.generateRandom(20, 70);
+        console.log('zhengwei test bubbleSortImprove', sortNum);
+        var ArrayTest = utilitytools_1.default.generateRandomArray(1, 100, sortNum);
+        var ArrayToSort = ArrayTest.concat([]);
+        console.log("orgin sequence is " + ArrayToSort);
+        bubbleSortImprove(ArrayToSort);
+        console.log("sequence sorted is " + ArrayToSort);
+        console.log('bubbleSortImprove  testcase is ', utilitytools_1.default.checkSeqUseStdSort(ArrayTest, ArrayToSort));
+    };
+    ////双向冒泡排序
+    TestCaseQuestion.prototype.testCaseShakerSort = function () {
+        var sortNum = utilitytools_1.default.generateRandom(20, 70);
+        console.log('zhengwei test ShakerSort', sortNum);
+        var ArrayTest = utilitytools_1.default.generateRandomArray(1, 100, sortNum);
+        var ArrayToSort = ArrayTest.concat([]);
+        console.log("orgin sequence is " + ArrayToSort);
+        ShakerSort(ArrayToSort);
+        console.log("sequence sorted is " + ArrayToSort);
+        console.log('ShakerSort  testcase is ', utilitytools_1.default.checkSeqUseStdSort(ArrayTest, ArrayToSort));
+    };
     TestCaseQuestion.prototype.runTest = function () {
         this.testCasemergeSequenceSort();
         this.testCaseMergeSortMinSeqKWrap();
+        this.testCaseBubbleSort();
+        this.testCaseBubbleSortImprove();
+        this.testCaseShakerSort();
     };
     return TestCaseQuestion;
 }());
@@ -110,9 +146,72 @@ function mergesortMinSeqK(ArrayInput, startIndex, endIndex, k) {
 function mergeSortMinSeqKWrap(ArrayInput, subSequenceNum) {
     mergesortMinSeqK(ArrayInput, 0, ArrayInput.length - 1, subSequenceNum);
 }
-// const ArrayTest = [6, 4, 1, 35, 1, 6, 7, 9, 12, 56, 78, 9, 0, 12, 8, 15, 32, 7, 9, 5, 7, 8, 9, 15, 24];
-// console.log(ArrayTest);
-// console.log(ArrayTest.slice(0, ArrayTest.length).sort((a, b) => a - b));
-// console.log(ArrayTest);
-// mergeSequenceSort(ArrayTest, 7);
-// console.log(ArrayTest); 
+/////////////////////////////////////////////////////
+///////// 冒泡排序算法导论习题2-2
+/////////////////////////////////////////////////////
+function bubbleSort(ArrayInput) {
+    for (var i = 0; i < ArrayInput.length; ++i) {
+        for (var j = ArrayInput.length - 1; j > i; --j) {
+            if (ArrayInput[j] < ArrayInput[j - 1]) {
+                var Temp = ArrayInput[j];
+                ArrayInput[j] = ArrayInput[j - 1];
+                ArrayInput[j - 1] = Temp;
+            }
+        }
+    }
+}
+// 对冒泡排序的一个改进，记住上一次最后交换的位置，作为下一次循环的最终点。
+// 当在一次循环中没交换时，说明已经排好顺序了，直接退出。
+function bubbleSortImprove(ArrayInput) {
+    for (var i = 0; i < ArrayInput.length;) {
+        var k = -1;
+        for (var j = ArrayInput.length - 1; j > i; --j) {
+            if (ArrayInput[j] < ArrayInput[j - 1]) {
+                var Temp = ArrayInput[j];
+                ArrayInput[j] = ArrayInput[j - 1];
+                ArrayInput[j - 1] = Temp;
+                k = j;
+            }
+        }
+        // 如果在一次循环中没有交换说明已经排好顺序了，直接退出
+        if (k === -1) {
+            return;
+        }
+        else {
+            i = k;
+        }
+    }
+}
+// 冒泡排序，双向冒泡排序
+function ShakerSort(ArrayInput) {
+    var left = 0;
+    var right = ArrayInput.length - 1;
+    var rightCpFlat = -1;
+    var leftCpFlat = -1;
+    while (left < right) {
+        for (var j = left; j < right; ++j) {
+            if (ArrayInput[j] > ArrayInput[j + 1]) {
+                var Temp = ArrayInput[j];
+                ArrayInput[j] = ArrayInput[j + 1];
+                ArrayInput[j + 1] = Temp;
+                rightCpFlat = j;
+            }
+        }
+        if (rightCpFlat === -1) {
+            return;
+        }
+        right = rightCpFlat;
+        for (var j = right; j > left; --j) {
+            if (ArrayInput[j - 1] > ArrayInput[j]) {
+                var Temp = ArrayInput[j];
+                ArrayInput[j] = ArrayInput[j - 1];
+                ArrayInput[j - 1] = Temp;
+                leftCpFlat = j;
+            }
+        }
+        if (leftCpFlat === -1) {
+            return;
+        }
+        left = leftCpFlat;
+    }
+}

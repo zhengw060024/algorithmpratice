@@ -7,7 +7,7 @@ class TestCaseQuestion {
     /////归并排序修改版排序测试----------
     testCasemergeSequenceSort() {
         const sortNum = utilityTools.generateRandom(20, 70);
-        console.log('zhengwei test testCasemergeSequenceSort',sortNum);
+        console.log('zhengwei test testCasemergeSequenceSort', sortNum);
         const ArrayTest = utilityTools.generateRandomArray(1, 100, sortNum);
         const ArrayToSort = ArrayTest.concat([]);
         console.log(`orgin sequence is ${ArrayToSort}`);
@@ -20,7 +20,7 @@ class TestCaseQuestion {
     /////归并排序修改版排序测试----------
     testCaseMergeSortMinSeqKWrap() {
         const sortNum = utilityTools.generateRandom(20, 70);
-        console.log('zhengwei test testCaseMergeSortMinSeqKWrap',sortNum);
+        console.log('zhengwei test testCaseMergeSortMinSeqKWrap', sortNum);
         const ArrayTest = utilityTools.generateRandomArray(1, 100, sortNum);
         const ArrayToSort = ArrayTest.concat([]);
         console.log(`orgin sequence is ${ArrayToSort}`);
@@ -30,9 +30,45 @@ class TestCaseQuestion {
         //utilityTools.checkSeqUseStdSort(ArrayTest, ArrayToSort);
         console.log('testCaseMergeSortMinSeqKWrap  testcase is ', utilityTools.checkSeqUseStdSort(ArrayTest, ArrayToSort));
     }
+    ////冒泡排序测试
+    testCaseBubbleSort() {
+        const sortNum = utilityTools.generateRandom(20, 70);
+        console.log('zhengwei test bubbleSort', sortNum);
+        const ArrayTest = utilityTools.generateRandomArray(1, 100, sortNum);
+        const ArrayToSort = ArrayTest.concat([]);
+        console.log(`orgin sequence is ${ArrayToSort}`);
+        bubbleSort(ArrayToSort);
+        console.log(`sequence sorted is ${ArrayToSort}`);
+        console.log('bubbleSort  testcase is ', utilityTools.checkSeqUseStdSort(ArrayTest, ArrayToSort));
+    }
+    ////冒泡排序优化版
+    testCaseBubbleSortImprove() {
+        const sortNum = utilityTools.generateRandom(20, 70);
+        console.log('zhengwei test bubbleSortImprove', sortNum);
+        const ArrayTest = utilityTools.generateRandomArray(1, 100, sortNum);
+        const ArrayToSort = ArrayTest.concat([]);
+        console.log(`orgin sequence is ${ArrayToSort}`);
+        bubbleSortImprove(ArrayToSort);
+        console.log(`sequence sorted is ${ArrayToSort}`);
+        console.log('bubbleSortImprove  testcase is ', utilityTools.checkSeqUseStdSort(ArrayTest, ArrayToSort));
+    }
+    ////双向冒泡排序
+    testCaseShakerSort() {
+        const sortNum = utilityTools.generateRandom(20, 70);
+        console.log('zhengwei test ShakerSort', sortNum);
+        const ArrayTest = utilityTools.generateRandomArray(1, 100, sortNum);
+        const ArrayToSort = ArrayTest.concat([]);
+        console.log(`orgin sequence is ${ArrayToSort}`);
+        ShakerSort(ArrayToSort);
+        console.log(`sequence sorted is ${ArrayToSort}`);
+        console.log('ShakerSort  testcase is ', utilityTools.checkSeqUseStdSort(ArrayTest, ArrayToSort));
+    }
     runTest() {
         this.testCasemergeSequenceSort();
         this.testCaseMergeSortMinSeqKWrap();
+        this.testCaseBubbleSort();
+        this.testCaseBubbleSortImprove();
+        this.testCaseShakerSort();
     }
 }
 const questionTestCase = new TestCaseQuestion();
@@ -113,10 +149,71 @@ function mergeSortMinSeqKWrap(ArrayInput: Array<number>, subSequenceNum: number)
     mergesortMinSeqK(ArrayInput, 0, ArrayInput.length - 1, subSequenceNum);
 }
 
-// const ArrayTest = [6, 4, 1, 35, 1, 6, 7, 9, 12, 56, 78, 9, 0, 12, 8, 15, 32, 7, 9, 5, 7, 8, 9, 15, 24];
-// console.log(ArrayTest);
-// console.log(ArrayTest.slice(0, ArrayTest.length).sort((a, b) => a - b));
-// console.log(ArrayTest);
-// mergeSequenceSort(ArrayTest, 7);
-
-// console.log(ArrayTest);
+/////////////////////////////////////////////////////
+///////// 冒泡排序算法导论习题2-2
+/////////////////////////////////////////////////////
+function bubbleSort(ArrayInput: Array<number>) {
+    for (let i = 0; i < ArrayInput.length; ++i) {
+        for (let j = ArrayInput.length - 1; j > i; --j) {
+            if (ArrayInput[j] < ArrayInput[j - 1]) {
+                const Temp = ArrayInput[j];
+                ArrayInput[j] = ArrayInput[j - 1];
+                ArrayInput[j - 1] = Temp;
+            }
+        }
+    }
+}
+// 对冒泡排序的一个改进，记住上一次最后交换的位置，作为下一次循环的最终点。
+// 当在一次循环中没交换时，说明已经排好顺序了，直接退出。
+function bubbleSortImprove(ArrayInput: Array<number>) {
+    for (let i = 0; i < ArrayInput.length;) {
+        let k = -1;
+        for (let j = ArrayInput.length - 1; j > i; --j) {
+            if (ArrayInput[j] < ArrayInput[j - 1]) {
+                const Temp = ArrayInput[j];
+                ArrayInput[j] = ArrayInput[j - 1];
+                ArrayInput[j - 1] = Temp;
+                k = j;
+            }
+        }
+        // 如果在一次循环中没有交换说明已经排好顺序了，直接退出
+        if (k === -1) {
+            return;
+        } else {
+            i = k;
+        }
+    }
+}
+// 冒泡排序，双向冒泡排序
+function ShakerSort(ArrayInput: Array<number>) {
+    let left = 0;
+    let right = ArrayInput.length - 1;
+    let rightCpFlat = -1;
+    let leftCpFlat = -1;
+    while (left < right) {
+        for (let j = left; j < right; ++j) {
+            if (ArrayInput[j] > ArrayInput[j + 1]) {
+                const Temp = ArrayInput[j];
+                ArrayInput[j] = ArrayInput[j + 1];
+                ArrayInput[j + 1] = Temp;
+                rightCpFlat = j;
+            }
+        }
+        if (rightCpFlat === -1) {
+            return;
+        }
+        right = rightCpFlat;
+        for (let j = right; j > left; --j) {
+            if (ArrayInput[j - 1] > ArrayInput[j]) {
+                const Temp = ArrayInput[j];
+                ArrayInput[j] = ArrayInput[j - 1];
+                ArrayInput[j - 1] = Temp;
+                leftCpFlat = j;
+            }
+        }
+        if (leftCpFlat === -1) {
+            return;
+        }
+        left = leftCpFlat;
+    }
+}
