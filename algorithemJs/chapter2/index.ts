@@ -1,4 +1,4 @@
-import sortProgramRunTest from './chapter1program'
+import sortProgramRunTest from './chapter2program'
 import questionTestCase from './question'
 function RunAllTest() {
     sortProgramRunTest.runTest();
