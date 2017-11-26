@@ -244,7 +244,7 @@ var MaxSubDSequenceSum = /** @class */ (function () {
     MaxSubDSequenceSum.prototype.testCaseDynamic = function () {
         var tempMaxsub = getMaxSubSequenceDynamic(this.m_arrayToTest);
         var testResult = tempMaxsub.maxSubSum === this.m_expectResult.maxSubSum;
-        console.log(" testResult is " + testResult + ",dynamic result is ", tempMaxsub);
+        console.log("testResult is " + testResult + ",dynamic result is ", tempMaxsub);
     };
     MaxSubDSequenceSum.prototype.testCaseDevideByK = function () {
         var numMinSeq = utilitytools_1.default.generateRandom(1, 10);
