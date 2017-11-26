@@ -1,0 +1,11 @@
+{
+  "name": "chapter4",
+  "version": "1.0.0",
+  "description": "算法导论第四章代码合集",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "author": "zhengwei",
+  "license": "ISC"
+}
