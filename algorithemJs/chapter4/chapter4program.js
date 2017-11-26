@@ -1,4 +1,6 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var utilitytools_1 = require("./utilitytools");
 /**
  * 暴力搜索法 n* n,计算所有的组合，因为之前计算的子数组的信息可以用来
  * 计算当前子数组，所以
@@ -28,10 +30,10 @@ function getMaxSubSequenceBrute(arrayInput) {
  * 分治法
  * @param arrayInput
  */
-function getMaxSubSequenceDevide(arrayInput) {
-    return getMaxSubSequenceDevideRecur(arrayInput, 0, arrayInput.length - 1);
+function getMaxSubSequenceDivide(arrayInput) {
+    return getMaxSubSequenceDivideRecur(arrayInput, 0, arrayInput.length - 1);
 }
-function getMaxSubSequenceDevideRecur(arrayInput, startIndex, endIndex) {
+function getMaxSubSequenceDivideRecur(arrayInput, startIndex, endIndex) {
     if (startIndex === endIndex) {
         return {
             minIndex: startIndex,
@@ -41,8 +43,8 @@ function getMaxSubSequenceDevideRecur(arrayInput, startIndex, endIndex) {
     }
     else {
         var nMiddle = Math.floor((startIndex + endIndex) / 2);
-        var first = getMaxSubSequenceDevideRecur(arrayInput, startIndex, nMiddle);
-        var second = getMaxSubSequenceDevideRecur(arrayInput, nMiddle + 1, endIndex);
+        var first = getMaxSubSequenceDivideRecur(arrayInput, startIndex, nMiddle);
+        var second = getMaxSubSequenceDivideRecur(arrayInput, nMiddle + 1, endIndex);
         // 计算中间的最大子串从 middle 向两边扩展。
         var tempLeftMax = {
             minIndex: nMiddle,
@@ -95,8 +97,8 @@ function getMaxSubSequenceDevideRecur(arrayInput, startIndex, endIndex) {
  * @param arrayInput
  * @param nMinLength nMinLenth 需要大于0
  */
-function getMaxSubSequenceDevideByK(arrayInput, nMinLength) {
-    return getMaxSubSequenceDevideRecurByK(arrayInput, 0, arrayInput.length - 1, nMinLength);
+function getMaxSubSequenceDivideByK(arrayInput, nMinLength) {
+    return getMaxSubSequenceDivideRecurByK(arrayInput, 0, arrayInput.length - 1, nMinLength);
 }
 function getMaxSubSequenceBrutebyK(arrayInput, nStartIndex, nEndIndex) {
     var TempResult = {
@@ -118,14 +120,14 @@ function getMaxSubSequenceBrutebyK(arrayInput, nStartIndex, nEndIndex) {
     }
     return TempResult;
 }
-function getMaxSubSequenceDevideRecurByK(arrayInput, startIndex, endIndex, nMinLength) {
+function getMaxSubSequenceDivideRecurByK(arrayInput, startIndex, endIndex, nMinLength) {
     if (endIndex - startIndex <= nMinLength) {
         return getMaxSubSequenceBrutebyK(arrayInput, startIndex, endIndex);
     }
     else {
         var nMiddle = Math.floor((startIndex + endIndex) / 2);
-        var first = getMaxSubSequenceDevideRecurByK(arrayInput, startIndex, nMiddle, nMinLength);
-        var second = getMaxSubSequenceDevideRecurByK(arrayInput, nMiddle + 1, endIndex, nMinLength);
+        var first = getMaxSubSequenceDivideRecurByK(arrayInput, startIndex, nMiddle, nMinLength);
+        var second = getMaxSubSequenceDivideRecurByK(arrayInput, nMiddle + 1, endIndex, nMinLength);
         // 计算中间的最大子串从 middle 向两边扩展。
         var tempLeftMax = {
             minIndex: nMiddle,
@@ -225,13 +227,37 @@ function getMaxSubSequenceMayEmptyWrap(arrayInput) {
         return TempResultNoEmpty;
     }
 }
+// 最大子串测试用例
 var MaxSubDSequenceSum = /** @class */ (function () {
     function MaxSubDSequenceSum() {
+        var itemCount = utilitytools_1.default.generateRandom(40, 100);
+        this.m_arrayToTest = utilitytools_1.default.generateRandomArray(-100, 40, itemCount);
+        console.log("array item count is " + itemCount + ", origin array is " + this.m_arrayToTest);
+        this.m_expectResult = getMaxSubSequenceBrute(this.m_arrayToTest);
+        console.log("expect result is ", this.m_expectResult);
     }
+    MaxSubDSequenceSum.prototype.testCaseDivide = function () {
+        var tempMaxsub = getMaxSubSequenceDivide(this.m_arrayToTest);
+        var testResult = tempMaxsub.maxSubSum === this.m_expectResult.maxSubSum;
+        console.log("testResult is " + testResult + ",divide result is ", tempMaxsub);
+    };
+    MaxSubDSequenceSum.prototype.testCaseDynamic = function () {
+        var tempMaxsub = getMaxSubSequenceDynamic(this.m_arrayToTest);
+        var testResult = tempMaxsub.maxSubSum === this.m_expectResult.maxSubSum;
+        console.log(" testResult is " + testResult + ",dynamic result is ", tempMaxsub);
+    };
+    MaxSubDSequenceSum.prototype.testCaseDevideByK = function () {
+        var numMinSeq = utilitytools_1.default.generateRandom(1, 10);
+        var tempMaxsub = getMaxSubSequenceDivideByK(this.m_arrayToTest, numMinSeq);
+        var testResult = tempMaxsub.maxSubSum === this.m_expectResult.maxSubSum;
+        console.log("divideK minSeqNum is " + numMinSeq + ", testResult is " + testResult + ",divideK result is ", tempMaxsub);
+    };
+    MaxSubDSequenceSum.prototype.runTest = function () {
+        this.testCaseDivide();
+        this.testCaseDevideByK();
+        this.testCaseDynamic();
+    };
     return MaxSubDSequenceSum;
 }());
-var ArrayTest = [13, -3, -25, 20, -3, -16, -23, 18, 20, -7, 12, -5, -22, 15, -4, 7];
-console.log(getMaxSubSequenceBrute(ArrayTest));
-console.log(getMaxSubSequenceDevide(ArrayTest));
-console.log(getMaxSubSequenceDevideByK(ArrayTest, 1));
-console.log(getMaxSubSequenceDynamic(ArrayTest));
+var MaxSubSeqSum = new MaxSubDSequenceSum();
+exports.default = MaxSubSeqSum;
