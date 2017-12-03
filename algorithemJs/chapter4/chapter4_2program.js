@@ -339,6 +339,11 @@ function mulMatrixStrassenHelp(dataMatrix1, dataMatrix2) {
     }
 }
 /////////处理非2的k次方的情况//////////////////////
+/**
+ * 不需要矩阵的秩为2的k次方
+ * @param dataMatrix1
+ * @param dataMatrix2
+ */
 function mulMatrixStrassen2(dataMatrix1, dataMatrix2) {
     return mulMatrixStrassenHelpCommon({
         dataMatrix: dataMatrix1,
