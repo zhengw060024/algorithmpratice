@@ -624,16 +624,40 @@ function mulMatrixStrassenHelpCommon(dataMatrix1, dataMatrix2) {
         };
     }
 }
-// const ArrayTemp1 = [[5,2],[9,3]];
-// const ArrayTemp2 = [[8,2],[2,8]];
-var temp1 = generateRandomMatrix(7, 7);
-//{dataMatrix:ArrayTemp1,row:2,col:2};
-printMatrix(temp1);
-console.log('--------------------');
-var temp2 = generateRandomMatrix(7, 7);
-printMatrix(temp2);
-console.log('fffffffffffffffffff');
-var temp3 = mulMatrixBrute(temp1, temp2);
-printMatrix(temp3);
-var temp4 = mulMatrixStrassen2(temp1, temp2);
-printMatrix(temp4);
+var MatrixMulTestCase = /** @class */ (function () {
+    function MatrixMulTestCase() {
+        this.m_Rank = utilitytools_1.default.generateRandom(100, 143);
+        this.m_A = generateRandomMatrix(this.m_Rank, this.m_Rank);
+        // printMatrix(this.m_A);
+        this.m_B = generateRandomMatrix(this.m_Rank, this.m_Rank);
+        // printMatrix(this.m_B);
+    }
+    MatrixMulTestCase.prototype.runTest = function () {
+        console.time('Matrix1');
+        var Mul1 = mulMatrixBrute(this.m_A, this.m_B);
+        console.timeEnd('Matrix1');
+        // printMatrix(Mul1);
+        console.time('Matrix2');
+        var Mul2 = mulMatrixStrassen2(this.m_A, this.m_B);
+        console.timeEnd('Matrix2');
+        // printMatrix(Mul2);
+        var checkResult = this.checkMatrixSame(Mul1, Mul2);
+        console.log("The two Matrix rank is " + this.m_Rank + ", checkResult is " + checkResult);
+    };
+    MatrixMulTestCase.prototype.checkMatrixSame = function (A, B) {
+        if (A.col != B.col || A.row != B.row) {
+            return false;
+        }
+        for (var i = 0; i < A.row; ++i) {
+            for (var j = 0; j < B.col; ++j) {
+                if (A.dataMatrix[i][j] !== B.dataMatrix[i][j]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    };
+    return MatrixMulTestCase;
+}());
+var MatrixTest = new MatrixMulTestCase();
+exports.default = MatrixTest;

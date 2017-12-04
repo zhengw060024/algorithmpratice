@@ -1,5 +1,6 @@
 import utilityTools from './utilitytools'
-// 矩阵乘法的 strassen算法 算法导论4-2
+// 矩阵乘法的 strassen算法 算法导论4-2,这个算法看似很好其实在js上面根本体现不出来，
+// 因为js分配临时结构的代价太大了。
 // 标准矩阵算法
 interface Matrix {
     row: number;
@@ -657,19 +658,44 @@ function mulMatrixStrassenHelpCommon(dataMatrix1: SubMatrix, dataMatrix2: SubMat
         }
     }
 }
-// const ArrayTemp1 = [[5,2],[9,3]];
-// const ArrayTemp2 = [[8,2],[2,8]];
-const temp1: Matrix = generateRandomMatrix(7, 7);
-//{dataMatrix:ArrayTemp1,row:2,col:2};
-printMatrix(temp1);
-console.log('--------------------');
-const temp2 = generateRandomMatrix(7, 7);
-printMatrix(temp2);
-console.log('fffffffffffffffffff');
+class MatrixMulTestCase {
+    constructor() {
+        this.m_Rank = utilityTools.generateRandom(10,13);
+        this.m_A = generateRandomMatrix(this.m_Rank, this.m_Rank);
+        // printMatrix(this.m_A);
+        this.m_B = generateRandomMatrix(this.m_Rank, this.m_Rank);
+        // printMatrix(this.m_B);
+    }
+    runTest() {
+        console.time('Matrix1');
+        const Mul1 = mulMatrixBrute(this.m_A,this.m_B);
+        console.timeEnd('Matrix1');
+        // printMatrix(Mul1);
+        console.time('Matrix2');
+        const Mul2 = mulMatrixStrassen2(this.m_A,this.m_B);
+        console.timeEnd('Matrix2');
+        // printMatrix(Mul2);
+        const checkResult = this.checkMatrixSame(Mul1, Mul2);
+        console.log(`The two Matrix rank is ${this.m_Rank}, checkResult is ${checkResult}`);
+    }
+    private  m_A: Matrix;
+    private  m_B: Matrix;
+    private  m_Rank: number;
+    private checkMatrixSame(A:Matrix, B:Matrix) {
+        if(A.col != B.col || A.row != B.row) {
+            return false;
+        }
+        for(let i = 0; i < A.row; ++i){
+            for(let j = 0; j < B.col; ++j){
+                if(A.dataMatrix[i][j] !== B.dataMatrix[i][j]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
-const temp3 = mulMatrixBrute(temp1, temp2);
-
-printMatrix(temp3);
-const temp4 = mulMatrixStrassen2(temp1, temp2);
-printMatrix(temp4);
+}
+const MatrixTest = new MatrixMulTestCase();
+export default MatrixTest;
 
