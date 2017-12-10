@@ -626,7 +626,7 @@ function mulMatrixStrassenHelpCommon(dataMatrix1, dataMatrix2) {
 }
 var MatrixMulTestCase = /** @class */ (function () {
     function MatrixMulTestCase() {
-        this.m_Rank = utilitytools_1.default.generateRandom(100, 143);
+        this.m_Rank = utilitytools_1.default.generateRandom(10, 13);
         this.m_A = generateRandomMatrix(this.m_Rank, this.m_Rank);
         // printMatrix(this.m_A);
         this.m_B = generateRandomMatrix(this.m_Rank, this.m_Rank);
