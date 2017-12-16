@@ -11,7 +11,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 // 假如 n为偶数有则有t1 + t2 = n /2 ，在t2 情况中好的数目为t2a，
 // 坏零件数目为t2b ,t1测试中好零件数目为t1a，坏零件数目为t1b,，则t2a + t2b <= n /2;
 // t1a >t1b; t1b + t2b < t2a+ t2b; => t2b < t2a && ta2 + t2b <= n/2;可以推断出对于
-// n为偶数的情况下，规模缩小为原来的1/2；同样对于奇数的情况有 (n - 1) /2 + 1（奇数情况较复杂，需要分析边界情况）
+// n为偶数的情况下，规模缩小为原来的1/2；同样对于奇数的情况有 (n - 1) /2 + 1（奇数情况较复杂，需要分析边界情况,以及子节点的奇偶情况）
 // 代码
 var utilitytools_1 = require("./utilitytools");
 var ChipTestCase = /** @class */ (function () {
