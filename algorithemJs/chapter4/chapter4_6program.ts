@@ -85,21 +85,32 @@ function getMongeArrayRowMinRecur(subMatrix: MongeSubMatrix, arrayOutPut: Array<
         arrayOutPut[nRowId] = Minleft;
     }
 }
-function testCase() {
-    const arrayTemp = [
-        [10, 17, 13, 28, 23],
-        [17, 22, 16, 29, 23],
-        [24, 28, 22, 34, 24],
-        [11, 13, 6, 17, 7],
-        [45, 44, 32, 37, 23],
-        [36, 33, 19, 21, 6],
-        [75, 66, 51, 53, 34]];
-    const matrix: Matrix = {
-        col:5,
-        row:7,
-        dataMatrix:arrayTemp
+class MongeMatrixTestCase {
+    constructor() {
+        
     }
-   const Temp =  getMongeArrayRowMinRecurWrap(matrix);
-   console.log(`min items is ${Temp}`);
+    runTest() {
+        this.testCase();
+    }
+    testCase() {
+        const arrayTemp = [
+            [10, 17, 13, 28, 23],
+            [17, 22, 16, 29, 23],
+            [24, 28, 22, 34, 24],
+            [11, 13, 6, 17, 7],
+            [45, 44, 32, 37, 23],
+            [36, 33, 19, 21, 6],
+            [75, 66, 51, 53, 34]];
+        const matrix: Matrix = {
+            col:5,
+            row:7,
+            dataMatrix:arrayTemp
+        }
+       const Temp =  getMongeArrayRowMinRecurWrap(matrix);
+       console.log(`min items is ${Temp}`);
+    }
 }
-testCase();
+const MongeTestCheck = new MongeMatrixTestCase();
+export default MongeTestCheck;
+
+
