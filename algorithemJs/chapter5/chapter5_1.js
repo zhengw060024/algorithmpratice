@@ -78,7 +78,7 @@ function generateRandomAB(a, b) {
     var nTotalCount = 0;
     do {
         nRandom = makeRandomByKpower(nK);
-        console.log(nRandom);
+        // console.log(nRandom);
         nTotalCount += nK;
     } while (nRandom > nLength);
     return {
@@ -94,11 +94,26 @@ var RandomGenTestCase = /** @class */ (function () {
         console.log(arrayInterview);
         console.log(hireAssistant(arrayInterview));
     };
+    // 最好做个随机千次测试，然后对每种情况计数
     RandomGenTestCase.prototype.testCaseRandomAB = function () {
-        console.log(generateRandomAB(1, 10));
+        var nRandomCount = 10 /*utilityTools.generateRandom(2,11)*/;
+        var nRandomStart = utilitytools_1.default.generateRandom(0, 11);
+        var nRandomEnd = nRandomStart + nRandomCount - 1;
+        var objTemp = {};
+        for (var i = 0; i < nRandomCount * 500; ++i) {
+            var Temp = generateRandomAB(nRandomStart, nRandomEnd);
+            if (objTemp[Temp.nRandomNum]) {
+                (objTemp[Temp.nRandomNum])['count']++;
+                (objTemp[Temp.nRandomNum])['totalcount'] += Temp.nCount;
+            }
+            else {
+                objTemp[Temp.nRandomNum] = { count: 0, totalcount: 0 };
+            }
+        }
+        console.log(objTemp);
     };
     return RandomGenTestCase;
 }());
 var RandomTest = new RandomGenTestCase();
-RandomTest.testCaseInterview();
+// RandomTest.testCaseInterview();
 RandomTest.testCaseRandomAB();

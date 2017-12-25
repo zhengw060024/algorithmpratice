@@ -93,7 +93,7 @@ function generateRandomAB(a: number, b: number): CountItem {
     let nTotalCount = 0;
     do {
         nRandom = makeRandomByKpower(nK);
-        console.log(nRandom);
+        // console.log(nRandom);
         nTotalCount += nK;
     } while (nRandom > nLength);
     return {
@@ -113,9 +113,22 @@ class RandomGenTestCase {
     }
     // 最好做个随机千次测试，然后对每种情况计数
     testCaseRandomAB() {
-      console.log(generateRandomAB(1,10))  ;
+      const nRandomCount = 10/*utilityTools.generateRandom(2,11)*/;
+      const nRandomStart  = utilityTools.generateRandom(0,11);
+      const nRandomEnd = nRandomStart + nRandomCount - 1;
+      let objTemp :any= {};
+      for(let i = 0; i < nRandomCount * 500; ++i ) {
+         const Temp = generateRandomAB(nRandomStart,nRandomEnd);
+          if(objTemp[Temp.nRandomNum]) {
+              (objTemp[Temp.nRandomNum])['count']++;
+              (objTemp[Temp.nRandomNum])['totalcount']+= Temp.nCount;
+          } else {
+            objTemp[Temp.nRandomNum] = {count:0,totalcount:0};
+          }
+      }
+      console.log(objTemp);
     }
 }
 const RandomTest = new RandomGenTestCase();
-RandomTest.testCaseInterview();
+// RandomTest.testCaseInterview();
 RandomTest.testCaseRandomAB();
