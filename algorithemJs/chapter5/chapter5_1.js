@@ -86,9 +86,112 @@ function generateRandomAB(a, b) {
         nCount: nTotalCount
     };
 }
+////////////////////
+//算法导论习题5-1-3
+//无偏差输出0,1
+////////////////////
+/**
+ * 0.75的概率产生0,0.25的概率产生1
+ */
+function generate01NoEqual() {
+    var k = utilitytools_1.default.generateRandom(1, 20);
+    if (k <= 15) {
+        return 0;
+    }
+    return 1;
+}
+// 思路每两组组合成为一次roll点测试，当出现01，和10时分别返回0,1,其他情况重复roll点测试即可
+function generateToNoEqualWrap() {
+    var t1 = generate01NoEqual();
+    var t2 = generate01NoEqual();
+    return 2 * t1 + t2;
+}
+function generate01Equal() {
+    var nCount = 0;
+    while (true) {
+        var k = generateToNoEqualWrap();
+        ++nCount;
+        if (k === 1) {
+            return {
+                nRandomResult: 0,
+                nCount: nCount
+            };
+        }
+        else if (k === 2) {
+            return {
+                nRandomResult: 1,
+                nCount: nCount
+            };
+        }
+    }
+}
+function testGenerateEqual() {
+    var objTemp = {
+        nCount0: 0,
+        nGenGount0: 0,
+        nCount1: 0,
+        nGenGount1: 0
+    };
+    for (var i = 0; i < 10000; ++i) {
+        var temp = generate01Equal();
+        if (temp.nRandomResult === 0) {
+            objTemp.nGenGount0 += temp.nCount;
+            ++objTemp.nCount0;
+        }
+        else {
+            objTemp.nGenGount1 += temp.nCount;
+            ++objTemp.nCount1;
+        }
+    }
+    console.log(objTemp);
+}
+function testCaseNoEqual() {
+    var k = 0;
+    var t = 0;
+    for (var i = 0; i < 10000; ++i) {
+        if (generate01NoEqual() === 1) {
+            ++t;
+        }
+        else {
+            ++k;
+        }
+    }
+    console.log("0 num is " + k + ",1 num is " + t);
+}
+function testCaseGenerate() {
+    var obj = {};
+    for (var i = 0; i < 10000; ++i) {
+        var k = utilitytools_1.default.generateRandom(1, 20);
+        if (!obj[k]) {
+            obj[k] = 1;
+        }
+        else {
+            ++obj[k];
+        }
+    }
+    console.log(obj);
+}
+function testCaseGenerateOldErr() {
+    var obj = {};
+    for (var i = 0; i < 10000; ++i) {
+        var k = utilitytools_1.default.generateRandomOldErr(1, 20);
+        if (!obj[k]) {
+            obj[k] = 1;
+        }
+        else {
+            ++obj[k];
+        }
+    }
+    console.log(obj);
+}
 var RandomGenTestCase = /** @class */ (function () {
     function RandomGenTestCase() {
     }
+    RandomGenTestCase.prototype.runTest = function () {
+        this.testCaseInterview();
+        this.testCaseRandomAB();
+        this.testEqual01();
+    };
     RandomGenTestCase.prototype.testCaseInterview = function () {
         var arrayInterview = generateInterViewArray();
         console.log(arrayInterview);
@@ -112,8 +215,14 @@ var RandomGenTestCase = /** @class */ (function () {
         }
         console.log(objTemp);
     };
+    RandomGenTestCase.prototype.testEqual01 = function () {
+        testGenerateEqual();
+    };
     return RandomGenTestCase;
 }());
-var RandomTest = new RandomGenTestCase();
+testGenerateEqual();
+// testCaseGenerate();
+// testCaseNoEqual();
+// const RandomTest = new RandomGenTestCase();
 // RandomTest.testCaseInterview();
-RandomTest.testCaseRandomAB();
+// RandomTest.testCaseRandomAB();

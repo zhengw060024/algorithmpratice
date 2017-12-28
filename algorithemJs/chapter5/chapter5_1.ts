@@ -9,7 +9,7 @@ interface cost {
     hirecost: number;
 }
 interface HiredProcedure {
-    cost:cost;
+    cost: cost;
     arrayHiredId: Array<number>
 }
 const COSTINT = 10;
@@ -33,7 +33,7 @@ function interview(person: candidate, totalCost: cost) {
 function hire(person: candidate, totalCost: cost) {
     totalCost.hirecost += COSTHIRE;
 }
-function hireAssistant(arrayCandidate: Array<candidate>):HiredProcedure {
+function hireAssistant(arrayCandidate: Array<candidate>): HiredProcedure {
     let totalCost = {
         interviewcost: 0,
         hirecost: 0
@@ -50,8 +50,8 @@ function hireAssistant(arrayCandidate: Array<candidate>):HiredProcedure {
         }
     }
     return {
-        cost:totalCost,
-        arrayHiredId:arrayHiredId
+        cost: totalCost,
+        arrayHiredId: arrayHiredId
     };
 }
 
@@ -102,33 +102,144 @@ function generateRandomAB(a: number, b: number): CountItem {
     }
 }
 
+////////////////////
+//算法导论习题5-1-3
+//无偏差输出0,1
+////////////////////
+/**
+ * 0.75的概率产生0,0.25的概率产生1
+ */
+function generate01NoEqual() {
+    const k = utilityTools.generateRandom(1, 20);
+    if (k <= 15) {
+        return 0;
+    }
+    return 1;
+}
+// 思路每两组组合成为一次roll点测试，当出现01，和10时分别返回0,1,其他情况重复roll点测试即可
+function generateToNoEqualWrap() {
+    const t1 = generate01NoEqual();
+    const t2 = generate01NoEqual();
+    return 2*t1 + t2;
+}
+interface Equal01Result {
+    nRandomResult:number;
+    nCount :number;
+}
+function generate01Equal() :Equal01Result{
+    let nCount = 0;
+    while (true) {
+        const k = generateToNoEqualWrap();
+        ++nCount;
+        if(k === 1) {
+            return {
+                nRandomResult:0,
+                nCount:nCount
+            };
+        }else if(k === 2) {
+            return {
+                nRandomResult:1,
+                nCount:nCount
+            };
+        }
+    }
+}
+function testGenerateEqual() {
+    let objTemp = {
+        nCount0: 0,
+        nGenGount0:0,
+        nCount1: 0,
+        nGenGount1:0
+    }
+    for(let i = 0; i < 10000; ++i) {
+        const temp = generate01Equal();
+        if(temp.nRandomResult === 0) {
+            objTemp.nGenGount0 += temp.nCount;
+            ++objTemp.nCount0;
+        } else {
+            objTemp.nGenGount1 += temp.nCount;
+            ++objTemp.nCount1;
+        }
+    }
+    console.log(objTemp);
+}
+function testCaseNoEqual() {
+    let k = 0;
+    let t = 0;
+    for(let i = 0; i < 10000; ++i) {
+        if(generate01NoEqual() === 1) {
+            ++t;
+        } else {
+            ++k;
+        }
+    }
+    console.log(`0 num is ${k},1 num is ${t}`);
+
+}
+function testCaseGenerate() {
+    let obj:any = {};
+    for(let i = 0; i < 10000; ++i) {
+        const k = utilityTools.generateRandom(1,20);
+        if(!obj[k]) {
+            obj[k] = 1;
+        }else {
+            ++obj[k];
+        }
+    }
+    console.log(obj);
+}
+function testCaseGenerateOldErr() {
+    let obj:any = {};
+    for(let i = 0; i < 10000; ++i) {
+        const k = utilityTools.generateRandomOldErr(1,20);
+        if(!obj[k]) {
+            obj[k] = 1;
+        }else {
+            ++obj[k];
+        }
+    }
+    console.log(obj);
+}
+
+
 class RandomGenTestCase {
     constructor() {
-        
+
+    }
+    runTest() {
+        this.testCaseInterview();
+        this.testCaseRandomAB();
+        this.testEqual01();
     }
     testCaseInterview() {
-      const arrayInterview =   generateInterViewArray();
-      console.log(arrayInterview);
-      console.log(hireAssistant(arrayInterview));
+        const arrayInterview = generateInterViewArray();
+        console.log(arrayInterview);
+        console.log(hireAssistant(arrayInterview));
     }
     // 最好做个随机千次测试，然后对每种情况计数
     testCaseRandomAB() {
-      const nRandomCount = 10/*utilityTools.generateRandom(2,11)*/;
-      const nRandomStart  = utilityTools.generateRandom(0,11);
-      const nRandomEnd = nRandomStart + nRandomCount - 1;
-      let objTemp :any= {};
-      for(let i = 0; i < nRandomCount * 500; ++i ) {
-         const Temp = generateRandomAB(nRandomStart,nRandomEnd);
-          if(objTemp[Temp.nRandomNum]) {
-              (objTemp[Temp.nRandomNum])['count']++;
-              (objTemp[Temp.nRandomNum])['totalcount']+= Temp.nCount;
-          } else {
-            objTemp[Temp.nRandomNum] = {count:0,totalcount:0};
-          }
-      }
-      console.log(objTemp);
+        const nRandomCount = 10/*utilityTools.generateRandom(2,11)*/;
+        const nRandomStart = utilityTools.generateRandom(0, 11);
+        const nRandomEnd = nRandomStart + nRandomCount - 1;
+        let objTemp: any = {};
+        for (let i = 0; i < nRandomCount * 500; ++i) {
+            const Temp = generateRandomAB(nRandomStart, nRandomEnd);
+            if (objTemp[Temp.nRandomNum]) {
+                (objTemp[Temp.nRandomNum])['count']++;
+                (objTemp[Temp.nRandomNum])['totalcount'] += Temp.nCount;
+            } else {
+                objTemp[Temp.nRandomNum] = { count: 0, totalcount: 0 };
+            }
+        }
+        console.log(objTemp);
+    }
+    testEqual01(){
+        testGenerateEqual();
     }
 }
-const RandomTest = new RandomGenTestCase();
+testGenerateEqual();
+// testCaseGenerate();
+// testCaseNoEqual();
+// const RandomTest = new RandomGenTestCase();
 // RandomTest.testCaseInterview();
-RandomTest.testCaseRandomAB();
+// RandomTest.testCaseRandomAB();
