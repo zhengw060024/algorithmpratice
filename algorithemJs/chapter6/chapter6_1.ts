@@ -1,4 +1,4 @@
-
+import utilityTools from './utilitytools'
 function ajustMaxHeapRecur(indexStart: number, arrayHeap: Array<number>) {
     const leftChild = indexStart * 2 + 1;
     const rightChild = indexStart * 2 + 2;
@@ -21,7 +21,7 @@ function ajustMaxHeapRecur(indexStart: number, arrayHeap: Array<number>) {
 function makeMaxHeapRecur(arrayInput: Array<number>) {
     const nStart = Math.floor((arrayInput.length - 2) / 2);
     for (let index = nStart; index >= 0; --index) {
-        ajustMaxHeapRecur(nStart, arrayInput);
+        ajustMaxHeapRecur(index, arrayInput);
     }
 }
 function ajustMaxHeapNoRecur(indexStart: number, arrayHeap: Array<number>) {
@@ -51,7 +51,7 @@ function ajustMaxHeapNoRecur(indexStart: number, arrayHeap: Array<number>) {
 function makeMaxHeapNoRecur(arrayInput: Array<number>) {
     const nStart = Math.floor((arrayInput.length - 2) / 2);
     for (let index = nStart; index >= 0; --index) {
-        ajustMaxHeapNoRecur(nStart, arrayInput);
+        ajustMaxHeapNoRecur(index, arrayInput);
     }
 }
 function checkArrayMinHeap(arrayInput: Array<number>) {
@@ -132,8 +132,71 @@ function heapSort(arrayInput:Array<number>) {
         ajustMaxHeapForSort(0,arrayInput,i - 1);
     }
 }
-const arrayTemp = [23,17,14,12,13,10,1,5,7,6];
-const bResult = checkArrayMaxHeap(arrayTemp);
-console.log(bResult);
-heapSort(arrayTemp);
-console.log(arrayTemp);
+class HeapTest {
+    constructor() {
+        
+    }
+    private runTestIsAheap() {
+        const arrayTemp = [23,17,14,12,13,10,1,5,7,6];
+        const bResult = checkArrayMaxHeap(arrayTemp);
+        if(bResult){
+            console.log("this is a heap!");
+        } else {
+            console.log("this is a not heap!");
+        }
+    }
+    private runTestMakeHeapRecur() {
+        const arrayOrgin = utilityTools.generateRandomArray(10,1000,20);
+        console.log('原始数组是：')
+        console.log(`${arrayOrgin}`);
+        const arrayTemp = arrayOrgin.concat();
+        makeMaxHeapRecur(arrayTemp);
+        const bResult = checkArrayMaxHeap(arrayTemp);
+        console.log('新数组是:');
+        console.log(`${arrayTemp}`);
+        if(bResult) {
+            console.log("make the array by recurway to a heap success!");
+        } else {
+            console.log("make the array by recurway to a heap err!");
+        }
+    }
+
+    private runTestMakeHeapNoRecur() {
+        const arrayOrgin = utilityTools.generateRandomArray(10,1000,20);
+        console.log('原始数组是：')
+        console.log(`${arrayOrgin}`);
+        const arrayTemp = arrayOrgin.concat();
+        makeMaxHeapNoRecur(arrayTemp);
+        const bResult = checkArrayMaxHeap(arrayTemp);
+        console.log('新数组是:');
+        console.log(`${arrayTemp}`);
+        if(bResult) {
+            console.log("make the array by norecurway to a heap success!");
+        } else {
+            console.log("make the array by norecurway to a heap err!");
+        }
+    }
+
+    private runTestHeapSort() {
+        const arrayOrgin = utilityTools.generateRandomArray(10,1000,20);
+        console.log('原始数组是：')
+        console.log(`${arrayOrgin}`);
+        const arrayTemp = arrayOrgin.concat();
+        heapSort(arrayTemp);
+        console.log('新数组是:');
+        console.log(`${arrayTemp}`);
+    }
+    runTest() {
+        this.runTestIsAheap();
+        this.runTestMakeHeapRecur();
+        this.runTestMakeHeapNoRecur();
+        this.runTestHeapSort();
+    }
+}
+ const heapTestCasedefaut = new HeapTest();
+ export default heapTestCasedefaut;
+// const arrayTemp = [23,17,14,12,13,10,1,5,7,6];
+// const bResult = checkArrayMaxHeap(arrayTemp);
+// console.log(bResult);
+// heapSort(arrayTemp);
+// console.log(arrayTemp);

@@ -7,6 +7,17 @@ class PriorityQueue<T> {
         this.m_cmp = cmp;
         this.m_arrayHeap = [];
     }
+    resetQueFromArray(arrayInput: Array<T>) {
+        this.m_arrayHeap = arrayInput.concat();
+        // 创建堆
+        if(this.m_arrayHeap.length <= 1) {
+            return;
+        }
+        const nStartIndex = Math.floor((this.m_arrayHeap.length - 2) / 2);
+        for(let i = nStartIndex; i >= 0; --i) {
+            this.ajustHeap(i);
+        }
+    }
     private m_arrayHeap:Array<T>;
     private m_cmp :(a:T,b:T) => boolean;
     getQueLength():number {
@@ -29,6 +40,7 @@ class PriorityQueue<T> {
                 return nIndexToAjust;
             }
         }
+        return nIndexToAjust;
     }
     getTopItem():T {
        return this.m_arrayHeap[0];
@@ -38,7 +50,9 @@ class PriorityQueue<T> {
             throw new Error('queque is empty!');
         } else {
             if(this.m_arrayHeap.length === 1){
-                return this.m_arrayHeap.pop();
+                const tReturn = this.m_arrayHeap[0];
+                this.m_arrayHeap.pop();
+                return tReturn;
             } else {
                 const tReturn = this.m_arrayHeap[0];
                 this.m_arrayHeap[0] = this.m_arrayHeap[this.m_arrayHeap.length - 1];
@@ -117,5 +131,10 @@ class PriorityQueue<T> {
             }
 
         }
+    }
+}
+class QueTestCase {
+    constructor() {
+        
     }
 }
