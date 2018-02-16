@@ -1,4 +1,4 @@
-
+import utilityTools from './utilitytools'
 function defaultCmp<T>(a:T, b:T):boolean {
     return a < b;
 }
@@ -7,16 +7,20 @@ class PriorityQueue<T> {
         this.m_cmp = cmp;
         this.m_arrayHeap = [];
     }
+    getQueBufArray():Array<T> {
+        return this.m_arrayHeap.concat();
+    }
     resetQueFromArray(arrayInput: Array<T>) {
         this.m_arrayHeap = arrayInput.concat();
         // 创建堆
-        if(this.m_arrayHeap.length <= 1) {
-            return;
-        }
-        const nStartIndex = Math.floor((this.m_arrayHeap.length - 2) / 2);
-        for(let i = nStartIndex; i >= 0; --i) {
-            this.ajustHeap(i);
-        }
+        this.makeArrayHeap();
+        // if(this.m_arrayHeap.length <= 1) {
+        //     return;
+        // }
+        // const nStartIndex = Math.floor((this.m_arrayHeap.length - 2) / 2);
+        // for(let i = nStartIndex; i >= 0; --i) {
+        //     this.ajustHeap(i);
+        // }
     }
     private m_arrayHeap:Array<T>;
     private m_cmp :(a:T,b:T) => boolean;
@@ -105,7 +109,7 @@ class PriorityQueue<T> {
             return;
         let nStartIndex = Math.floor((this.m_arrayHeap.length - 2 ) / 2);
         for (let index = nStartIndex; index >= 0; --index) {
-            this.ajustHeap(nStartIndex);
+            this.ajustHeap(index);
         }
     }
     private ajustHeap(nStartIndex:number) {
@@ -133,8 +137,118 @@ class PriorityQueue<T> {
         }
     }
 }
+class TestCaseItem {
+    m_strItem1:string;
+    m_strItem2:string;
+    m_nNumX:number;
+    m_nNumY:number;
+    constructor() {
+        this.m_strItem1 = '';
+        this.m_strItem2 = '';
+        this.m_nNumX = utilityTools.generateRandom(1,100);
+        this.m_nNumY = utilityTools.generateRandom(50,150);
+        const strLength1 = utilityTools.generateRandom(2,15);
+        const array1 = utilityTools.generateRandomArray(0,25,strLength1);
+        array1.forEach(value => {
+            const nTemp1 = value + 'A'.charCodeAt(0);
+            this.m_strItem1 += String.fromCharCode(nTemp1);
+        });
+
+        const strLength2 = utilityTools.generateRandom(2,15);
+        const array2 = utilityTools.generateRandomArray(0,25,strLength2);
+        array2.forEach(value => {
+            const nTemp1 = value + 'A'.charCodeAt(0);
+            this.m_strItem2 += String.fromCharCode(nTemp1);
+        });
+
+    }
+}
 class QueTestCase {
     constructor() {
         
     }
+    testCaseContruct() {
+        // 测试普通的number构造
+        const temp1 =  new PriorityQueue<number>();
+        const arrayTemp = utilityTools.generateRandomArray(0,250,10);
+        console.log(`原始数组：${arrayTemp}`);
+        arrayTemp.forEach(value => {
+            temp1.insert(value);
+        });
+        console.log(`优先级队列中的数据：${temp1.getQueBufArray()}`);
+        const arrayOut2 = [];
+        while(temp1.getQueLength() !== 0) {
+          arrayOut2.push(temp1.popTop());
+        }
+        console.log(`顺序pop：${arrayOut2}`);
+        
+    }
+
+    testCaseContruct2() {
+        // 测试普通number带比较构造参数的测试
+        const temp1 =  new PriorityQueue<number>((data1,data2)=> {
+            return data1 > data2;
+        });
+        const arrayTemp = utilityTools.generateRandomArray(0,250,10);
+        console.log(`原始数组：${arrayTemp}`);
+        arrayTemp.forEach(value => {
+            temp1.insert(value);
+        });
+        console.log(`优先级队列中的数据：${temp1.getQueBufArray()}`);
+        const arrayOut2 = [];
+        while(temp1.getQueLength() !== 0) {
+          arrayOut2.push(temp1.popTop());
+        }
+        console.log(`顺序pop：${arrayOut2}`);
+    }
+    testCaseConstruct3() {
+        const temp1 = new PriorityQueue<TestCaseItem>((data1,data2) => {
+            //return data1.m_nNumX < data2.m_nNumX; 
+            // return data1.m_nNumY < data2.m_nNumY;
+            // return data1.m_strItem1 < data2.m_strItem1;
+            return data1.m_strItem2 < data2.m_strItem2;
+        });
+        const arrayTemp1 = [];
+        for(let i = 0; i < 8; ++i){
+            const tempxx = new TestCaseItem();
+            console.log(`${i + 1}:`);
+            console.log(tempxx);
+            temp1.insert(tempxx);
+            // arrayTemp1.push();
+        }
+        console.log('pop start:')
+        let nIndex = 0;
+        while(temp1.getQueLength() !== 0) {
+            console.log(`${++nIndex}:`);
+            console.log(temp1.popTop());
+        }
+    }
+    testCaseChange() {
+        const temp1 =  new PriorityQueue<number>((data1,data2)=> {
+            return data1 > data2;
+        });
+        const arrayTemp = utilityTools.generateRandomArray(0,250,10);
+        console.log(`原始数组：${arrayTemp}`);
+        arrayTemp.forEach(value => {
+            temp1.insert(value);
+        });
+        console.log(`优先级队列中的数据：${temp1.getQueBufArray()}`);
+        let nTemp = utilityTools.generateRandom(0,250);
+        console.log(nTemp);
+        temp1.changeIndexKey(3,nTemp);
+        console.log(`优先级队列中的数据2：${temp1.getQueBufArray()}`);
+        const arrayOut2 = [];
+        while(temp1.getQueLength() !== 0) {
+          arrayOut2.push(temp1.popTop());
+        }
+        console.log(`顺序pop：${arrayOut2}`);
+    }
+    runTestCase() {
+        this.testCaseContruct();
+        this.testCaseContruct2();
+        this.testCaseConstruct3();
+        this.testCaseChange();
+    }
 }
+const QueTestCaseDefault = new QueTestCase();
+export default QueTestCaseDefault;

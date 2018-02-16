@@ -1,4 +1,6 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var utilitytools_1 = require("./utilitytools");
 function defaultCmp(a, b) {
     return a < b;
 }
@@ -8,16 +10,20 @@ var PriorityQueue = /** @class */ (function () {
         this.m_cmp = cmp;
         this.m_arrayHeap = [];
     }
+    PriorityQueue.prototype.getQueBufArray = function () {
+        return this.m_arrayHeap.concat();
+    };
     PriorityQueue.prototype.resetQueFromArray = function (arrayInput) {
         this.m_arrayHeap = arrayInput.concat();
         // 创建堆
-        if (this.m_arrayHeap.length <= 1) {
-            return;
-        }
-        var nStartIndex = Math.floor((this.m_arrayHeap.length - 2) / 2);
-        for (var i = nStartIndex; i >= 0; --i) {
-            this.ajustHeap(i);
-        }
+        this.makeArrayHeap();
+        // if(this.m_arrayHeap.length <= 1) {
+        //     return;
+        // }
+        // const nStartIndex = Math.floor((this.m_arrayHeap.length - 2) / 2);
+        // for(let i = nStartIndex; i >= 0; --i) {
+        //     this.ajustHeap(i);
+        // }
     };
     PriorityQueue.prototype.getQueLength = function () {
         return this.m_arrayHeap.length;
@@ -107,7 +113,7 @@ var PriorityQueue = /** @class */ (function () {
             return;
         var nStartIndex = Math.floor((this.m_arrayHeap.length - 2) / 2);
         for (var index = nStartIndex; index >= 0; --index) {
-            this.ajustHeap(nStartIndex);
+            this.ajustHeap(index);
         }
     };
     PriorityQueue.prototype.ajustHeap = function (nStartIndex) {
@@ -136,8 +142,112 @@ var PriorityQueue = /** @class */ (function () {
     };
     return PriorityQueue;
 }());
+var TestCaseItem = /** @class */ (function () {
+    function TestCaseItem() {
+        var _this = this;
+        this.m_strItem1 = '';
+        this.m_strItem2 = '';
+        this.m_nNumX = utilitytools_1.default.generateRandom(1, 100);
+        this.m_nNumY = utilitytools_1.default.generateRandom(50, 150);
+        var strLength1 = utilitytools_1.default.generateRandom(2, 15);
+        var array1 = utilitytools_1.default.generateRandomArray(0, 25, strLength1);
+        array1.forEach(function (value) {
+            var nTemp1 = value + 'A'.charCodeAt(0);
+            _this.m_strItem1 += String.fromCharCode(nTemp1);
+        });
+        var strLength2 = utilitytools_1.default.generateRandom(2, 15);
+        var array2 = utilitytools_1.default.generateRandomArray(0, 25, strLength2);
+        array2.forEach(function (value) {
+            var nTemp1 = value + 'A'.charCodeAt(0);
+            _this.m_strItem2 += String.fromCharCode(nTemp1);
+        });
+    }
+    return TestCaseItem;
+}());
 var QueTestCase = /** @class */ (function () {
     function QueTestCase() {
     }
+    QueTestCase.prototype.testCaseContruct = function () {
+        // 测试普通的number构造
+        var temp1 = new PriorityQueue();
+        var arrayTemp = utilitytools_1.default.generateRandomArray(0, 250, 10);
+        console.log("\u539F\u59CB\u6570\u7EC4\uFF1A" + arrayTemp);
+        arrayTemp.forEach(function (value) {
+            temp1.insert(value);
+        });
+        console.log("\u4F18\u5148\u7EA7\u961F\u5217\u4E2D\u7684\u6570\u636E\uFF1A" + temp1.getQueBufArray());
+        var arrayOut2 = [];
+        while (temp1.getQueLength() !== 0) {
+            arrayOut2.push(temp1.popTop());
+        }
+        console.log("\u987A\u5E8Fpop\uFF1A" + arrayOut2);
+    };
+    QueTestCase.prototype.testCaseContruct2 = function () {
+        // 测试普通number带比较构造参数的测试
+        var temp1 = new PriorityQueue(function (data1, data2) {
+            return data1 > data2;
+        });
+        var arrayTemp = utilitytools_1.default.generateRandomArray(0, 250, 10);
+        console.log("\u539F\u59CB\u6570\u7EC4\uFF1A" + arrayTemp);
+        arrayTemp.forEach(function (value) {
+            temp1.insert(value);
+        });
+        console.log("\u4F18\u5148\u7EA7\u961F\u5217\u4E2D\u7684\u6570\u636E\uFF1A" + temp1.getQueBufArray());
+        var arrayOut2 = [];
+        while (temp1.getQueLength() !== 0) {
+            arrayOut2.push(temp1.popTop());
+        }
+        console.log("\u987A\u5E8Fpop\uFF1A" + arrayOut2);
+    };
+    QueTestCase.prototype.testCaseConstruct3 = function () {
+        var temp1 = new PriorityQueue(function (data1, data2) {
+            //return data1.m_nNumX < data2.m_nNumX; 
+            // return data1.m_nNumY < data2.m_nNumY;
+            // return data1.m_strItem1 < data2.m_strItem1;
+            return data1.m_strItem2 < data2.m_strItem2;
+        });
+        var arrayTemp1 = [];
+        for (var i = 0; i < 8; ++i) {
+            var tempxx = new TestCaseItem();
+            console.log(i + 1 + ":");
+            console.log(tempxx);
+            temp1.insert(tempxx);
+            // arrayTemp1.push();
+        }
+        console.log('pop start:');
+        var nIndex = 0;
+        while (temp1.getQueLength() !== 0) {
+            console.log(++nIndex + ":");
+            console.log(temp1.popTop());
+        }
+    };
+    QueTestCase.prototype.testCaseChange = function () {
+        var temp1 = new PriorityQueue(function (data1, data2) {
+            return data1 > data2;
+        });
+        var arrayTemp = utilitytools_1.default.generateRandomArray(0, 250, 10);
+        console.log("\u539F\u59CB\u6570\u7EC4\uFF1A" + arrayTemp);
+        arrayTemp.forEach(function (value) {
+            temp1.insert(value);
+        });
+        console.log("\u4F18\u5148\u7EA7\u961F\u5217\u4E2D\u7684\u6570\u636E\uFF1A" + temp1.getQueBufArray());
+        var nTemp = utilitytools_1.default.generateRandom(0, 250);
+        console.log(nTemp);
+        temp1.changeIndexKey(3, nTemp);
+        console.log("\u4F18\u5148\u7EA7\u961F\u5217\u4E2D\u7684\u6570\u636E2\uFF1A" + temp1.getQueBufArray());
+        var arrayOut2 = [];
+        while (temp1.getQueLength() !== 0) {
+            arrayOut2.push(temp1.popTop());
+        }
+        console.log("\u987A\u5E8Fpop\uFF1A" + arrayOut2);
+    };
+    QueTestCase.prototype.runTestCase = function () {
+        this.testCaseContruct();
+        this.testCaseContruct2();
+        this.testCaseConstruct3();
+        this.testCaseChange();
+    };
     return QueTestCase;
 }());
+var QueTestCaseDefault = new QueTestCase();
+exports.default = QueTestCaseDefault;
