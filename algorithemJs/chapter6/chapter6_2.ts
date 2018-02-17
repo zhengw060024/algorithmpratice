@@ -79,13 +79,14 @@ class PriorityQueue<T> {
         while(nSubIndex >= 0 ) {
             if(this.m_cmp(this.m_arrayHeap[nSubIndex],item)){
                 this.m_arrayHeap[nIndexToAjust] = this.m_arrayHeap[nSubIndex];
-                this.m_arrayHeap[nSubIndex] = item;
                 nIndexToAjust = nSubIndex;
                 nSubIndex = Math.floor((nIndexToAjust - 1) / 2);
             }else {
+                this.m_arrayHeap[nIndexToAjust] = item;
                 return nIndexToAjust;
             }
         }
+        this.m_arrayHeap[nIndexToAjust] = item;
 
     }
     changeIndexKey(index:number, newItem: T) {
@@ -233,9 +234,10 @@ class QueTestCase {
             temp1.insert(value);
         });
         console.log(`优先级队列中的数据：${temp1.getQueBufArray()}`);
-        let nTemp = utilityTools.generateRandom(0,250);
+        // let nTemp = utilityTools.generateRandom(0,250);
+        let nTemp = 0;
         console.log(nTemp);
-        temp1.changeIndexKey(3,nTemp);
+        temp1.changeIndexKey(8,nTemp);
         console.log(`优先级队列中的数据2：${temp1.getQueBufArray()}`);
         const arrayOut2 = [];
         while(temp1.getQueLength() !== 0) {

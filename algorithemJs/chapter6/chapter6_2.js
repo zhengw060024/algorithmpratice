@@ -82,14 +82,15 @@ var PriorityQueue = /** @class */ (function () {
         while (nSubIndex >= 0) {
             if (this.m_cmp(this.m_arrayHeap[nSubIndex], item)) {
                 this.m_arrayHeap[nIndexToAjust] = this.m_arrayHeap[nSubIndex];
-                this.m_arrayHeap[nSubIndex] = item;
                 nIndexToAjust = nSubIndex;
                 nSubIndex = Math.floor((nIndexToAjust - 1) / 2);
             }
             else {
+                this.m_arrayHeap[nIndexToAjust] = item;
                 return nIndexToAjust;
             }
         }
+        this.m_arrayHeap[nIndexToAjust] = item;
     };
     PriorityQueue.prototype.changeIndexKey = function (index, newItem) {
         if (index < 0 || index >= this.m_arrayHeap.length) {
@@ -231,9 +232,10 @@ var QueTestCase = /** @class */ (function () {
             temp1.insert(value);
         });
         console.log("\u4F18\u5148\u7EA7\u961F\u5217\u4E2D\u7684\u6570\u636E\uFF1A" + temp1.getQueBufArray());
-        var nTemp = utilitytools_1.default.generateRandom(0, 250);
+        // let nTemp = utilityTools.generateRandom(0,250);
+        var nTemp = 0;
         console.log(nTemp);
-        temp1.changeIndexKey(3, nTemp);
+        temp1.changeIndexKey(8, nTemp);
         console.log("\u4F18\u5148\u7EA7\u961F\u5217\u4E2D\u7684\u6570\u636E2\uFF1A" + temp1.getQueBufArray());
         var arrayOut2 = [];
         while (temp1.getQueLength() !== 0) {
