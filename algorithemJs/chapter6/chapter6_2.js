@@ -51,6 +51,28 @@ var PriorityQueue = /** @class */ (function () {
     PriorityQueue.prototype.getTopItem = function () {
         return this.m_arrayHeap[0];
     };
+    PriorityQueue.prototype.queDeleteByIndex = function (index) {
+        if (index < 0 || index >= this.m_arrayHeap.length) {
+            throw new Error('out of queque range!!!');
+        }
+        else {
+            if (index === 0) {
+                return this.popTop();
+            }
+            else {
+                if (this.m_arrayHeap.length === 1 && index === 0) {
+                    var tReturn_1 = this.m_arrayHeap[0];
+                    this.m_arrayHeap.pop();
+                    return tReturn_1;
+                }
+                var tReturn = this.m_arrayHeap[index];
+                this.m_arrayHeap[index] = this.m_arrayHeap[this.m_arrayHeap.length - 1];
+                this.m_arrayHeap.pop();
+                this.ajustHeap(index);
+                return tReturn;
+            }
+        }
+    };
     PriorityQueue.prototype.popTop = function () {
         if (this.m_arrayHeap.length === 0) {
             throw new Error('queque is empty!');
@@ -243,13 +265,223 @@ var QueTestCase = /** @class */ (function () {
         }
         console.log("\u987A\u5E8Fpop\uFF1A" + arrayOut2);
     };
+    QueTestCase.prototype.testCaseDeleteItem = function () {
+        var temp1 = new PriorityQueue(function (data1, data2) {
+            return data1 > data2;
+        });
+        var arrayTemp = utilitytools_1.default.generateRandomArray(0, 250, 10);
+        console.log("\u539F\u59CB\u6570\u7EC4\uFF1A" + arrayTemp);
+        arrayTemp.forEach(function (value) {
+            temp1.insert(value);
+        });
+        console.log("\u4F18\u5148\u7EA7\u961F\u5217\u4E2D\u7684\u6570\u636E\uFF1A" + temp1.getQueBufArray());
+        var nIndex = utilitytools_1.default.generateRandom(0, 9);
+        console.log("\u9700\u8981\u5220\u9664\u7684\u6570\u636E\u4E3A\uFF1Aid " + nIndex + ", value " + temp1.queDeleteByIndex(nIndex));
+        console.log("\u5220\u9664\u4E4B\u540E\uFF0C\u4F18\u5148\u7EA7\u961F\u5217\u4E2D\u7684\u6570\u636E\uFF1A" + temp1.getQueBufArray());
+        var arrayOut2 = [];
+        while (temp1.getQueLength() !== 0) {
+            arrayOut2.push(temp1.popTop());
+        }
+        console.log("\u987A\u5E8Fpop\uFF1A" + arrayOut2);
+    };
+    QueTestCase.prototype.testCaseStack = function () {
+        var stackTest = new CommonStackByPriQue();
+        var arrayToTest = utilitytools_1.default.generateRandomArray(10, 1000, 100);
+        console.log("" + arrayToTest);
+        arrayToTest.forEach(function (value) {
+            stackTest.push(value);
+        });
+        var arrayOut = [];
+        while (!stackTest.isEmpty()) {
+            arrayOut.push(stackTest.pop());
+        }
+        console.log("" + arrayOut);
+        stackTest.push(1);
+        stackTest.push(9);
+        stackTest.push(12);
+        stackTest.push(2);
+        stackTest.push(3);
+        stackTest.push(21);
+        stackTest.push(5);
+        stackTest.push(4);
+        stackTest.push(40);
+        stackTest.pop();
+        stackTest.pop();
+        stackTest.pop();
+        stackTest.push(50);
+        stackTest.push(24);
+        stackTest.push(20);
+        stackTest.push(21);
+        var arrayOut2 = [];
+        while (!stackTest.isEmpty()) {
+            arrayOut2.push(stackTest.pop());
+        }
+        console.log("" + arrayOut2);
+        var arrayPutToStack = [];
+        var arrayStackItem = [];
+        var arrayOutFromStack = [];
+        for (var i = 0; i < 100; ++i) {
+            var flag = utilitytools_1.default.generateRandom(0, 3);
+            if (flag === 0) {
+                if (!stackTest.isEmpty()) {
+                    arrayOutFromStack.push(stackTest.pop());
+                    arrayStackItem.pop();
+                    // arrayPutToStack.pop(); 
+                }
+            }
+            else {
+                var nTemp = utilitytools_1.default.generateRandom(0, 1000);
+                stackTest.push(nTemp);
+                arrayPutToStack.push(nTemp);
+                arrayStackItem.push(nTemp);
+            }
+        }
+        console.log("Input stackArray is " + arrayPutToStack);
+        console.log("Out from stackarray is " + arrayOutFromStack);
+        console.log("True put to Array " + arrayStackItem);
+        var arrayOut3 = [];
+        while (!stackTest.isEmpty()) {
+            arrayOut3.push(stackTest.pop());
+        }
+        console.log("out put stack is " + arrayOut3);
+    };
+    QueTestCase.prototype.testCommonQue = function () {
+        var quequeTest = new CommonQueByPriQue();
+        var arrayToTest = utilitytools_1.default.generateRandomArray(10, 1000, 100);
+        console.log("" + arrayToTest);
+        arrayToTest.forEach(function (value) {
+            quequeTest.push(value);
+        });
+        var arrayOut = [];
+        while (!quequeTest.isEmpty()) {
+            arrayOut.push(quequeTest.removeFront());
+        }
+        console.log("" + arrayOut);
+        quequeTest.printCurrentIndex();
+        var arrayPutToQueque = [];
+        var arrayOutFromQueque = [];
+        for (var i = 0; i < 150; ++i) {
+            var flag = utilitytools_1.default.generateRandom(0, 3);
+            if (flag === 0) {
+                if (!quequeTest.isEmpty()) {
+                    arrayOutFromQueque.push(quequeTest.removeFront());
+                    // arrayPutToStack.pop(); 
+                }
+            }
+            else {
+                var nTemp = utilitytools_1.default.generateRandom(0, 1000);
+                quequeTest.push(nTemp);
+                arrayPutToQueque.push(nTemp);
+            }
+        }
+        console.log("item put to queque is " + arrayPutToQueque);
+        console.log(" item remove from queque is " + arrayOutFromQueque);
+        quequeTest.printCurrentIndex();
+    };
     QueTestCase.prototype.runTestCase = function () {
         this.testCaseContruct();
         this.testCaseContruct2();
         this.testCaseConstruct3();
         this.testCaseChange();
+        this.testCaseDeleteItem();
+        this.testCaseStack();
+        this.testCommonQue();
     };
     return QueTestCase;
+}());
+var CommonStackByPriQue = /** @class */ (function () {
+    function CommonStackByPriQue() {
+        this.m_priQue = new PriorityQueue(function (data1, data2) {
+            return data1.m_key < data2.m_key;
+        });
+    }
+    CommonStackByPriQue.prototype.push = function (item) {
+        this.m_priQue.insert({
+            m_key: this.m_priQue.getQueLength(),
+            m_value: item
+        });
+    };
+    CommonStackByPriQue.prototype.pop = function () {
+        if (this.m_priQue.getQueLength() !== 0) {
+            var temp = this.m_priQue.popTop();
+            return temp.m_value;
+        }
+    };
+    CommonStackByPriQue.prototype.isEmpty = function () {
+        return this.m_priQue.getQueLength() === 0;
+    };
+    return CommonStackByPriQue;
+}());
+var QueKeyItem = /** @class */ (function () {
+    function QueKeyItem() {
+        this.m_array = [];
+        this.m_array.push(0);
+    }
+    QueKeyItem.prototype.addOne = function () {
+        var nToNext = true;
+        var i = 0;
+        for (i = 0; i < this.m_array.length; ++i) {
+            if (this.m_array[i] === 9) {
+                this.m_array[i] = 0;
+            }
+            else {
+                break;
+            }
+        }
+        if (nToNext) {
+            if (i === this.m_array.length) {
+                this.m_array.push(1);
+            }
+            else {
+                this.m_array[i] = this.m_array[i] + 1;
+            }
+        }
+    };
+    QueKeyItem.prototype.cloneNewOne = function () {
+        var temp = new QueKeyItem();
+        temp.m_array = this.m_array.concat();
+        return temp;
+    };
+    return QueKeyItem;
+}());
+function cmp_temp(temp1, temp2) {
+    if (temp1.m_array.length === temp2.m_array.length) {
+        for (var i = temp1.m_array.length - 1; i >= 0; --i) {
+            if (temp1.m_array[i] !== temp2.m_array[i]) {
+                return temp1.m_array[i] > temp2.m_array[i];
+            }
+        }
+        return false;
+    }
+    else {
+        return temp1.m_array.length > temp2.m_array.length;
+    }
+}
+var CommonQueByPriQue = /** @class */ (function () {
+    function CommonQueByPriQue() {
+        this.m_currentKey = new QueKeyItem();
+        this.m_priQue = new PriorityQueue(function (data1, data2) {
+            return cmp_temp(data1.m_key, data2.m_key);
+        });
+    }
+    CommonQueByPriQue.prototype.push = function (item) {
+        this.m_currentKey.addOne();
+        this.m_priQue.insert({
+            m_key: this.m_currentKey.cloneNewOne(),
+            m_value: item
+        });
+    };
+    CommonQueByPriQue.prototype.removeFront = function () {
+        var Temp = this.m_priQue.popTop();
+        return Temp.m_value;
+    };
+    CommonQueByPriQue.prototype.isEmpty = function () {
+        return this.m_priQue.getQueLength() === 0;
+    };
+    CommonQueByPriQue.prototype.printCurrentIndex = function () {
+        console.log("" + this.m_currentKey.m_array);
+    };
+    return CommonQueByPriQue;
 }());
 var QueTestCaseDefault = new QueTestCase();
 exports.default = QueTestCaseDefault;
