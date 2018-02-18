@@ -378,6 +378,70 @@ var QueTestCase = /** @class */ (function () {
         console.log(" item remove from queque is " + arrayOutFromQueque);
         quequeTest.printCurrentIndex();
     };
+    QueTestCase.prototype.testCaseListSortSimple = function () {
+        var arrayHelp = [];
+        var nArrayBufCount = 5;
+        for (var i = 0; i < nArrayBufCount; ++i) {
+            arrayHelp.push(0);
+        }
+        var nRandom = 124;
+        var nTemp = nRandom;
+        var nTemp2 = 0;
+        var nFillId = 0;
+        while (nTemp > 0) {
+            nTemp2 = 1;
+            --nTemp;
+            var i = 0;
+            while (i < nFillId && arrayHelp[i] !== 0) {
+                nTemp2 += arrayHelp[i];
+                arrayHelp[i] = 0;
+                ++i;
+            }
+            if (i === nArrayBufCount - 1) {
+                arrayHelp[i] += nTemp2;
+            }
+            else {
+                arrayHelp[i] = nTemp2;
+            }
+            nTemp2 = 0;
+            if (i === nFillId && nFillId < nArrayBufCount - 1) {
+                nFillId++;
+            }
+        }
+        console.log("arrayHelp is " + arrayHelp);
+    };
+    QueTestCase.prototype.testListOp = function () {
+        var temp = new DoubleList();
+        temp.insert(12);
+        temp.insert(4);
+        temp.insert(1);
+        temp.insert(21);
+        temp.insert(55);
+        temp.insert(7);
+        temp.printList();
+        temp.reverse();
+        temp.printList();
+        temp.sort(function (data1, data2) {
+            return data1 > data2;
+        });
+        temp.printList();
+        var arrayTemp = utilitytools_1.default.generateRandomArray(0, 2500, 100);
+        var temp2 = new DoubleList();
+        console.log("\u5F85\u63D2\u5165\u7684\u5E8F\u5217\u662F" + arrayTemp);
+        arrayTemp.forEach(function (data) {
+            temp2.insert(data);
+        });
+        temp2.printList(',');
+        temp2.reverse();
+        temp2.printList(',');
+        temp2.sort();
+        temp2.printList(',');
+        var array2 = arrayTemp.concat();
+        array2.sort(function (data1, data2) {
+            return data1 - data2;
+        });
+        console.log("" + array2);
+    };
     QueTestCase.prototype.runTestCase = function () {
         this.testCaseContruct();
         this.testCaseContruct2();
@@ -386,6 +450,8 @@ var QueTestCase = /** @class */ (function () {
         this.testCaseDeleteItem();
         this.testCaseStack();
         this.testCommonQue();
+        this.testCaseListSortSimple();
+        this.testListOp();
     };
     return QueTestCase;
 }());
@@ -482,6 +548,187 @@ var CommonQueByPriQue = /** @class */ (function () {
         console.log("" + this.m_currentKey.m_array);
     };
     return CommonQueByPriQue;
+}());
+function default_cmp2(item1, item2) {
+    return item1 === item2;
+}
+function default_cmp3(item1, item2) {
+    return item1 < item2;
+}
+var DoubleList = /** @class */ (function () {
+    function DoubleList() {
+        // this.m_head = null;
+        this.m_sentinel = {
+            m_next: null,
+            m_pre: null
+        };
+        this.m_sentinel.m_next = this.m_sentinel;
+        this.m_sentinel.m_pre = this.m_sentinel;
+    }
+    // 将一个元素插入到list前端
+    DoubleList.prototype.getBegin = function () {
+        return this.m_sentinel.m_next;
+    };
+    DoubleList.prototype.getEnd = function () {
+        return this.m_sentinel;
+    };
+    DoubleList.prototype.insert = function (item) {
+        var temp = {
+            m_next: null,
+            m_pre: null,
+            m_data: item
+        };
+        temp.m_next = this.m_sentinel.m_next;
+        temp.m_pre = this.m_sentinel;
+        this.m_sentinel.m_next.m_pre = temp;
+        this.m_sentinel.m_next = temp;
+        // console.log(temp);
+    };
+    DoubleList.prototype.deleteItem = function (item, cmp) {
+        if (cmp === void 0) { cmp = default_cmp2; }
+        var temp = this.search(item, cmp);
+        if (temp) {
+            this.deleteItemByIndex(temp);
+        }
+    };
+    DoubleList.prototype.search = function (item, cmp) {
+        if (cmp === void 0) { cmp = default_cmp2; }
+        var temp = this.m_sentinel.m_next;
+        while (temp !== this.m_sentinel) {
+            if (temp) {
+                if (cmp(temp.m_data, item)) {
+                    return temp;
+                }
+                temp = temp.m_next;
+            }
+            else {
+                return null;
+            }
+        }
+        return null;
+    };
+    DoubleList.prototype.sort = function (cmp) {
+        if (cmp === void 0) { cmp = default_cmp3; }
+        var arrayCount = 64;
+        var arrayHelpImp = [];
+        var helpTempList = new DoubleList();
+        var nFillId = 0;
+        for (var i = 0; i < arrayCount; ++i) {
+            arrayHelpImp.push(new DoubleList());
+        }
+        while (!this.isEmpty()) {
+            var i = 0;
+            helpTempList.splice(helpTempList.getBegin(), this, this.getBegin());
+            while (i < nFillId && (!arrayHelpImp[i].isEmpty())) {
+                helpTempList.merge(arrayHelpImp[i++], cmp);
+            }
+            if (i === arrayCount) {
+                arrayHelpImp[i - 1].merge(helpTempList, cmp);
+                console.log('help array is full!!!');
+            }
+            else {
+                helpTempList.swap(arrayHelpImp[i]);
+            }
+            if (i === nFillId && nFillId < arrayCount) {
+                ++nFillId;
+            }
+        }
+        for (var i = 1; i < nFillId; ++i) {
+            arrayHelpImp[i].merge(arrayHelpImp[i - 1], cmp);
+        }
+        this.swap(arrayHelpImp[nFillId - 1]);
+    };
+    DoubleList.prototype.printList = function (strDepart) {
+        if (strDepart === void 0) { strDepart = ' --> '; }
+        var str = 'head';
+        var start = this.getBegin();
+        while (start !== this.getEnd()) {
+            str = str + strDepart + start.m_data;
+            start = start.m_next;
+        }
+        str = str + strDepart + 'end';
+        console.log(str);
+    };
+    DoubleList.prototype.transfer = function (pos1, beginItem, endItem) {
+        if (beginItem !== endItem) {
+            // 将要移除的列表从原来的列表中删除
+            beginItem.m_pre.m_next = endItem;
+            var temp = endItem.m_pre;
+            endItem.m_pre = beginItem.m_pre;
+            // 插入新的列表中
+            pos1.m_pre.m_next = beginItem;
+            beginItem.m_pre = pos1.m_pre;
+            temp.m_next = pos1;
+            pos1.m_pre = temp;
+        }
+    };
+    // 合并两个链表，其中两个链表均要有序，从小到大的顺讯
+    DoubleList.prototype.merge = function (listToMerge, cmp) {
+        if (cmp === void 0) { cmp = default_cmp3; }
+        var start1 = this.m_sentinel.m_next;
+        var end1 = this.m_sentinel;
+        var start2 = listToMerge.getBegin();
+        var end2 = listToMerge.getEnd();
+        while (start1 !== end1 && start2 !== end2) {
+            if (cmp(start2.m_data, start1.m_data)) {
+                var temp = start2.m_next;
+                this.transfer(start1, start2, temp);
+                start2 = temp;
+            }
+            else {
+                start1 = start1.m_next;
+            }
+        }
+        if (start2 !== end2) {
+            this.transfer(end1, start2, end2);
+        }
+    };
+    DoubleList.prototype.isEmpty = function () {
+        return this.m_sentinel.m_next === this.m_sentinel;
+    };
+    DoubleList.prototype.swap = function (list) {
+        var temp = list.m_sentinel;
+        list.m_sentinel = this.m_sentinel;
+        this.m_sentinel = temp;
+    };
+    // 切分
+    DoubleList.prototype.splice = function (pos1, list, posStart, posEnd) {
+        if (posStart && posEnd) {
+            if (posStart !== posEnd) {
+                this.transfer(pos1, posStart, posEnd);
+            }
+        }
+        else if (posStart) {
+            var temp = posStart.m_next;
+            if (pos1 === temp || pos1 === posStart)
+                return;
+            this.transfer(pos1, posStart, temp);
+        }
+        else {
+            if (!list.isEmpty()) {
+                this.transfer(pos1, list.getBegin(), list.getEnd());
+            }
+        }
+    };
+    // 反转链表
+    DoubleList.prototype.reverse = function () {
+        // 需要先判断是否为空或者只有一个元素
+        var posStart = this.getBegin();
+        if (posStart === this.m_sentinel || posStart.m_next === this.m_sentinel) {
+            return;
+        }
+        posStart = posStart.m_next;
+        while (posStart !== this.getEnd()) {
+            var tempold = posStart;
+            posStart = posStart.m_next;
+            this.transfer(this.getBegin(), tempold, posStart);
+        }
+    };
+    DoubleList.prototype.deleteItemByIndex = function (itemToDelete) {
+        itemToDelete.m_next.m_pre = itemToDelete.m_pre;
+        itemToDelete.m_pre.m_next = itemToDelete.m_next;
+    };
+    return DoubleList;
 }());
 var QueTestCaseDefault = new QueTestCase();
 exports.default = QueTestCaseDefault;

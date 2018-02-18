@@ -284,6 +284,7 @@ class QueTestCase {
         }
         console.log(`顺序pop：${arrayOut2}`);
     }
+
     private testCaseStack() {
         const stackTest = new CommonStackByPriQue<number>();
         const arrayToTest = utilityTools.generateRandomArray(10, 1000, 100);
@@ -383,6 +384,72 @@ class QueTestCase {
         quequeTest.printCurrentIndex();
 
     }
+    testCaseListSortSimple() {
+        const arrayHelp = [];
+        let nArrayBufCount = 5;
+        for(let i = 0; i < nArrayBufCount; ++i) {
+            arrayHelp.push(0);
+        }
+        const nRandom =  124;
+        let nTemp = nRandom;
+        let nTemp2 = 0;
+        let nFillId = 0;
+        while(nTemp > 0) {
+            nTemp2 = 1;
+            --nTemp;
+            let i = 0;
+            while(i < nFillId && arrayHelp[i] !== 0) {
+                nTemp2 += arrayHelp[i];
+                arrayHelp[i] = 0;
+                ++i;
+            }
+            if(i === nArrayBufCount - 1) {
+                arrayHelp[i] += nTemp2;
+            }else {
+                arrayHelp[i] = nTemp2;
+            }
+            
+            nTemp2 = 0;
+            if(i === nFillId && nFillId < nArrayBufCount - 1) {
+                nFillId++;
+            }
+        }
+        console.log(`arrayHelp is ${arrayHelp}`);
+    }
+    testListOp() {
+        const temp : DoubleList<number> = new DoubleList<number>();
+        temp.insert(12);
+        temp.insert(4);
+        temp.insert(1);
+        temp.insert(21);
+        temp.insert(55);
+        temp.insert(7);
+        temp.printList();
+        temp.reverse();
+        temp.printList();
+        
+        temp.sort((data1,data2) => {
+            return data1 > data2;
+        });
+        temp.printList();
+
+        const arrayTemp = utilityTools.generateRandomArray(0, 2500, 100);
+        const temp2 = new DoubleList<number>();
+        console.log(`待插入的序列是${arrayTemp}`);
+        arrayTemp.forEach(data => {
+            temp2.insert(data);
+        });
+        temp2.printList(',');
+        temp2.reverse();
+        temp2.printList(',');
+        temp2.sort();
+        temp2.printList(',');
+        const array2 = arrayTemp.concat();
+        array2.sort((data1,data2) => {
+            return data1 - data2;
+        })
+        console.log(`${array2}`);
+    }
     runTestCase() {
         this.testCaseContruct();
         this.testCaseContruct2();
@@ -391,6 +458,8 @@ class QueTestCase {
         this.testCaseDeleteItem();
         this.testCaseStack();
         this.testCommonQue();
+        this.testCaseListSortSimple();
+        this.testListOp();
     }
 }
 // 使用优先队列实现栈和队列
@@ -500,7 +569,11 @@ class CommonQueByPriQue<T> {
 interface DbListItem<T> {
     m_pre: DbListItem<T> | null;
     m_next: DbListItem<T> | null;
-    m_data: T;
+    m_data?: T;
+}
+interface DbListSentinel<T> {
+    m_pre:DbListItem<T> | DbListSentinel<T> | null;
+    m_next:DbListItem<T> | DbListSentinel<T> | null;
 }
 function default_cmp2<T>(item1: T, item2: T): boolean {
     return item1 === item2;
@@ -510,28 +583,33 @@ function default_cmp3<T>(item1: T, item2: T): boolean {
 }
 class DoubleList<T>{
     constructor() {
-        this.m_head = null;
-    }
-    m_head: DbListItem<T> | null;
-    // 将一个元素插入到list前端
-    insert(item: T) {
-        if (this.m_head) {
-            const Temp = {
-                m_pre : null,
-                m_next : this.m_head,
-                m_data : item
-            }
-            this.m_head.m_pre = Temp;
-            this.m_head = Temp;
-
-        } else {
-            this.m_head = {
-                m_pre: null,
-                m_next: null,
-                m_data: item
-            }
+        // this.m_head = null;
+        this.m_sentinel = {
+            m_next : null,
+            m_pre : null
         }
-
+        this.m_sentinel.m_next = this.m_sentinel;
+        this.m_sentinel.m_pre = this.m_sentinel;
+    }
+    private m_sentinel: DbListItem<T> ;
+    // 将一个元素插入到list前端
+    getBegin()  : DbListItem<T> {
+        return <DbListItem<T>> this.m_sentinel.m_next;
+    }
+    getEnd() :DbListItem<T>{
+        return this.m_sentinel;
+    }
+    insert(item: T) {
+        const temp :DbListItem<T> = {
+            m_next:null,
+            m_pre:null,
+            m_data:item
+        };
+        temp.m_next = this.m_sentinel.m_next;
+        temp.m_pre = this.m_sentinel;
+        (<DbListItem<T>> this.m_sentinel.m_next).m_pre = temp;
+        this.m_sentinel.m_next = temp;
+        // console.log(temp);
     }
     deleteItem(item: T, cmp: <T>(item1: T, item2: T) => boolean = default_cmp2) {
         const temp = this.search(item,cmp);
@@ -540,39 +618,136 @@ class DoubleList<T>{
         }
     }
     search(item: T, cmp: <T>(item1: T, item2: T) => boolean = default_cmp2) :DbListItem<T> | null{
-        let temp = this.m_head;
-        while(temp) {
-            if(cmp(temp.m_data,item)) {
-                return temp;
+        let temp = this.m_sentinel.m_next;
+        while(temp !== this.m_sentinel) {
+            if(temp) {
+                if(cmp(temp.m_data,item)) {
+                    return temp;
+                }
+                temp = temp.m_next;
+            }else {
+                return null;
             }
-            temp = temp.m_next;
         }
         return null;
     }
     sort(cmp: <T>(item1: T, item2: T) => boolean = default_cmp3) {
+        const arrayCount = 64;
+        const arrayHelpImp = [];
+        const helpTempList = new DoubleList<T>();
+        let nFillId = 0;
+        for(let i = 0; i < arrayCount; ++i) {
+            arrayHelpImp.push(new DoubleList<T>());
+        }
+        while(!this.isEmpty()) {
+            let  i = 0;
+            helpTempList.splice(helpTempList.getBegin(),this,this.getBegin());
+            while( i < nFillId && (!arrayHelpImp[i].isEmpty())) {
+                helpTempList.merge(arrayHelpImp[i++],cmp);
+            }
+            if(i === arrayCount) {
+                arrayHelpImp[i - 1].merge(helpTempList,cmp);
+                console.log('help array is full!!!');
 
+            } else {
+                helpTempList.swap(arrayHelpImp[i]);
+            }
+            
+
+            if(i === nFillId && nFillId < arrayCount) {
+                ++nFillId;
+            }
+        }
+        for(let i = 1; i < nFillId; ++i) {
+            arrayHelpImp[i].merge(arrayHelpImp[i - 1],cmp);
+        }
+        this.swap(arrayHelpImp[nFillId - 1]);
+    }
+    printList(strDepart = ' --> ') {
+        let str = 'head';
+        let start = this.getBegin();
+        while(start !== this.getEnd()) {
+            str = str + strDepart + start.m_data;
+            start = <DbListItem<T>>start.m_next;
+        }
+        str = str + strDepart + 'end';
+        console.log(str);
+    }
+    transfer(pos1: DbListItem<T>,beginItem:DbListItem<T>,endItem:DbListItem<T>) {
+        if(beginItem !== endItem) {
+            // 将要移除的列表从原来的列表中删除
+            (<DbListItem<T>>beginItem.m_pre).m_next = endItem;
+            const temp = <DbListItem<T>>endItem.m_pre;
+            endItem.m_pre = beginItem.m_pre;
+            // 插入新的列表中
+            (<DbListItem<T>>pos1.m_pre).m_next = beginItem;
+            beginItem.m_pre = pos1.m_pre;
+            temp.m_next = pos1;
+            pos1.m_pre = temp;
+        }
+    }
+    // 合并两个链表，其中两个链表均要有序，从小到大的顺讯
+    merge( listToMerge:DoubleList<T>,cmp = default_cmp3) {
+        let start1 =<DbListItem<T>> this.m_sentinel.m_next;
+        let end1 = this.m_sentinel;
+        let start2 = listToMerge.getBegin();
+        let end2 = listToMerge.getEnd();
+        while(start1 !== end1 && start2 !== end2) {
+            if(cmp(start2.m_data , start1.m_data)) {
+                const temp = <DbListItem<T>> start2.m_next;
+                this.transfer(start1,start2,temp);
+                start2 = temp;
+            } else {
+                start1 = <DbListItem<T>> start1.m_next;
+            }
+        }
+        if(start2 !== end2) {
+            this.transfer(end1,start2,end2);
+        }
+    }
+    isEmpty() {
+        return this.m_sentinel.m_next === this.m_sentinel;
+    }
+    swap( list:DoubleList<T>) {
+        const temp = list.m_sentinel;
+        list.m_sentinel = this.m_sentinel;
+        this.m_sentinel = temp;
+    }
+    // 切分
+    
+    splice(pos1: DbListItem<T>,list:DoubleList<T>, posStart?: DbListItem<T>,posEnd?:DbListItem<T>) {
+        if(posStart && posEnd) {
+            if(posStart !== posEnd) {
+                this.transfer(pos1,posStart,posEnd);
+            }
+        } else if(posStart) {
+            const temp = <DbListItem<T>>posStart.m_next;
+            if(pos1 === temp || pos1 === posStart) return;
+            this.transfer(pos1,posStart,temp);
+
+        } else {
+            if(!list.isEmpty()) {
+                this.transfer(pos1, list.getBegin(),list.getEnd());
+            }
+        }
+    }
+    // 反转链表
+    reverse() {
+        // 需要先判断是否为空或者只有一个元素
+        let posStart = this.getBegin();
+        if(posStart === this.m_sentinel || posStart.m_next === this.m_sentinel) {
+            return ;
+        }
+        posStart = <DbListItem<T>>posStart.m_next;
+        while(posStart !== this.getEnd()) {
+            const tempold = posStart;
+            posStart = <DbListItem<T>> posStart.m_next;
+            this.transfer(this.getBegin(),tempold,posStart);
+        }
     }
     private deleteItemByIndex(itemToDelete: DbListItem<T>) {
-        // 删除的元素是不是头结点
-        if(itemToDelete.m_pre === null) {
-            const itemTemp :DbListItem<T>= <DbListItem<T>>this.m_head;
-            this.m_head = itemTemp.m_next;
-            itemTemp.m_next = null;
-            if(this.m_head) {
-                this.m_head.m_pre = null;
-            }
-        } else if(itemToDelete.m_next === null) {
-            const itemTemp = itemToDelete.m_pre;
-            itemToDelete.m_pre = null;
-            itemTemp.m_next = null;
-        } else {
-            const itemPre = itemToDelete.m_pre;
-            const itemNext = itemToDelete.m_next;
-            itemToDelete.m_next = null;
-            itemToDelete.m_pre = null;
-            itemPre.m_next = itemNext;
-            itemNext.m_pre = itemPre;
-        }
+        (<DbListItem<T>> itemToDelete.m_next).m_pre = itemToDelete.m_pre;
+        (<DbListItem<T>>itemToDelete.m_pre).m_next = itemToDelete.m_next;
     }
 }
 const QueTestCaseDefault = new QueTestCase();
