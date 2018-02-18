@@ -566,6 +566,7 @@ class CommonQueByPriQue<T> {
 }
 // 设计一个时间复杂度为O(nlgk)的算法，能有将k个有序链表合并为一个有序链表，n是链表
 // 包含的总的元素个数
+// 这里先实现一个list 支持基本list操作，以及合并和排序等功能。
 interface DbListItem<T> {
     m_pre: DbListItem<T> | null;
     m_next: DbListItem<T> | null;
