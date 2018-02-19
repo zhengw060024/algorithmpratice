@@ -436,11 +436,76 @@ var QueTestCase = /** @class */ (function () {
         temp2.printList(',');
         temp2.sort();
         temp2.printList(',');
+        var arrayOut = [];
+        var start = temp2.getBegin();
+        while (start !== temp2.getEnd()) {
+            arrayOut.push(start.m_data);
+            start = start.m_next;
+        }
         var array2 = arrayTemp.concat();
         array2.sort(function (data1, data2) {
             return data1 - data2;
         });
         console.log("" + array2);
+        if (array2.length !== arrayOut.length) {
+            console.log('list sort error!!!');
+        }
+        else {
+            for (var i = 0; i < array2.length; ++i) {
+                if (array2[i] !== arrayOut[i]) {
+                    console.log('list sort error!!!');
+                    return;
+                }
+            }
+            console.log('list sort success!!!');
+        }
+    };
+    QueTestCase.prototype.testCaseMergeKSortList = function () {
+        // 生成k个list，并排序
+        var k = utilitytools_1.default.generateRandom(6, 15);
+        var arrayTotal = [];
+        for (var i = 0; i < k; ++i) {
+            var listItemCount = utilitytools_1.default.generateRandom(4, 12);
+            arrayTotal.push(utilitytools_1.default.generateRandomArray(0, 1000, listItemCount));
+        }
+        var arrayListOut = [];
+        var arrayItemTotal = [];
+        arrayTotal.forEach(function (value) {
+            var tempList = new DoubleList();
+            console.log("" + value);
+            value.forEach(function (itemData) {
+                tempList.insert(itemData);
+                arrayItemTotal.push(itemData);
+            });
+            tempList.printList();
+            tempList.sort();
+            tempList.printList();
+            arrayListOut.push(tempList);
+        });
+        arrayItemTotal.sort(function (data1, data2) {
+            return data1 - data2;
+        });
+        var outList = mergeArrayList(arrayListOut);
+        outList.printList(',');
+        console.log("" + arrayItemTotal);
+        var arrayOut = [];
+        var start = outList.getBegin();
+        while (start !== outList.getEnd()) {
+            arrayOut.push(start.m_data);
+            start = start.m_next;
+        }
+        if (arrayOut.length === arrayItemTotal.length) {
+            for (var i = 0; i < arrayOut.length; ++i) {
+                if (arrayOut[i] !== arrayItemTotal[i]) {
+                    console.log('array list merge failed!!!');
+                    return;
+                }
+            }
+            console.log('array list merge success!!!');
+        }
+        else {
+            console.log('array list merge failed!!!');
+        }
     };
     QueTestCase.prototype.runTestCase = function () {
         this.testCaseContruct();
@@ -452,6 +517,7 @@ var QueTestCase = /** @class */ (function () {
         this.testCommonQue();
         this.testCaseListSortSimple();
         this.testListOp();
+        this.testCaseMergeKSortList();
     };
     return QueTestCase;
 }());
@@ -730,5 +796,36 @@ var DoubleList = /** @class */ (function () {
     };
     return DoubleList;
 }());
+function mergeArrayList(arrayList) {
+    var arrayListItem = [];
+    arrayList.forEach(function (data) {
+        arrayListItem.push({
+            m_list: data,
+            m_top: data.getBegin()
+        });
+    });
+    // 需要构造最小堆
+    var prequeTemp = new PriorityQueue(function (data1, data2) {
+        return data1.m_top.m_data > data2.m_top.m_data;
+    });
+    prequeTemp.resetQueFromArray(arrayListItem);
+    var listOutput = new DoubleList();
+    // 
+    while (!(prequeTemp.getQueLength() === 0)) {
+        var tempInsert = prequeTemp.getTopItem();
+        // console.log(tempInsert);
+        listOutput.splice(listOutput.getEnd(), tempInsert.m_list, tempInsert.m_top);
+        if (tempInsert.m_list.isEmpty()) {
+            prequeTemp.popTop();
+        }
+        else {
+            prequeTemp.changeIndexKey(0, {
+                m_list: tempInsert.m_list,
+                m_top: tempInsert.m_list.getBegin()
+            });
+        }
+    }
+    return listOutput;
+}
 var QueTestCaseDefault = new QueTestCase();
 exports.default = QueTestCaseDefault;

@@ -444,11 +444,74 @@ class QueTestCase {
         temp2.printList(',');
         temp2.sort();
         temp2.printList(',');
+        const arrayOut = [];
+        let start = temp2.getBegin();
+        while(start !== temp2.getEnd()) {
+            arrayOut.push(start.m_data);
+            start = <DbListItem<number>> start.m_next;
+        }
         const array2 = arrayTemp.concat();
         array2.sort((data1,data2) => {
             return data1 - data2;
         })
         console.log(`${array2}`);
+        if(array2.length !== arrayOut.length) {
+            console.log('list sort error!!!');
+        } else {
+            for(let i = 0; i < array2.length; ++i) {
+                if(array2[i] !== arrayOut[i]) {
+                    console.log('list sort error!!!');
+                    return ;
+                }
+            }
+            console.log('list sort success!!!');
+        }
+    }
+    testCaseMergeKSortList() {
+        // 生成k个list，并排序
+        const k = utilityTools.generateRandom(6,15);
+        const arrayTotal:Array<Array<number>> = [];
+        for(let i = 0; i< k; ++i) {
+            const listItemCount = utilityTools.generateRandom(4,12);
+            arrayTotal.push(utilityTools.generateRandomArray(0,1000,listItemCount));
+        }
+        const arrayListOut:Array<DoubleList<number>> = [];
+        const arrayItemTotal:Array<number> = [];
+        arrayTotal.forEach(value => {
+            const tempList = new DoubleList<number>();
+            console.log(`${value}`);
+            value.forEach(itemData => {
+                tempList.insert(itemData);
+                arrayItemTotal.push(itemData);
+            });
+            tempList.printList();
+            tempList.sort();
+            tempList.printList();
+            arrayListOut.push(tempList);
+        });
+        arrayItemTotal.sort((data1,data2) => {
+            return data1 - data2;
+        });
+        const outList = mergeArrayList(arrayListOut);
+        outList.printList(',');
+        console.log(`${arrayItemTotal}`);
+        const arrayOut = [];
+        let start = outList.getBegin();
+        while(start !== outList.getEnd()) {
+            arrayOut.push(start.m_data);
+            start = <DbListItem<number>> start.m_next;
+        }
+        if(arrayOut.length === arrayItemTotal.length) {
+            for(let i = 0; i < arrayOut.length; ++i) {
+                if(arrayOut[i] !== arrayItemTotal[i]) {
+                    console.log('array list merge failed!!!');
+                    return;
+                }
+            }
+            console.log('array list merge success!!!');
+        } else {
+            console.log('array list merge failed!!!');
+        }
     }
     runTestCase() {
         this.testCaseContruct();
@@ -460,6 +523,7 @@ class QueTestCase {
         this.testCommonQue();
         this.testCaseListSortSimple();
         this.testListOp();
+        this.testCaseMergeKSortList();
     }
 }
 // 使用优先队列实现栈和队列
@@ -750,6 +814,40 @@ class DoubleList<T>{
         (<DbListItem<T>> itemToDelete.m_next).m_pre = itemToDelete.m_pre;
         (<DbListItem<T>>itemToDelete.m_pre).m_next = itemToDelete.m_next;
     }
+}
+interface MergeListItem {
+    m_list:DoubleList<number>;
+    m_top: DbListItem<number>;
+}
+function mergeArrayList(arrayList:Array<DoubleList<number>>) {
+    const arrayListItem:Array<MergeListItem> = [];
+    arrayList.forEach(data => {
+        arrayListItem.push({
+            m_list:data,
+            m_top:data.getBegin()
+        });
+    });
+    // 需要构造最小堆
+    const prequeTemp = new PriorityQueue<MergeListItem>((data1,data2) => {
+         return <number>data1.m_top.m_data > <number>data2.m_top.m_data;
+    });
+    prequeTemp.resetQueFromArray(arrayListItem);
+    const listOutput = new DoubleList<number>();
+    // 
+    while(!(prequeTemp.getQueLength() === 0)) {
+        const tempInsert = prequeTemp.getTopItem();
+        // console.log(tempInsert);
+        listOutput.splice(listOutput.getEnd(),tempInsert.m_list,tempInsert.m_top);
+        if(tempInsert.m_list.isEmpty()) {
+            prequeTemp.popTop();
+        } else {
+            prequeTemp.changeIndexKey(0,{
+                m_list:tempInsert.m_list,
+                m_top: tempInsert.m_list.getBegin()
+            });
+        }
+    }
+    return listOutput;
 }
 const QueTestCaseDefault = new QueTestCase();
 export default QueTestCaseDefault;
