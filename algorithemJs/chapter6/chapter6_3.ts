@@ -137,9 +137,207 @@ function increasedCrossHeapItemById(arrayInput:Array<number>, posIndex:number ,
             return ajustdCrossItemToTop(arrayInput,posIndex,dCross);
         }
 }
+class YoungTableau {
+    constructor(m:number,n:number) {
+        this.m_row = m;
+        this.m_col = n;
+        this.m_dataBuff = [];
+        for(let i = 0; i < this.m_row; ++i) {
+            const arrayTemp = [];
+            for(let j = 0; j < this.m_col; ++j) {
+                arrayTemp.push(Number.MAX_VALUE);
+            }
+            this.m_dataBuff.push(arrayTemp);
+        }
+    }
+    isFull() {
+        return this.m_dataBuff[this.m_row - 1][this.m_col - 1] === Number.MAX_VALUE;
+    }
+    isEmpty() {
+        return this.m_dataBuff[0][0] === Number.MAX_VALUE;
+    }
+    insertItem(item:number) {
+        if(!this.isFull()) {
+            let i = this.m_row - 1; let j = this.m_col - 1;
+            while(true) {
+                if(i === 0 && j === 0) {
+                    break;
+                } else if(i === 0) {
+                    if(this.m_dataBuff[i][j - 1] > item) {
+                        this.m_dataBuff[i][j] = this.m_dataBuff[i][j - 1]
+                        j = j - 1;
+                    } else {
+                        break;
+                    }
+
+                } else if (j === 0) {
+                    if(this.m_dataBuff[i - 1][j] > item) {
+                        this.m_dataBuff[i][j] = this.m_dataBuff[i - 1][j];
+                        i = i - 1;
+                    } else {
+                        break;
+                    }
+
+                } else {
+                    if(this.m_dataBuff[i - 1][j] < this.m_dataBuff[i][j - 1]) {
+                        if(this.m_dataBuff[i][j - 1] > item) {
+                            this.m_dataBuff[i][j] = this.m_dataBuff[i][j - 1]
+                            j = j - 1;
+                        } else {
+                            break;
+                        } 
+                    } else {
+                        if(this.m_dataBuff[i - 1][j] > item) {
+                            this.m_dataBuff[i][j] = this.m_dataBuff[i - 1][j];
+                            i = i - 1;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+            this.m_dataBuff[i][j] = item;
+            return [i,j];
+        } else {
+            throw new Error("table is full!!!");
+        }
+    }
+    adjustItemToStart(i:number,j:number) {
+        const item = this.m_dataBuff[i][j];
+        while(true) {
+            if(i === 0 && j === 0) {
+                break;
+            } else if(i === 0) {
+                if(this.m_dataBuff[i][j - 1] > item) {
+                    this.m_dataBuff[i][j] = this.m_dataBuff[i][j - 1]
+                    j = j - 1;
+                } else {
+                    break;
+                }
+
+            } else if (j === 0) {
+                if(this.m_dataBuff[i - 1][j] > item) {
+                    this.m_dataBuff[i][j] = this.m_dataBuff[i - 1][j];
+                    i = i - 1;
+                } else {
+                    break;
+                }
+
+            } else {
+                if(this.m_dataBuff[i - 1][j] < this.m_dataBuff[i][j - 1]) {
+                    if(this.m_dataBuff[i][j - 1] > item) {
+                        this.m_dataBuff[i][j] = this.m_dataBuff[i][j - 1]
+                        j = j - 1;
+                    } else {
+                        break;
+                    } 
+                } else {
+                    if(this.m_dataBuff[i - 1][j] > item) {
+                        this.m_dataBuff[i][j] = this.m_dataBuff[i - 1][j];
+                        i = i - 1;
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        this.m_dataBuff[i][j] = item;
+        return [i,j];
+    }
+    adjustItemToEnd(i:number,j:number) {
+        const nTempToInsert = this.m_dataBuff[i][j];
+        while(true){
+            if(i === this.m_row - 1 && j === this.m_col - 1) {
+                break;
+            } else if(i === this.m_row - 1) {
+                if(this.m_dataBuff[i][j + 1] < nTempToInsert) {
+                    this.m_dataBuff[i][j] = this.m_dataBuff[i][j + 1];
+                    j = j + 1;
+                } else {
+                    break;
+                }
+            } else if(j === this.m_col - 1) {
+                if(this.m_dataBuff[i + 1][j] < nTempToInsert) {
+                    this.m_dataBuff[i][j] = this.m_dataBuff[i + 1][j];
+                    i = i + 1;
+                } else {
+                    break;
+                }
+            } else {
+                if(this.m_dataBuff[i + 1][j] < this.m_dataBuff[i][j + 1]) {
+                    if(this.m_dataBuff[i + 1][j] < nTempToInsert) {
+                        this.m_dataBuff[i][j] = this.m_dataBuff[i + 1][j];
+                        i = i + 1;
+                    } else {
+                        break;
+                    }
+                } else {
+                    if(this.m_dataBuff[i][j + 1] < nTempToInsert) {
+                        this.m_dataBuff[i][j] = this.m_dataBuff[i][j+ 1];
+                        j = j + 1;
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        this.m_dataBuff[i][j] = nTempToInsert; 
+        return [i,j];
+    }
+    popMinItem() {
+        if(this.isEmpty()) {
+            throw new Error("table is empty!!!");
+            //return Number.MAX_VALUE;
+        } else {
+            const nTemp = this.m_dataBuff[0][0];
+            const nTempToInsert = this.m_dataBuff[this.m_row - 1][this.m_col - 1];
+            this.m_dataBuff[this.m_row - 1][this.m_col - 1] = Number.MAX_VALUE;
+            let i = 0; let j = 0;
+            while(true){
+                if(i === this.m_row - 1 && j === this.m_col - 1) {
+                    break;
+                } else if(i === this.m_row - 1) {
+                    if(this.m_dataBuff[i][j + 1] < nTempToInsert) {
+                        this.m_dataBuff[i][j] = this.m_dataBuff[i][j + 1];
+                        j = j + 1;
+                    } else {
+                        break;
+                    }
+                } else if(j === this.m_col - 1) {
+                    if(this.m_dataBuff[i + 1][j] < nTempToInsert) {
+                        this.m_dataBuff[i][j] = this.m_dataBuff[i + 1][j];
+                        i = i + 1;
+                    } else {
+                        break;
+                    }
+                } else {
+                    if(this.m_dataBuff[i + 1][j] < this.m_dataBuff[i][j + 1]) {
+                        if(this.m_dataBuff[i + 1][j] < nTempToInsert) {
+                            this.m_dataBuff[i][j] = this.m_dataBuff[i + 1][j];
+                            i = i + 1;
+                        } else {
+                            break;
+                        }
+                    } else {
+                        if(this.m_dataBuff[i][j + 1] < nTempToInsert) {
+                            this.m_dataBuff[i][j] = this.m_dataBuff[i][j+ 1];
+                            j = j + 1;
+                        } else {
+                            break;
+                        }
+                    }
+                }
+            }
+            this.m_dataBuff[i][j] = nTempToInsert; 
+            return nTemp;
+        }
+    }
+    m_dataBuff:Array<Array<number>>;
+    m_row:number;
+    m_col :number;
+}
 class TestCaseQuestion {
     constructor() {
-
     }
     testCaseDCrossHeap() {
         const arrayOrgin = utilityTools.generateRandomArray(1,1000,30);
@@ -215,3 +413,4 @@ class TestCaseQuestion {
 const testItem = new TestCaseQuestion();
 // testItem.testCaseInsertBuildHeap();
 testItem.testCaseDCrossHeap();
+console.log(10000 < Number.MAX_VALUE);

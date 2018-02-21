@@ -217,3 +217,4 @@ var TestCaseQuestion = /** @class */ (function () {
 var testItem = new TestCaseQuestion();
 // testItem.testCaseInsertBuildHeap();
 testItem.testCaseDCrossHeap();
+console.log(10000 < Number.MAX_VALUE);
