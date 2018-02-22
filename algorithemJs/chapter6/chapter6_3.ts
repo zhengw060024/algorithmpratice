@@ -422,10 +422,37 @@ class YoungTableau {
     private m_row: number;
     private m_col: number;
 }
+function sortNNNumsByYoungTableau(n:number) {
+    const helpYoung = new YoungTableau(n,n);
+    const arrayOrign = utilityTools.generateRandomArray(1,1000,n* n);
+    const arraySortRight = arrayOrign.concat().sort((a,b) => {
+        return a - b;
+    });
+    console.log(`orgin array is ${arrayOrign}`);
+    const arraySortResultYoung = [];
+    for(let i = 0; i < arrayOrign.length; ++i){
+        helpYoung.insertItem(arrayOrign[i]);
+    }
+    while(!helpYoung.isEmpty()) {
+        arraySortResultYoung.push(helpYoung.popMinItem());
+    }
+    console.log(`sorted array is ${arraySortResultYoung}`);
+    if(arraySortResultYoung.length !== arraySortRight.length){
+        console.log('error ,young sorted failed!!!');
+        return ;
+    }
+    for(let i = 0; i < arraySortResultYoung.length; ++i ){
+        if(arraySortResultYoung[i] !== arraySortRight[i]) {
+            console.log('error ,young sorted failed, numbers not match!!!');
+            return;
+        }
+    }
+    console.log('Young sort success!!!');
+}
 class TestCaseQuestion {
     constructor() {
     }
-    testCaseYoungTableau() {
+    private testCaseYoungTableau() {
         const arrayInput = [9, 16, 3, 2, 4, 8, 5, 14, 12];
         const youngTestCase1 = new YoungTableau(4,4);
         arrayInput.forEach(data => {
@@ -468,9 +495,11 @@ class TestCaseQuestion {
         console.log(youngTestCase2.resetIndexItem(iRow,iCol,itemToChange));
         youngTestCase2.printYoungTable();
         // youngTestCase2.
+        const sortItemsNum = utilityTools.generateRandom(5,15);
+        sortNNNumsByYoungTableau(sortItemsNum);
         
     }
-    testCaseDCrossHeap() {
+    private testCaseDCrossHeap() {
         const arrayOrgin = utilityTools.generateRandomArray(1, 1000, 30);
         console.log(`Orgin array is ${arrayOrgin}`);
         const arrayTest = arrayOrgin.concat();
@@ -523,11 +552,8 @@ class TestCaseQuestion {
         } else {
             console.log('change indexed item testcase failed');
         }
-
-
-
     }
-    testCaseInsertBuildHeap() {
+    private testCaseInsertBuildHeap() {
         const arrayOrgin = utilityTools.generateRandomArray(1, 1000, 30);
         console.log(`Orgin array is ${arrayOrgin}`);
         const arrayTest = arrayOrgin.concat();
@@ -539,8 +565,14 @@ class TestCaseQuestion {
             console.log('this is not max heap ,some error happened!')
         }
     }
+    runTestCase() {
+        this.testCaseInsertBuildHeap();
+        this.testCaseDCrossHeap();
+        this.testCaseYoungTableau();
+    }
 }
-const testItem = new TestCaseQuestion();
+const TestItem = new TestCaseQuestion();
+export default TestItem;
 // testItem.testCaseInsertBuildHeap();
-testItem.testCaseYoungTableau();
-console.log(10000 < Number.MAX_VALUE);
+
+// console.log(10000 < Number.MAX_VALUE);

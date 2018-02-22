@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 // 算法导论第6章思考题
 // 插入法建堆
 var utilitytools_1 = require("./utilitytools");
@@ -465,6 +465,33 @@ var YoungTableau = /** @class */ (function () {
     };
     return YoungTableau;
 }());
+function sortNNNumsByYoungTableau(n) {
+    var helpYoung = new YoungTableau(n, n);
+    var arrayOrign = utilitytools_1.default.generateRandomArray(1, 1000, n * n);
+    var arraySortRight = arrayOrign.concat().sort(function (a, b) {
+        return a - b;
+    });
+    console.log("orgin array is " + arrayOrign);
+    var arraySortResultYoung = [];
+    for (var i = 0; i < arrayOrign.length; ++i) {
+        helpYoung.insertItem(arrayOrign[i]);
+    }
+    while (!helpYoung.isEmpty()) {
+        arraySortResultYoung.push(helpYoung.popMinItem());
+    }
+    console.log("sorted array is " + arraySortResultYoung);
+    if (arraySortResultYoung.length !== arraySortRight.length) {
+        console.log('error ,young sorted failed!!!');
+        return;
+    }
+    for (var i = 0; i < arraySortResultYoung.length; ++i) {
+        if (arraySortResultYoung[i] !== arraySortRight[i]) {
+            console.log('error ,young sorted failed, numbers not match!!!');
+            return;
+        }
+    }
+    console.log('Young sort success!!!');
+}
 var TestCaseQuestion = /** @class */ (function () {
     function TestCaseQuestion() {
     }
@@ -481,8 +508,8 @@ var TestCaseQuestion = /** @class */ (function () {
         else {
             console.log('create young table error!');
         }
-        var nItemToGen = utilitytools_1["default"].generateRandom(16, 35);
-        var arrayOrgin = utilitytools_1["default"].generateRandomArray(1, 99, nItemToGen);
+        var nItemToGen = utilitytools_1.default.generateRandom(16, 35);
+        var arrayOrgin = utilitytools_1.default.generateRandomArray(1, 99, nItemToGen);
         var youngTestCase2 = new YoungTableau(5, 7);
         arrayOrgin.forEach(function (data) {
             youngTestCase2.insertItem(data);
@@ -502,20 +529,22 @@ var TestCaseQuestion = /** @class */ (function () {
             console.log('create young table error!');
         }
         youngTestCase2.printYoungTable();
-        var itemToFind = utilitytools_1["default"].generateRandom(1, 99);
+        var itemToFind = utilitytools_1.default.generateRandom(1, 99);
         console.log(itemToFind);
         console.log(youngTestCase2.findItem(itemToFind));
         console.log(youngTestCase1.findItem(8));
-        var iRow = utilitytools_1["default"].generateRandom(0, 4);
-        var iCol = utilitytools_1["default"].generateRandom(0, 6);
-        var itemToChange = utilitytools_1["default"].generateRandom(1, 99);
+        var iRow = utilitytools_1.default.generateRandom(0, 4);
+        var iCol = utilitytools_1.default.generateRandom(0, 6);
+        var itemToChange = utilitytools_1.default.generateRandom(1, 99);
         console.log("old pos is " + [iRow, iCol] + ",new data is " + itemToChange);
         console.log(youngTestCase2.resetIndexItem(iRow, iCol, itemToChange));
         youngTestCase2.printYoungTable();
         // youngTestCase2.
+        var sortItemsNum = utilitytools_1.default.generateRandom(5, 15);
+        sortNNNumsByYoungTableau(sortItemsNum);
     };
     TestCaseQuestion.prototype.testCaseDCrossHeap = function () {
-        var arrayOrgin = utilitytools_1["default"].generateRandomArray(1, 1000, 30);
+        var arrayOrgin = utilitytools_1.default.generateRandomArray(1, 1000, 30);
         console.log("Orgin array is " + arrayOrgin);
         var arrayTest = arrayOrgin.concat();
         // 秩为2为普通的堆
@@ -528,7 +557,7 @@ var TestCaseQuestion = /** @class */ (function () {
             console.log('this is not max heap by dCrossHeapTest,some error happened!');
         }
         //
-        var dCross = utilitytools_1["default"].generateRandom(2, 30);
+        var dCross = utilitytools_1.default.generateRandom(2, 30);
         var arrayTest2 = arrayOrgin.concat();
         console.log("dcross is " + dCross);
         buildCrossHeap(arrayTest2, dCross);
@@ -545,7 +574,7 @@ var TestCaseQuestion = /** @class */ (function () {
         else {
             console.log('remove op is failed!!!');
         }
-        var nInsertNum = utilitytools_1["default"].generateRandom(10, 4000);
+        var nInsertNum = utilitytools_1.default.generateRandom(10, 4000);
         console.log('The number to insert is :', nInsertNum);
         var nInsertPos = insertItemTodCrossHeap(arrayTest2, dCross, nInsertNum);
         console.log('The insert pos is :', nInsertPos);
@@ -557,9 +586,9 @@ var TestCaseQuestion = /** @class */ (function () {
         }
         console.log("after insert item ,dCrossHeap is " + arrayTest2);
         // 修改heap中的某项的值
-        var nItemIndexChange = utilitytools_1["default"].generateRandom(0, arrayTest2.length - 1);
+        var nItemIndexChange = utilitytools_1.default.generateRandom(0, arrayTest2.length - 1);
         var nOldData = arrayTest2[nItemIndexChange];
-        var nNewNum = utilitytools_1["default"].generateRandom(0, 1000);
+        var nNewNum = utilitytools_1.default.generateRandom(0, 1000);
         var nNewItemIndex = increasedCrossHeapItemById(arrayTest2, nItemIndexChange, nNewNum, dCross);
         console.log("the old data is " + nOldData + ", the old index is " + nItemIndexChange);
         console.log("the new data is " + nNewNum + ", the new index is " + nNewItemIndex);
@@ -572,7 +601,7 @@ var TestCaseQuestion = /** @class */ (function () {
         }
     };
     TestCaseQuestion.prototype.testCaseInsertBuildHeap = function () {
-        var arrayOrgin = utilitytools_1["default"].generateRandomArray(1, 1000, 30);
+        var arrayOrgin = utilitytools_1.default.generateRandomArray(1, 1000, 30);
         console.log("Orgin array is " + arrayOrgin);
         var arrayTest = arrayOrgin.concat();
         buildMaxHeap(arrayTest);
@@ -584,9 +613,14 @@ var TestCaseQuestion = /** @class */ (function () {
             console.log('this is not max heap ,some error happened!');
         }
     };
+    TestCaseQuestion.prototype.runTestCase = function () {
+        this.testCaseInsertBuildHeap();
+        this.testCaseDCrossHeap();
+        this.testCaseYoungTableau();
+    };
     return TestCaseQuestion;
 }());
-var testItem = new TestCaseQuestion();
+var TestItem = new TestCaseQuestion();
+exports.default = TestItem;
 // testItem.testCaseInsertBuildHeap();
-testItem.testCaseYoungTableau();
-console.log(10000 < Number.MAX_VALUE);
+// console.log(10000 < Number.MAX_VALUE);
