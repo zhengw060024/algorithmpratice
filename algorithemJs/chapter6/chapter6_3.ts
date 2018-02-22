@@ -202,7 +202,7 @@ class YoungTableau {
             throw new Error("table is full!!!");
         }
     }
-    adjustItemToStart(i: number, j: number) {
+    private adjustItemToStart(i: number, j: number) {
         const item = this.m_dataBuff[i][j];
         while (true) {
             if (i === 0 && j === 0) {
@@ -244,7 +244,7 @@ class YoungTableau {
         this.m_dataBuff[i][j] = item;
         return [i, j];
     }
-    adjustItemToEnd(i: number, j: number) {
+    private adjustItemToEnd(i: number, j: number) {
         const nTempToInsert = this.m_dataBuff[i][j];
         while (true) {
             if (i === this.m_row - 1 && j === this.m_col - 1) {
