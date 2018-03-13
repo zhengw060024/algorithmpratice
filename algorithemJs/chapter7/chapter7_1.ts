@@ -503,3 +503,7 @@ export default qSortTestCase;
  //console.log(quickDepartMiddle(arrayTemp,0,arrayTemp.length - 1));
  //console.log(`${arrayTemp}`);
 // quickDepartMiddle(arrayTemp,0,arrayTemp.length - 1);
+// 一些习题的说明
+// 思考题7-1,7-4，在快速排序优化代码中有体现，一个是切分使用7-1的方法，另一个在快速排序尾递归的
+// 过程中，对于一个划分，对较窄范围的数据进行递归，而对较大范围数据采用循环。可以保证最坏情况下
+// 栈深度是lg（N）
