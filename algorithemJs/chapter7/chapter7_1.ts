@@ -187,56 +187,71 @@ class quickSortTest {
             console.log('quicksort3 is right!!!');
         }
     }
+    // 快速排序优化测试，在js代码中计时其实是没有意义的，有空写个c的代码来比较下实际运行速度。
     testQSort4() {
         const arrayNum = utilityTools.generateRandom(12000, 15000);
         console.log(`arrayNum is ${arrayNum}`);
         const arrayTest = utilityTools.generateRandomArray(1, 1000, arrayNum);
         console.log(`array to sort is ${arrayTest}`);
 
-        const arrayToSort = arrayTest.concat();
-        console.time('zhengwei');
-        quickSort123(arrayToSort);
-        console.timeEnd('zhengwei');
-        // console.log(`array quickSort3 quicksorted si ${arrayToSort}`);
         const arrayTemp2 = arrayTest.concat();
         console.time('zhengwei2');
-        arrayTemp2.sort((a,b) => {
-            return a - b;
+        arrayTemp2.sort((a, b) => {
+            return b - a;
         });
         console.timeEnd('zhengwei2');
+
+        const arrayToSort = arrayTest.concat();
+        console.time('zhengwei');
+        quickSort123(arrayToSort, (a: number, b: number) => {
+            return a > b;
+        });
+        console.timeEnd('zhengwei');
+        // console.log(`array quickSort3 quicksorted is ${arrayToSort}`);
+
         // console.log(`array quickSort3 quicksorted si ${arrayTemp2}`);
         const testResult = this.checkSortResult(arrayTest, arrayToSort, (a, b) => {
-            return a - b;
+            return b - a;
         });
         if (testResult) {
             console.log('quicksort123 is right!!!');
         }
     }
+    // 测试intro排序，其实在js代码中计时是没有什么意义的，有空的时候可以写一个c++的代码来测试。
     testQSort5() {
         const arrayNum = utilityTools.generateRandom(12000, 15000);
         console.log(`arrayNum is ${arrayNum}`);
         const arrayTest = utilityTools.generateRandomArray(1, 1000, arrayNum);
         console.log(`array to sort is ${arrayTest}`);
+        let cmpTemp = (a: number, b: number) => {
+            return a > b;
+        }
+        const arrayToSort2 = arrayTest.concat();
+        console.time('zhengwei');
+        quickSort123(arrayToSort2, cmpTemp);
+        console.timeEnd('zhengwei');
 
-        const arrayTemp2 = arrayTest.concat();
-        console.time('zhengwei4');
-        quickSort123(arrayTemp2);
-        console.timeEnd('zhengwei4');
-        
         const arrayToSort = arrayTest.concat();
         console.log('zhengwei test');
         console.time('zhengwei3');
-        introsort(arrayToSort);
+        introsort(arrayToSort, cmpTemp);
         console.timeEnd('zhengwei3');
         // console.log(`array quickSort3 quicksorted si ${arrayToSort}`);
-        
+
         // console.log(`array quickSort3 quicksorted si ${arrayTemp2}`);
         const testResult = this.checkSortResult(arrayTest, arrayToSort, (a, b) => {
-            return a - b;
+            return b - a;
         });
         if (testResult) {
             console.log('introsort is right!!!');
         }
+    }
+    runTestCase() {
+        this.testQSort1();
+        this.testQSort2();
+        this.testQSort3();
+        this.testQSort4();
+        this.testQSort5();
     }
 }
 
@@ -251,9 +266,7 @@ class quickSortTest {
 const CONST_MIN_DEPARTLEN = 16;
 // 插入排序：这里有个小优化，首先判断首节点是否比待插入的节点小，如果
 // 比首节点大就直接插入，否则不需要判断是否需要越界。
-function insertSortImp(arrayInput: Array<number>, startIndex: number, endIndex: number, cmp = (a: number, b: number) => {
-    return a < b;
-}) {
+function insertSortImp(arrayInput: Array<number>, startIndex: number, endIndex: number, cmp: (a: number, b: number) => boolean) {
     if (startIndex === endIndex) {
         return;
     }
@@ -275,9 +288,7 @@ function insertSortImp(arrayInput: Array<number>, startIndex: number, endIndex: 
         }
     }
 }
-function insertSortUnguard(arrayInput: Array<number>, startIndex: number, endIndex: number, cmp = (a: number, b: number) => {
-    return a < b;
-}) {
+function insertSortUnguard(arrayInput: Array<number>, startIndex: number, endIndex: number, cmp: (a: number, b: number) => boolean) {
     for (let i = startIndex + 1; i <= endIndex; ++i) {
         const nTemp = arrayInput[i];
         // 这样处理可以减少一次对j有效性的判断
@@ -289,14 +300,12 @@ function insertSortUnguard(arrayInput: Array<number>, startIndex: number, endInd
         arrayInput[j + 1] = nTemp;
     }
 }
-function insertLineSortFinal(arrayInput: Array<number>, startIndex: number, endIndex: number, cmp = (a: number, b: number) => {
-    return a < b;
-}) {
+function insertLineSortFinal(arrayInput: Array<number>, startIndex: number, endIndex: number, cmp: (a: number, b: number) => boolean) {
     // console.log(`array input is ${arrayInput}`);
     if (endIndex - startIndex + 1 > CONST_MIN_DEPARTLEN) {
         insertSortImp(arrayInput, startIndex, startIndex + CONST_MIN_DEPARTLEN - 1, cmp);
         // 这里注意下，需要从 startIndex 到endIndex，而不是[ startIndex + CONST_MIN_DEPARTLEN,endIndex]
-        insertSortUnguard(arrayInput, startIndex , endIndex,cmp);
+        insertSortUnguard(arrayInput, startIndex, endIndex, cmp);
     } else {
         insertSortImp(arrayInput, startIndex, endIndex, cmp);
     }
@@ -353,23 +362,21 @@ function quickSortDepartNoMidIndex(arrayInput: Array<number>,
     }
 }
 // 使用1，2,3条来优化
-function quicksortBetterImp(arrayInput: Array<number>, startIndex: number, endIndex: number, cmp = (a: number, b: number) => {
-    return a < b;
-}) {
+function quicksortBetterImp(arrayInput: Array<number>, startIndex: number, endIndex: number, cmp: (a: number, b: number) => boolean) {
     while (endIndex - startIndex >= CONST_MIN_DEPARTLEN) {
-        
+
         const nDepartIndex = quickSortDepartNoMidIndex(arrayInput, startIndex, endIndex, cmp);
         // console.log('zhengwei test!!',nDepartIndex,startIndex,endIndex);
         // console.log(`array output is ${arrayInput}`);
         // 对较短端进行递归处理
-        if (nDepartIndex - startIndex + 1 > endIndex - nDepartIndex) {
+        if (nDepartIndex - startIndex - 1 > endIndex - nDepartIndex) {
             quicksortBetterImp(arrayInput, nDepartIndex, endIndex, cmp);
             // 这里注意不能是 endIndex = nDepartIndex！！！
             endIndex = nDepartIndex - 1;
         } else {
             //  // 这里注意这里是nDepartIndex - 1
             quicksortBetterImp(arrayInput, startIndex, nDepartIndex - 1, cmp);
-           
+
             startIndex = nDepartIndex;
         }
     }
@@ -396,9 +403,7 @@ function getMaxK(n: number): number {
 }
 
 // heapsort堆排序，对序列从nStart和nEnd进行堆排序
-function heapSortImp(arrayInput: Array<number>, nStart: number, nEnd: number, cmp = (a: number, b: number) => {
-    return a < b;
-}) {
+function heapSortImp(arrayInput: Array<number>, nStart: number, nEnd: number, cmp: (a: number, b: number) => boolean) {
     makeHeap(arrayInput, nStart, nEnd, cmp);
     while (nStart < nEnd) {
         let nTemp = arrayInput[nEnd];
@@ -453,23 +458,29 @@ function introsort(arrayInput: Array<number>, cmp = (a: number, b: number) => {
     }
 }
 function introsortLoop(arrayInput: Array<number>, nStartIndex: number, nEndIndex: number, nMaxDepartNum: number, cmp: (a: number, b: number) => boolean) {
-    while (nEndIndex - nStartIndex  >= CONST_MIN_DEPARTLEN) {
+    while (nEndIndex - nStartIndex >= CONST_MIN_DEPARTLEN) {
         if (nMaxDepartNum === 0) {
-            heapSortImp(arrayInput, nStartIndex, nEndIndex, cmp);
-            // console.log('分割恶化使用堆');
-            ++nCountFengeEhua;
+            // 这里可以使用一个策略，当元素个数大于某个限制时使用堆排序，否则使用插入排序
+            // 这个参数取决于普通排序和堆排序速度对比峰值。
+            if (nEndIndex - nStartIndex > 128) {
+                heapSortImp(arrayInput, nStartIndex, nEndIndex, cmp);
+                // console.log('分割恶化使用堆',nEndIndex - nStartIndex);
+            } else {
+                insertSortImp(arrayInput, nStartIndex, nEndIndex, cmp);
+            }
+            // ++nCountFengeEhua;
             return;
         }
         --nMaxDepartNum;
         const nMidIndex = quickSortDepartNoMidIndex(arrayInput, nStartIndex, nEndIndex, cmp);
         // 对较小段端进行递归，这里必须特别注意边界条件
-        if (nEndIndex - nMidIndex > nMidIndex-1 - nStartIndex) {
+        if (nMidIndex - 1 - nStartIndex > nEndIndex - nMidIndex) {
+            introsortLoop(arrayInput, nMidIndex, nEndIndex, nMaxDepartNum, cmp);
+            nEndIndex = nMidIndex - 1;
+        } else {
             // 注意边界条件
             introsortLoop(arrayInput, nStartIndex, nMidIndex - 1, nMaxDepartNum, cmp);
             nStartIndex = nMidIndex;
-        } else {
-            introsortLoop(arrayInput, nMidIndex, nEndIndex, nMaxDepartNum, cmp);
-            nEndIndex = nMidIndex - 1;
         }
     }
 }
@@ -479,11 +490,13 @@ const qSortTestCase = new quickSortTest();
 // qSortTestCase.testQSort2();
 // qSortTestCase.testQSort3();
 // qSortTestCase.testQSort4();
-qSortTestCase.testQSort5();
-console.log(nCountFengeEhua);
-console.log(getMidItem(1, 5, 7));
-console.log(getMidItem(5, 1, 7));
-console.log(getMidItem(12, 4, 7));
+// qSortTestCase.testQSort5();
+// console.log(nCountFengeEhua);
+// console.log(getMidItem(1, 5, 7));
+// console.log(getMidItem(5, 1, 7));
+// console.log(getMidItem(12, 4, 7));
+
+export default qSortTestCase;
  //const arrayTemp = utilityTools.generateRandomArray(1,12,utilityTools.generateRandom(10,30));
  //console.log(`${arrayTemp}`);
 
