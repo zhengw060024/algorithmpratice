@@ -183,12 +183,310 @@ var quickSortTest = /** @class */ (function () {
             console.log('quicksort3 is right!!!');
         }
     };
+    quickSortTest.prototype.testQSort4 = function () {
+        var arrayNum = utilitytools_1.default.generateRandom(12000, 15000);
+        console.log("arrayNum is " + arrayNum);
+        var arrayTest = utilitytools_1.default.generateRandomArray(1, 1000, arrayNum);
+        console.log("array to sort is " + arrayTest);
+        var arrayToSort = arrayTest.concat();
+        console.time('zhengwei');
+        quickSort123(arrayToSort);
+        console.timeEnd('zhengwei');
+        // console.log(`array quickSort3 quicksorted si ${arrayToSort}`);
+        var arrayTemp2 = arrayTest.concat();
+        console.time('zhengwei2');
+        arrayTemp2.sort(function (a, b) {
+            return a - b;
+        });
+        console.timeEnd('zhengwei2');
+        // console.log(`array quickSort3 quicksorted si ${arrayTemp2}`);
+        var testResult = this.checkSortResult(arrayTest, arrayToSort, function (a, b) {
+            return a - b;
+        });
+        if (testResult) {
+            console.log('quicksort123 is right!!!');
+        }
+    };
+    quickSortTest.prototype.testQSort5 = function () {
+        var arrayNum = utilitytools_1.default.generateRandom(12000, 15000);
+        console.log("arrayNum is " + arrayNum);
+        var arrayTest = utilitytools_1.default.generateRandomArray(1, 1000, arrayNum);
+        console.log("array to sort is " + arrayTest);
+        var arrayTemp2 = arrayTest.concat();
+        console.time('zhengwei4');
+        quickSort123(arrayTemp2);
+        console.timeEnd('zhengwei4');
+        var arrayToSort = arrayTest.concat();
+        console.log('zhengwei test');
+        console.time('zhengwei3');
+        introsort(arrayToSort);
+        console.timeEnd('zhengwei3');
+        // console.log(`array quickSort3 quicksorted si ${arrayToSort}`);
+        // console.log(`array quickSort3 quicksorted si ${arrayTemp2}`);
+        var testResult = this.checkSortResult(arrayTest, arrayToSort, function (a, b) {
+            return a - b;
+        });
+        if (testResult) {
+            console.log('introsort is right!!!');
+        }
+    };
     return quickSortTest;
 }());
+// 关于快速排序的一些优化
+// 1:当快速排序将整个待排序数组排序到近似有序时，使用插入排序方法将整个数组重新排序。
+// 2: 对快速排序做尾递归优化，可以减少内存和函数递归调用堆栈操作。
+// 3: 使用三点取中法取中值，即取头尾中央三个位置的中间的中值作为枢轴。
+// 4: 使用内省式排序，当分割行为有恶化为二次的倾向时，转而采用heapsort （introsort采用的就是这种方式）
+// 一些通用的辅助函数
+// 最短分割长度
+var CONST_MIN_DEPARTLEN = 16;
+// 插入排序：这里有个小优化，首先判断首节点是否比待插入的节点小，如果
+// 比首节点大就直接插入，否则不需要判断是否需要越界。
+function insertSortImp(arrayInput, startIndex, endIndex, cmp) {
+    if (cmp === void 0) { cmp = function (a, b) {
+        return a < b;
+    }; }
+    if (startIndex === endIndex) {
+        return;
+    }
+    for (var i = startIndex + 1; i <= endIndex; ++i) {
+        var nTemp = arrayInput[i];
+        if (cmp(nTemp, arrayInput[startIndex])) {
+            for (var j = i; j > startIndex; --j) {
+                arrayInput[j] = arrayInput[j - 1];
+            }
+            arrayInput[startIndex] = nTemp;
+        }
+        else {
+            // 这样处理可以减少一次对j有效性的判断
+            var j = i - 1;
+            while (cmp(nTemp, arrayInput[j])) {
+                arrayInput[j + 1] = arrayInput[j];
+                --j;
+            }
+            arrayInput[j + 1] = nTemp;
+        }
+    }
+}
+function insertSortUnguard(arrayInput, startIndex, endIndex, cmp) {
+    if (cmp === void 0) { cmp = function (a, b) {
+        return a < b;
+    }; }
+    for (var i = startIndex + 1; i <= endIndex; ++i) {
+        var nTemp = arrayInput[i];
+        // 这样处理可以减少一次对j有效性的判断
+        var j = i - 1;
+        while (cmp(nTemp, arrayInput[j])) {
+            arrayInput[j + 1] = arrayInput[j];
+            --j;
+        }
+        arrayInput[j + 1] = nTemp;
+    }
+}
+function insertLineSortFinal(arrayInput, startIndex, endIndex, cmp) {
+    if (cmp === void 0) { cmp = function (a, b) {
+        return a < b;
+    }; }
+    // console.log(`array input is ${arrayInput}`);
+    if (endIndex - startIndex + 1 > CONST_MIN_DEPARTLEN) {
+        insertSortImp(arrayInput, startIndex, startIndex + CONST_MIN_DEPARTLEN - 1, cmp);
+        // 这里注意下，需要从 startIndex 到endIndex，而不是[ startIndex + CONST_MIN_DEPARTLEN,endIndex]
+        insertSortUnguard(arrayInput, startIndex, endIndex, cmp);
+    }
+    else {
+        insertSortImp(arrayInput, startIndex, endIndex, cmp);
+    }
+}
+function getMidItem(a, b, c) {
+    if (a < b) {
+        if (c < a) {
+            return a;
+        }
+        else if (c < b) {
+            return c;
+        }
+        else {
+            return b;
+        }
+    }
+    else {
+        if (c < b) {
+            return b;
+        }
+        else if (c < a) {
+            return c;
+        }
+        else {
+            return a;
+        }
+    }
+}
+//假设返回值为nIndex，则[startIndex, nIndex- 1] 均小于[nIndex,endIndex]
+function quickSortDepartNoMidIndex(arrayInput, startIndex, endIndex, cmp) {
+    var nTemp = 0;
+    var midIndex = Math.floor((startIndex + endIndex) / 2);
+    nTemp = getMidItem(arrayInput[startIndex], arrayInput[midIndex], arrayInput[endIndex]);
+    // if (arrayInput[startIndex] < arrayInput[endIndex]) {
+    //     if (midIndex < arrayInput[startIndex]) {
+    //     }
+    // } else {
+    // }
+    // console.log('depart num is :',nTemp);
+    var i = startIndex;
+    var j = endIndex;
+    while (true) {
+        while (cmp(arrayInput[i], nTemp)) {
+            ++i;
+        }
+        ;
+        while (cmp(nTemp, arrayInput[j])) {
+            --j;
+        }
+        ;
+        if (i < j) {
+            var nTempChange = arrayInput[i];
+            arrayInput[i] = arrayInput[j];
+            arrayInput[j] = nTempChange;
+            ++i;
+            --j;
+        }
+        else {
+            return i;
+        }
+    }
+}
+// 使用1，2,3条来优化
+function quicksortBetterImp(arrayInput, startIndex, endIndex, cmp) {
+    if (cmp === void 0) { cmp = function (a, b) {
+        return a < b;
+    }; }
+    while (endIndex - startIndex >= CONST_MIN_DEPARTLEN) {
+        var nDepartIndex = quickSortDepartNoMidIndex(arrayInput, startIndex, endIndex, cmp);
+        // console.log('zhengwei test!!',nDepartIndex,startIndex,endIndex);
+        // console.log(`array output is ${arrayInput}`);
+        // 对较短端进行递归处理
+        if (nDepartIndex - startIndex + 1 > endIndex - nDepartIndex) {
+            quicksortBetterImp(arrayInput, nDepartIndex, endIndex, cmp);
+            // 这里注意不能是 endIndex = nDepartIndex！！！
+            endIndex = nDepartIndex - 1;
+        }
+        else {
+            //  // 这里注意这里是nDepartIndex - 1
+            quicksortBetterImp(arrayInput, startIndex, nDepartIndex - 1, cmp);
+            startIndex = nDepartIndex;
+        }
+    }
+}
+function quickSort123(arrayInput, cmp) {
+    if (cmp === void 0) { cmp = function (a, b) {
+        return a < b;
+    }; }
+    if (arrayInput.length > 0) {
+        quicksortBetterImp(arrayInput, 0, arrayInput.length - 1, cmp);
+        // console.log('zhengwei test!!');
+        insertLineSortFinal(arrayInput, 0, arrayInput.length - 1, cmp);
+    }
+}
+// 获取最大的k使得2的k次幂小于n
+function getMaxK(n) {
+    var k = 0;
+    var nTemp = 2;
+    do {
+        k++;
+        nTemp *= nTemp;
+    } while (nTemp <= n);
+    return k;
+}
+// heapsort堆排序，对序列从nStart和nEnd进行堆排序
+function heapSortImp(arrayInput, nStart, nEnd, cmp) {
+    if (cmp === void 0) { cmp = function (a, b) {
+        return a < b;
+    }; }
+    makeHeap(arrayInput, nStart, nEnd, cmp);
+    while (nStart < nEnd) {
+        var nTemp = arrayInput[nEnd];
+        arrayInput[nEnd] = arrayInput[nStart];
+        arrayInput[nStart] = nTemp;
+        ajustHeap(arrayInput, nStart, --nEnd, cmp);
+    }
+}
+// 对序列nStart 到nEnd创建堆，实际从（nEnd - 1） / 2 开始调整堆
+function makeHeap(arrayInput, nStart, nEnd, cmp) {
+    var nAjustStart = Math.floor((nEnd - 1) / 2);
+    for (var i = nAjustStart; i >= nStart; --i) {
+        ajustHeap(arrayInput, nStart, nEnd, cmp);
+    }
+}
+function ajustHeap(arrayInput, nStart, nEnd, cmp) {
+    var nTemp = arrayInput[nStart];
+    while (nStart < nEnd) {
+        var nLeft = nStart * 2 + 1;
+        var nRight = nEnd * 2 + 2;
+        // 其实这个判断是没有必要的，对于在makeHeap中调用这个函数
+        if (nLeft > nEnd) {
+            break;
+        }
+        //////////////////////////
+        var nMaxIndex = nLeft;
+        // 这里防止越界，先比较左右节点，用左右节点的最大值和父节点比较
+        if (nRight <= nEnd) {
+            if (cmp(arrayInput[nLeft], arrayInput[nRight])) {
+                nMaxIndex = nRight;
+            }
+        }
+        if (cmp(nTemp, arrayInput[nMaxIndex])) {
+            arrayInput[nStart] = arrayInput[nMaxIndex];
+            nStart = nMaxIndex;
+        }
+        else {
+            break;
+        }
+    }
+    arrayInput[nStart] = nTemp;
+}
+// introsort排序
+function introsort(arrayInput, cmp) {
+    if (cmp === void 0) { cmp = function (a, b) {
+        return a < b;
+    }; }
+    if (arrayInput.length > 1) {
+        introsortLoop(arrayInput, 0, arrayInput.length - 1, 4 * getMaxK(arrayInput.length), cmp);
+        insertLineSortFinal(arrayInput, 0, arrayInput.length - 1, cmp);
+    }
+}
+function introsortLoop(arrayInput, nStartIndex, nEndIndex, nMaxDepartNum, cmp) {
+    while (nEndIndex - nStartIndex >= CONST_MIN_DEPARTLEN) {
+        if (nMaxDepartNum === 0) {
+            heapSortImp(arrayInput, nStartIndex, nEndIndex, cmp);
+            // console.log('分割恶化使用堆');
+            ++nCountFengeEhua;
+            return;
+        }
+        --nMaxDepartNum;
+        var nMidIndex = quickSortDepartNoMidIndex(arrayInput, nStartIndex, nEndIndex, cmp);
+        // 对较小段端进行递归，这里必须特别注意边界条件
+        if (nEndIndex - nMidIndex > nMidIndex - 1 - nStartIndex) {
+            // 注意边界条件
+            introsortLoop(arrayInput, nStartIndex, nMidIndex - 1, nMaxDepartNum, cmp);
+            nStartIndex = nMidIndex;
+        }
+        else {
+            introsortLoop(arrayInput, nMidIndex, nEndIndex, nMaxDepartNum, cmp);
+            nEndIndex = nMidIndex - 1;
+        }
+    }
+}
+var nCountFengeEhua = 0;
 var qSortTestCase = new quickSortTest();
-qSortTestCase.testQSort1();
-qSortTestCase.testQSort2();
-qSortTestCase.testQSort3();
+// qSortTestCase.testQSort1();
+// qSortTestCase.testQSort2();
+// qSortTestCase.testQSort3();
+// qSortTestCase.testQSort4();
+qSortTestCase.testQSort5();
+console.log(nCountFengeEhua);
+console.log(getMidItem(1, 5, 7));
+console.log(getMidItem(5, 1, 7));
+console.log(getMidItem(12, 4, 7));
 //const arrayTemp = utilityTools.generateRandomArray(1,12,utilityTools.generateRandom(10,30));
 //console.log(`${arrayTemp}`);
 //console.log(quickDepartMiddle(arrayTemp,0,arrayTemp.length - 1));
