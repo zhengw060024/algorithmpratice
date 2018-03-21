@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 //这里的主要是思考题7.2 以及7.6，从本质上来说，其实他们算的上是同一个问题
 // 思考题7.2考虑到含有相同元素的划分。
 var utilitytools_1 = require("./utilitytools");
@@ -84,8 +84,8 @@ var NumRange = /** @class */ (function () {
 function generateTestRange(nMin, nMax, rangeNum) {
     var arrayTemp = [];
     for (var i = 0; i < rangeNum; ++i) {
-        var nStart = utilitytools_1.default.generateRandom(nMin, nMax);
-        var nEnd = utilitytools_1.default.generateRandom(nStart, nMax);
+        var nStart = utilitytools_1["default"].generateRandom(nMin, nMax);
+        var nEnd = utilitytools_1["default"].generateRandom(nStart, nMax);
         arrayTemp.push(new NumRange(nStart, nEnd, i));
     }
     return arrayTemp;
@@ -156,7 +156,7 @@ var TestCase = /** @class */ (function () {
     function TestCase() {
     }
     TestCase.prototype.testCase7_6 = function () {
-        var arrayNum = utilitytools_1.default.generateRandom(500, 700);
+        var arrayNum = utilitytools_1["default"].generateRandom(500, 700);
         var arrayInput = generateTestRange(1, 2000, arrayNum);
         console.log("arrayNum is " + arrayNum);
         var arrayToSort = arrayInput.concat();
@@ -213,9 +213,9 @@ var TestCase = /** @class */ (function () {
         return true;
     };
     TestCase.prototype.testDepart = function () {
-        var ItemCount = utilitytools_1.default.generateRandom(5, 200);
+        var ItemCount = utilitytools_1["default"].generateRandom(5, 200);
         console.log('lenth is ', ItemCount);
-        var arrayInput = utilitytools_1.default.generateRandomArray(1, 10, ItemCount);
+        var arrayInput = utilitytools_1["default"].generateRandomArray(1, 10, ItemCount);
         console.log("orgin array is " + arrayInput);
         var arrayToDepart = arrayInput.concat();
         var nReturnTuple = quickDepart(arrayToDepart, 0, arrayInput.length - 1);
@@ -230,9 +230,9 @@ var TestCase = /** @class */ (function () {
         }
     };
     TestCase.prototype.testDepartTemplate = function () {
-        var ItemCount = utilitytools_1.default.generateRandom(5, 200);
+        var ItemCount = utilitytools_1["default"].generateRandom(5, 200);
         console.log('lenth is ', ItemCount);
-        var arrayInput = utilitytools_1.default.generateRandomArray(1, 10, ItemCount);
+        var arrayInput = utilitytools_1["default"].generateRandomArray(1, 10, ItemCount);
         console.log("orgin array is " + arrayInput);
         var arrayToDepart = arrayInput.concat();
         var cmp = function (a, b) {
@@ -250,9 +250,9 @@ var TestCase = /** @class */ (function () {
         }
     };
     TestCase.prototype.testCaseQickSort = function () {
-        var ItemCount = utilitytools_1.default.generateRandom(5, 200);
+        var ItemCount = utilitytools_1["default"].generateRandom(5, 200);
         console.log('lenth is ', ItemCount);
-        var arrayInput = utilitytools_1.default.generateRandomArray(1, 1000, ItemCount);
+        var arrayInput = utilitytools_1["default"].generateRandomArray(1, 1000, ItemCount);
         console.log("orgin array is " + arrayInput);
         var arrayToSort = arrayInput.concat();
         var cmp = function (a, b) {
@@ -344,5 +344,5 @@ var TestCase = /** @class */ (function () {
     return TestCase;
 }());
 var testCaseItem = new TestCase();
-exports.default = testCaseItem;
+exports["default"] = testCaseItem;
 //testCaseItem.runTestCase(); 
