@@ -73,6 +73,42 @@ function bucketSortRing(arrayInput: Array<PointIntOne>) {
     }
     return arrayOut;
 }
+// 习题8-4-5：
+// 思路如下：假设概率分布函数为p(x),则概率分布函数一定是取值范围[0,1]且递增的
+// 如果待排序数组有n个，将[0,1]分割成n个区间，通过待排序的数值x[i]计算p(x[i]),
+// 然后根据p(x[i])的值划归x[i]所属的区间（ 利用单调递增性,保证排序有效性）
+function getPx(x:number) {
+    return 0;
+
+}
+function bucketSortP(arrayInput: Array<number>, nRangeMin: number, nRangMax: number) {
+    let nNum = arrayInput.length;
+    const nRange = 1.0 / nNum;
+    const arrayTemp: Array<Array<number>> = [];
+    for (let i = 0; i < arrayInput.length; ++i) {
+        let nIndex = Math.floor(nNum * getPx(arrayInput[i]));
+        if (!arrayTemp[nIndex]) {
+            arrayTemp[nIndex] = [];
+        }
+        arrayTemp[nIndex].push(arrayInput[i]);
+    }
+    for (let i = 0; i < arrayTemp.length; ++i) {
+        if (arrayTemp[i]) {
+            arrayTemp[i].sort((data: number, data2: number) => {
+                return data - data2;
+            });
+        }
+    }
+    const arrayOut: Array<number> = [];
+    for (let i = 0; i < arrayTemp.length; ++i) {
+        if (arrayTemp[i]) {
+            arrayTemp[i].forEach(item => {
+                arrayOut.push(item);
+            });
+        }
+    }
+    return arrayOut;
+}
 class BucketSortCase {
     constructor() {
 
