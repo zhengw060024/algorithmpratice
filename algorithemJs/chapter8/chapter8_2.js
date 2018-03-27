@@ -78,23 +78,23 @@ function bucketSortRing(arrayInput) {
 // 例如指数分布F(X)=1-EXP(-aX),反函数为S(U)=-(1/a)ln(1-u),先产生[0,1]均匀分布随机数u，
 // 带入S(u），得到指数分布随机数。
 /**
- * 此处是我模拟的一个概率分布函数
+ * 此处是我模拟的一个概率分布函数,注意此概率分布函数要是单调递增的
  * @param x
  */
 function getPx(x) {
-    return 1 - Math.exp(0.5 * x);
+    return 1 - Math.exp(-0.5 * x);
 }
 function getEx(nNum) {
     var arrayOut = [];
     for (var i = 0; i < nNum; ++i) {
         var nRandom = Math.random();
         // S(U)=-(1/a)ln(1-u)
-        var temp = 2 * Math.log(1 - nRandom);
+        var temp = -2 * Math.log(1 - nRandom);
         arrayOut.push(temp);
     }
     return arrayOut;
 }
-function bucketSortP(arrayInput, nRangeMin, nRangMax) {
+function bucketSortP(arrayInput) {
     var nNum = arrayInput.length;
     var nRange = 1.0 / nNum;
     var arrayTemp = [];
@@ -106,6 +106,7 @@ function bucketSortP(arrayInput, nRangeMin, nRangMax) {
         arrayTemp[nIndex].push(arrayInput[i]);
     }
     for (var i = 0; i < arrayTemp.length; ++i) {
+        // console.log(arrayTemp[i]);
         if (arrayTemp[i]) {
             arrayTemp[i].sort(function (data, data2) {
                 return data - data2;
@@ -122,29 +123,39 @@ function bucketSortP(arrayInput, nRangeMin, nRangMax) {
     }
     return arrayOut;
 }
-function testCaseRanGenerate() {
-    // 生成10000个随机数，然后看下按照桶的划分其分布是否均匀。
-    var arrayInput = getEx(10000);
-    // console.log(`${arrayInput}`);
-    var nNum = 10;
-    var nRange = 1.0 / nNum;
-    var arrayTemp = [];
-    for (var i = 0; i < arrayInput.length; ++i) {
-        var nIndex = Math.floor(nNum * getPx(arrayInput[i]));
-        // console.log(nIndex);
-        if (!arrayTemp[nIndex]) {
-            arrayTemp[nIndex] = [];
-        }
-        arrayTemp[nIndex].push(arrayInput[i]);
-    }
-    console.log('fdsaf');
-    for (var i = 0; i < arrayTemp.length; ++i) {
-        console.log(arrayTemp[i].length);
-    }
-}
-var BucketSortCase = /** @class */ (function () {
+var BucketSortCase = (function () {
     function BucketSortCase() {
     }
+    /**
+     * 测试算法导论习题8-4-5
+     */
+    BucketSortCase.prototype.testCasePxSort = function () {
+        var arrayInput = getEx(1000);
+        // console.log(arrayInput);
+        var arraySort = bucketSortP(arrayInput);
+        // console.log(arraySort);
+        this.checkSortRight(arraySort, arrayInput);
+    };
+    BucketSortCase.prototype.testCaseRanGenerate = function () {
+        // 生成10000个随机数，然后看下按照桶的划分其分布是否均匀。
+        var arrayInput = getEx(10000);
+        // console.log(`${arrayInput}`);
+        var nNum = 10;
+        var nRange = 1.0 / nNum;
+        var arrayTemp = [];
+        for (var i = 0; i < arrayInput.length; ++i) {
+            var nIndex = Math.floor(nNum * getPx(arrayInput[i]));
+            // console.log(nIndex);
+            if (!arrayTemp[nIndex]) {
+                arrayTemp[nIndex] = [];
+            }
+            arrayTemp[nIndex].push(arrayInput[i]);
+        }
+        console.log('fdsaf');
+        for (var i = 0; i < arrayTemp.length; ++i) {
+            console.log(arrayTemp[i].length);
+        }
+    };
     BucketSortCase.prototype.testCaseBucketSort = function () {
         var arrayTest = utilitytools_1["default"].generateRandomArray(1, 10000, 100);
         var arraySorted = bucketSort(arrayTest.concat(), 1, 10000 + 1);
@@ -220,4 +231,5 @@ var BucketSortCase = /** @class */ (function () {
 var Temp = new BucketSortCase();
 Temp.testCaseBucketSort();
 Temp.testCaseBuckSort2();
-testCaseRanGenerate();
+Temp.testCaseRanGenerate();
+Temp.testCasePxSort();
