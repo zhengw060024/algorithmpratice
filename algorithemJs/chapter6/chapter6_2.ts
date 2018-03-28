@@ -657,13 +657,14 @@ class DoubleList<T>{
         this.m_sentinel.m_pre = this.m_sentinel;
     }
     private m_sentinel: DbListItem<T> ;
-    // 将一个元素插入到list前端
+    
     getBegin()  : DbListItem<T> {
         return <DbListItem<T>> this.m_sentinel.m_next;
     }
     getEnd() :DbListItem<T>{
         return this.m_sentinel;
     }
+    // 将一个元素插入到list前端
     insert(item: T) {
         const temp :DbListItem<T> = {
             m_next:null,
