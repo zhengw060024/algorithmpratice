@@ -25,20 +25,20 @@ function numIndexSort(arrayInput: Array<number>, nRangeMin: number, nRangeMax: n
     let nCount = 0;
     while (i >= 0) {
         let nTemp2 = arrayTempSave[arrayInput[i] - nRangeMin] - 1;
-        let nTemp1 =  arrayTemp[arrayInput[i] - nRangeMin] - 1;
-        if ((i >= nTemp1) 
+        let nTemp1 = arrayTemp[arrayInput[i] - nRangeMin] - 1;
+        if ((i >= nTemp1)
             && (i <= nTemp2)) {
-                --i;
+            --i;
         } else {
             let temp = arrayInput[i];
-           //console.log(arrayInput[i]);
-           // 交换nID2和i位置的数组
+            //console.log(arrayInput[i]);
+            // 交换nID2和i位置的数组
             const nId2 = arrayTemp[arrayInput[i] - nRangeMin] - 1;
-            if(nId2 < 0) {
+            if (nId2 < 0) {
                 console.log('Error out of range');
                 throw new Error('out of range!!!!!!');
             }
-            console.log(temp,nId2,i);
+            console.log(temp, nId2, i);
             arrayInput[i] = arrayInput[nId2];
             arrayInput[nId2] = temp;
             arrayTemp[temp - nRangeMin] -= 1;
@@ -67,7 +67,7 @@ function numIndexSortError(arrayInput: Array<number>, nRangeMin: number, nRangeM
     for (let i = 0; i < nRange - 1; ++i) {
         arrayTempSave.push(arrayTemp[i]);
     }
-    console.log(`${arrayTemp}`); 
+    console.log(`${arrayTemp}`);
     arrayInput[0] = nRangeMin;
     for (let i = nRange - 1; i > 0; --i) {
         while (arrayTemp[nRange] !== arrayTemp[nRange - 1]) {
@@ -103,16 +103,16 @@ function numIndexSortObj<T extends DataObjWithKey>(arrayInput: Array<T>, nRangeM
     let nCount = 0;
     while (i >= 0) {
         let nTemp2 = arrayTempSave[arrayInput[i].m_key - nRangeMin] - 1;
-        let nTemp1 =  arrayTemp[arrayInput[i].m_key - nRangeMin] - 1;
-        if ((i >= nTemp1) 
+        let nTemp1 = arrayTemp[arrayInput[i].m_key - nRangeMin] - 1;
+        if ((i >= nTemp1)
             && (i <= nTemp2)) {
-                --i;
+            --i;
         } else {
             let temp = arrayInput[i];
-           //console.log(arrayInput[i]);
-           // 交换nID2和i位置的数组
+            //console.log(arrayInput[i]);
+            // 交换nID2和i位置的数组
             const nId2 = arrayTemp[arrayInput[i].m_key - nRangeMin] - 1;
-            if(nId2 < 0) {
+            if (nId2 < 0) {
                 console.log('Error out of range');
                 throw new Error('out of range!!!!!!');
             }
@@ -123,10 +123,18 @@ function numIndexSortObj<T extends DataObjWithKey>(arrayInput: Array<T>, nRangeM
         }
     }
 }
+// 思考题8-3的思考，对于整数，显然使用基数排序，但是对于基数排序，之前的实现是有些问题的，
+// 之前的实现会将原来不存在的位数按照0index作为关键字排序，此外为了维持排序的稳定性，每次
+// 计数排序的过程中都要讲数组拷贝一遍，这太消耗空间了，所以新写一个方法，使用不稳定的原址
+// 计数排序方法，作为基数排序的基础。
+// 这里注意下，设置一个数轴nStartIndex，表示最高位已经被处理的start index，nStartIndex
+// 之前的数据均是有序。
+// 我之前的想法是错误的，基数排序最重要的特点是计数排序必须是稳定的，所以8-3还是只能用基数排序来实现。
+// 对于8-3的第二字符类的处理，采取桶排序方法处理。
 class TestTempItem implements DataObjWithKey {
-    m_key:number;
-    m_singleFlag:number;
-    constructor(key:number,id:number) {
+    m_key: number;
+    m_singleFlag: number;
+    constructor(key: number, id: number) {
         this.m_key = key;
         this.m_singleFlag = id;
     }
@@ -159,12 +167,12 @@ class IndexSortTestCase2 {
         return true;
     }
 
-    private generateObjTempArray(nMin:number,nMax:number,nCount:number) {
-    
-        const arrayOut:Array<TestTempItem> = [];
+    private generateObjTempArray(nMin: number, nMax: number, nCount: number) {
+
+        const arrayOut: Array<TestTempItem> = [];
         const arrayInput = utilityTools.generateRandomArray(nMin, nMax, nCount);
-        for(let i = 0; i < arrayInput.length; ++i) {
-            arrayOut.push(new TestTempItem(arrayInput[i],i));
+        for (let i = 0; i < arrayInput.length; ++i) {
+            arrayOut.push(new TestTempItem(arrayInput[i], i));
         }
         return arrayOut;
     }
@@ -172,33 +180,33 @@ class IndexSortTestCase2 {
         const nMin = 1;
         const nMax = 40;
         const nCount = 200;
-        const arrayTest = this.generateObjTempArray(nMin,nMax,nCount);
+        const arrayTest = this.generateObjTempArray(nMin, nMax, nCount);
         const arraySorted = arrayTest.concat();
-        numIndexSortObj(arraySorted,nMin,nMax);
-        this.checkArrayObjSortRight(arraySorted,arrayTest);
+        numIndexSortObj(arraySorted, nMin, nMax);
+        this.checkArrayObjSortRight(arraySorted, arrayTest);
     }
-    private checkArrayObjSortRight(arraySorted:Array<TestTempItem>,arrayOrgin:Array<TestTempItem>) {
-        if(arraySorted.length !== arrayOrgin.length) {
+    private checkArrayObjSortRight(arraySorted: Array<TestTempItem>, arrayOrgin: Array<TestTempItem>) {
+        if (arraySorted.length !== arrayOrgin.length) {
             console.log('array length is not equal!!!');
             return false;
         }
-        for(let i = 1; i < arraySorted.length; ++i) {
-            if(arraySorted[i-1].m_key > arraySorted[i].m_key) {
+        for (let i = 1; i < arraySorted.length; ++i) {
+            if (arraySorted[i - 1].m_key > arraySorted[i].m_key) {
                 console.log('array order is not right!!!');
                 return false;
             }
         }
-        const arrayTemp1 = arraySorted.concat().sort((data1,data2) => {
+        const arrayTemp1 = arraySorted.concat().sort((data1, data2) => {
             return data1.m_singleFlag - data2.m_singleFlag;
         });
-        const arrayTemp2 =  arrayOrgin.concat().sort((data1,data2) => {
+        const arrayTemp2 = arrayOrgin.concat().sort((data1, data2) => {
             return data1.m_singleFlag - data2.m_singleFlag;
         });
-        for(let i = 0; i< arrayTemp1.length; ++i ) {
-            if(arrayTemp1[i].m_singleFlag !== arrayTemp2[i].m_singleFlag ||
+        for (let i = 0; i < arrayTemp1.length; ++i) {
+            if (arrayTemp1[i].m_singleFlag !== arrayTemp2[i].m_singleFlag ||
                 arrayTemp1[i].m_key !== arrayTemp2[i].m_key) {
-                    console.log('array item change!!!');
-                    return false;
+                console.log('array item change!!!');
+                return false;
             }
         }
         console.log('array sorted right!!!')
@@ -210,5 +218,5 @@ class IndexSortTestCase2 {
     }
 }
 
-const tempCaseIndexSort =  new IndexSortTestCase2();
+const tempCaseIndexSort = new IndexSortTestCase2();
 tempCaseIndexSort.runTestCase();
