@@ -122,14 +122,64 @@ function numIndexSortObj(arrayInput, nRangeMin, nRangeMax) {
         }
     }
 }
-var TestTempItem = (function () {
+// 思考题8-3的思考，对于整数，显然使用基数排序，但是对于基数排序，之前的实现是有些问题的，
+// 之前的实现会将原来不存在的位数按照0index作为关键字排序，此外为了维持排序的稳定性，每次
+// 计数排序的过程中都要讲数组拷贝一遍，这太消耗空间了，所以新写一个方法，使用不稳定的原址
+// 计数排序方法，作为基数排序的基础。
+// 这里注意下，设置一个数轴nStartIndex，表示最高位已经被处理的start index，nStartIndex
+// 之前的数据均是有序。
+// 我之前的想法是错误的，基数排序最重要的特点是计数排序必须是稳定的，所以8-3还是只能用基数排序来实现。
+// 对于8-3的第二字符类的处理，采取桶排序方法处理。
+// 对从a-z的字符做桶排序
+function stringSort(arrayInput) {
+    stringSortHelp(arrayInput, 0);
+}
+function stringSortHelp(arrayInput, nIndexStart) {
+    var helpArray = [];
+    if (arrayInput.length <= 1) {
+        return;
+    }
+    for (var i = 0; i < arrayInput.length; ++i) {
+        if (nIndexStart === arrayInput[i].length) {
+            if (!helpArray[0]) {
+                helpArray[0] = [];
+            }
+            helpArray[0].push(arrayInput[i]);
+        }
+        else {
+            var nIndex = arrayInput[i].charCodeAt(nIndexStart) - 'a'.charCodeAt(0) + 1;
+            if (!helpArray[nIndex]) {
+                helpArray[nIndex] = [];
+            }
+            helpArray[nIndex].push(arrayInput[i]);
+        }
+    }
+    ++nIndexStart;
+    for (var i = 1; i < helpArray.length; ++i) {
+        if (helpArray[i]) {
+            stringSortHelp(helpArray[i], nIndexStart);
+        }
+    }
+    // const arrayOut = [];
+    var k = 0;
+    for (var i = 0; i < helpArray.length; ++i) {
+        if (helpArray[i]) {
+            for (var j = 0; j < helpArray[i].length; ++j) {
+                arrayInput[k] = helpArray[i][j];
+                ++k;
+            }
+        }
+    }
+    // return arrayInput[];
+}
+var TestTempItem = /** @class */ (function () {
     function TestTempItem(key, id) {
         this.m_key = key;
         this.m_singleFlag = id;
     }
     return TestTempItem;
 }());
-var IndexSortTestCase2 = (function () {
+var IndexSortTestCase2 = /** @class */ (function () {
     function IndexSortTestCase2() {
     }
     IndexSortTestCase2.prototype.testCaseItem = function () {
@@ -203,6 +253,20 @@ var IndexSortTestCase2 = (function () {
         console.log('array sorted right!!!');
         return true;
     };
+    IndexSortTestCase2.prototype.testCaseWordsSort = function () {
+        var arrayInput = [];
+        arrayInput.push('fsdafsadf');
+        arrayInput.push('xxxxxxxx');
+        arrayInput.push('');
+        arrayInput.push('fdsaf3dfdsaf');
+        arrayInput.push('');
+        arrayInput.push('dfdaf');
+        arrayInput.push('tsdfasdf');
+        arrayInput.push('hgdfdffds');
+        var arrayTemp = arrayInput.concat();
+        stringSort(arrayTemp);
+        console.log("" + arrayTemp);
+    };
     IndexSortTestCase2.prototype.runTestCase = function () {
         this.testCaseItem();
         this.testCaseObjItem();
@@ -210,4 +274,5 @@ var IndexSortTestCase2 = (function () {
     return IndexSortTestCase2;
 }());
 var tempCaseIndexSort = new IndexSortTestCase2();
-tempCaseIndexSort.runTestCase();
+//tempCaseIndexSort.runTestCase();
+tempCaseIndexSort.testCaseWordsSort();

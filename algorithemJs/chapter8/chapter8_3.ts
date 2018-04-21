@@ -131,6 +131,48 @@ function numIndexSortObj<T extends DataObjWithKey>(arrayInput: Array<T>, nRangeM
 // 之前的数据均是有序。
 // 我之前的想法是错误的，基数排序最重要的特点是计数排序必须是稳定的，所以8-3还是只能用基数排序来实现。
 // 对于8-3的第二字符类的处理，采取桶排序方法处理。
+// 对从a-z的字符做桶排序
+function stringSort(arrayInput:Array<string>) {
+    stringSortHelp(arrayInput,0);
+}
+function stringSortHelp(arrayInput:Array<string>,nIndexStart:number) {
+    const helpArray:Array<Array<string>> = [];
+    if(arrayInput.length <= 1) {
+        return ;
+    }
+    for(let i = 0; i < arrayInput.length; ++i) {
+        if(nIndexStart === arrayInput[i].length) {
+            if(!helpArray[0]) {
+                helpArray[0] = [];
+            }
+            helpArray[0].push(arrayInput[i]);
+        }else {
+            let nIndex = arrayInput[i].charCodeAt(nIndexStart) - 'a'.charCodeAt(0) + 1;
+            if(!helpArray[nIndex]) {
+                helpArray[nIndex] = [];
+            }
+            helpArray[nIndex].push(arrayInput[i]);
+        }
+
+    }
+    ++nIndexStart;
+    for(let i = 1; i < helpArray.length; ++i) {
+        if(helpArray[i]) {
+            stringSortHelp(helpArray[i],nIndexStart);
+        }
+    }
+    // const arrayOut = [];
+    let k = 0;
+    for(let i = 0; i < helpArray.length; ++i) {
+        if(helpArray[i]) {
+            for(let j = 0; j < helpArray[i].length; ++j) {
+                arrayInput[k] = helpArray[i][j];
+                ++k;
+            }
+        }
+    }
+    // return arrayInput[];
+}
 class TestTempItem implements DataObjWithKey {
     m_key: number;
     m_singleFlag: number;
@@ -212,6 +254,21 @@ class IndexSortTestCase2 {
         console.log('array sorted right!!!')
         return true;
     }
+    testCaseWordsSort() {
+        const arrayInput = [];
+        arrayInput.push('fsdafsadf');
+        arrayInput.push('xxxxxxxx');
+        arrayInput.push('');
+        arrayInput.push('fdsaf3dfdsaf');
+        arrayInput.push('')
+        arrayInput.push('dfdaf');
+        arrayInput.push('tsdfasdf');
+        arrayInput.push('hgdfdffds');
+        let arrayTemp = arrayInput.concat();
+        stringSort(arrayTemp);
+        
+        console.log(`${arrayTemp}`);
+    }
     runTestCase() {
         this.testCaseItem();
         this.testCaseObjItem();
@@ -219,4 +276,5 @@ class IndexSortTestCase2 {
 }
 
 const tempCaseIndexSort = new IndexSortTestCase2();
-tempCaseIndexSort.runTestCase();
+//tempCaseIndexSort.runTestCase();
+tempCaseIndexSort.testCaseWordsSort();
