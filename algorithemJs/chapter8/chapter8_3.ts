@@ -207,7 +207,7 @@ function getKettlePairNN(arrayBlue: Array<Kettle>, arrayRed: Array<Kettle>) {
     return arrayOut;
 }
 function getKettlePairLGN(arrayBlue: Array<Kettle>, arrayRed: Array<Kettle>) {
-
+    getKettePairLGN_Imp(arrayBlue,arrayRed,0,arrayBlue.length - 1);
 }
 // 该函数将对应的瓶子分成两组
 function departKetteLGN(arrayBlue: Array<Kettle>, arrayRed: Array<Kettle>
@@ -240,6 +240,7 @@ function departKetteLGN(arrayBlue: Array<Kettle>, arrayRed: Array<Kettle>
             }
         }
         // 对红色瓶子进行划分
+        // console.log(j);
         radix = arrayBlue[j - 1];
         j = startIndex;
         for(let i = startIndex; i <= endIndex; ++i) {
@@ -263,6 +264,7 @@ function departKetteLGN(arrayBlue: Array<Kettle>, arrayRed: Array<Kettle>
                 ++j;
             }
         }
+        // console.log(j);
         return j - 1;
 }
 function getKettePairLGN_Imp(arrayBlue: Array<Kettle>, arrayRed: Array<Kettle>
@@ -369,9 +371,50 @@ class IndexSortTestCase2 {
         arrayInput.push('hgdfdffds');
         let arrayTemp = arrayInput.concat();
         stringSort(arrayTemp);
-
         console.log(`${arrayTemp}`);
     }
+    testCaseKetteSort() {
+        
+        // 生成0-1000中的10个不同的数字
+        const arrayNum = [];
+        for(let i = 0; i < 1000; ++i) {
+            arrayNum.push(i + 1);
+        }
+        const nTestNum = 10;
+        for(let i = 0; i< nTestNum; ++i) {
+            const nNum = utilityTools.generateRandom(i,999);
+            const nTemp = arrayNum[i];
+            arrayNum[i] = arrayNum[nNum];
+            arrayNum[nNum] = nTemp;
+        }
+        // const arrayInputRed = [];
+        const arrayInput = arrayNum.slice(0,nTestNum);
+        //
+        const arrayBlue = [];
+        for(let i = 0; i < nTestNum; ++i) {
+            arrayBlue.push(new Kettle(arrayInput[i],Kettle_Color.blue));
+        }
+        for(let i = 0; i < nTestNum; ++i) {
+            const nNum = utilityTools.generateRandom(i,nTestNum - 1);
+            const nTemp = arrayInput[i];
+            arrayInput[i] = arrayInput[nNum];
+            arrayInput[nNum] = nTemp;
+        }
+        const arrayRed = [];
+        for(let i = 0; i< nTestNum; ++i) {
+            arrayRed.push(new Kettle(arrayInput[i],Kettle_Color.red));
+        }
+        const arrayResult = getKettlePairNN(arrayBlue,arrayRed);
+        for(let i = 0; i < arrayResult.length; ++i) {
+            console.log(arrayResult[i]);
+        }
+        console.log('fdsafsadf');
+        getKettlePairLGN(arrayBlue,arrayRed);
+        for(let i = 0; i < arrayBlue.length; ++i) {
+            console.log([arrayBlue[i],arrayRed[i]]);
+        }
+    }
+    
     runTestCase() {
         this.testCaseItem();
         this.testCaseObjItem();
@@ -379,5 +422,5 @@ class IndexSortTestCase2 {
 }
 
 const tempCaseIndexSort = new IndexSortTestCase2();
-//tempCaseIndexSort.runTestCase();
-tempCaseIndexSort.testCaseWordsSort();
+// tempCaseIndexSort.testCaseWordsSort();
+tempCaseIndexSort.testCaseKetteSort();

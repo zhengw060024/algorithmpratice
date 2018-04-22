@@ -172,6 +172,109 @@ function stringSortHelp(arrayInput, nIndexStart) {
     }
     // return arrayInput[];
 }
+// 算法导论思考题8-4
+// n*n的算法很简单，考虑下n*lgn，使用类似快排的算法
+// 在第1次配对时，取一个红色的水壶将蓝色的水壶分成两队，比次红色水壶大的
+// 放右边，比它小的放左边。在将得到的对应的蓝色水壶红色水壶分成两队，然后在
+// 对左边和右边的子水壶队列重复这个过程。
+var Kettle_Color;
+(function (Kettle_Color) {
+    Kettle_Color[Kettle_Color["red"] = 0] = "red";
+    Kettle_Color[Kettle_Color["blue"] = 1] = "blue";
+})(Kettle_Color || (Kettle_Color = {}));
+var Kettle = /** @class */ (function () {
+    function Kettle(volume, color) {
+        this.m_color = color;
+        this.m_volume = volume;
+    }
+    return Kettle;
+}());
+function getKettlePairNN(arrayBlue, arrayRed) {
+    var arrayOut = [];
+    if (arrayBlue.length !== arrayRed.length) {
+        throw new Error('Error input!');
+    }
+    else {
+        for (var i = 0; i < arrayBlue.length; ++i) {
+            for (var j = 0; j < arrayRed.length; ++j)
+                if (arrayBlue[i].m_volume === arrayRed[j].m_volume) {
+                    arrayOut.push([arrayBlue[i], arrayRed[j]]);
+                }
+        }
+    }
+    return arrayOut;
+}
+function getKettlePairLGN(arrayBlue, arrayRed) {
+    getKettePairLGN_Imp(arrayBlue, arrayRed, 0, arrayBlue.length - 1);
+}
+// 该函数将对应的瓶子分成两组
+function departKetteLGN(arrayBlue, arrayRed, startIndex, endIndex) {
+    var bEqualHappen = false;
+    var radix = arrayRed[startIndex];
+    // j表示第一个大于radix的坐标
+    var j = startIndex;
+    //对蓝色瓶子进行划分
+    for (var i = startIndex; i <= endIndex; ++i) {
+        if (arrayBlue[i].m_volume < radix.m_volume) {
+            if (bEqualHappen) {
+                var nTemp = arrayBlue[i];
+                arrayBlue[i] = arrayBlue[j];
+                arrayBlue[j] = arrayBlue[j - 1];
+                arrayBlue[j - 1] = nTemp;
+            }
+            else {
+                var nTemp = arrayBlue[i];
+                arrayBlue[i] = arrayBlue[j];
+                arrayBlue[j] = nTemp;
+            }
+            //这里有问题
+            ++j;
+        }
+        else if (arrayBlue[i].m_volume === radix.m_volume) {
+            var temp = arrayBlue[j];
+            arrayBlue[j] = arrayBlue[i];
+            arrayBlue[i] = temp;
+            bEqualHappen = true;
+            ++j;
+        }
+    }
+    // 对红色瓶子进行划分
+    // console.log(j);
+    radix = arrayBlue[j - 1];
+    j = startIndex;
+    for (var i = startIndex; i <= endIndex; ++i) {
+        if (arrayRed[i].m_volume < radix.m_volume) {
+            if (bEqualHappen) {
+                var nTemp = arrayRed[i];
+                arrayRed[i] = arrayRed[j];
+                arrayRed[j] = arrayRed[j - 1];
+                arrayRed[j - 1] = nTemp;
+            }
+            else {
+                var nTemp = arrayRed[i];
+                arrayRed[i] = arrayRed[j];
+                arrayRed[j] = nTemp;
+            }
+            ++j;
+        }
+        else if (arrayRed[i].m_volume === radix.m_volume) {
+            var temp = arrayRed[j];
+            arrayRed[j] = arrayRed[i];
+            arrayRed[i] = temp;
+            bEqualHappen = true;
+            ++j;
+        }
+    }
+    // console.log(j);
+    return j - 1;
+}
+function getKettePairLGN_Imp(arrayBlue, arrayRed, startIndex, endIndex) {
+    if (startIndex < endIndex) {
+        var middle = departKetteLGN(arrayBlue, arrayRed, startIndex, endIndex);
+        getKettePairLGN_Imp(arrayBlue, arrayRed, startIndex, middle - 1);
+        getKettePairLGN_Imp(arrayBlue, arrayRed, middle + 1, endIndex);
+    }
+}
 var TestTempItem = /** @class */ (function () {
     function TestTempItem(key, id) {
         this.m_key = key;
@@ -270,6 +373,46 @@ var IndexSortTestCase2 = /** @class */ (function () {
         stringSort(arrayTemp);
         console.log("" + arrayTemp);
     };
+    IndexSortTestCase2.prototype.testCaseKetteSort = function () {
+        // 生成0-1000中的10个不同的数字
+        var arrayNum = [];
+        for (var i = 0; i < 1000; ++i) {
+            arrayNum.push(i + 1);
+        }
+        var nTestNum = 10;
+        for (var i = 0; i < nTestNum; ++i) {
+            var nNum = utilitytools_1["default"].generateRandom(i, 999);
+            var nTemp = arrayNum[i];
+            arrayNum[i] = arrayNum[nNum];
+            arrayNum[nNum] = nTemp;
+        }
+        // const arrayInputRed = [];
+        var arrayInput = arrayNum.slice(0, nTestNum);
+        //
+        var arrayBlue = [];
+        for (var i = 0; i < nTestNum; ++i) {
+            arrayBlue.push(new Kettle(arrayInput[i], Kettle_Color.blue));
+        }
+        for (var i = 0; i < nTestNum; ++i) {
+            var nNum = utilitytools_1["default"].generateRandom(i, nTestNum - 1);
+            var nTemp = arrayInput[i];
+            arrayInput[i] = arrayInput[nNum];
+            arrayInput[nNum] = nTemp;
+        }
+        var arrayRed = [];
+        for (var i = 0; i < nTestNum; ++i) {
+            arrayRed.push(new Kettle(arrayInput[i], Kettle_Color.red));
+        }
+        var arrayResult = getKettlePairNN(arrayBlue, arrayRed);
+        for (var i = 0; i < arrayResult.length; ++i) {
+            console.log(arrayResult[i]);
+        }
+        console.log('fdsafsadf');
+        getKettlePairLGN(arrayBlue, arrayRed);
+        for (var i = 0; i < arrayBlue.length; ++i) {
+            console.log([arrayBlue[i], arrayRed[i]]);
+        }
+    };
     IndexSortTestCase2.prototype.runTestCase = function () {
         this.testCaseItem();
         this.testCaseObjItem();
@@ -277,5 +420,5 @@ var IndexSortTestCase2 = /** @class */ (function () {
     return IndexSortTestCase2;
 }());
 var tempCaseIndexSort = new IndexSortTestCase2();
-//tempCaseIndexSort.runTestCase();
-tempCaseIndexSort.testCaseWordsSort();
+// tempCaseIndexSort.testCaseWordsSort();
+tempCaseIndexSort.testCaseKetteSort();
