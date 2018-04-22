@@ -255,6 +255,9 @@ var IndexSortTestCase2 = /** @class */ (function () {
     };
     IndexSortTestCase2.prototype.testCaseWordsSort = function () {
         var arrayInput = [];
+        arrayInput.push('ab');
+        arrayInput.push('a');
+        arrayInput.push('b');
         arrayInput.push('fsdafsadf');
         arrayInput.push('xxxxxxxx');
         arrayInput.push('');

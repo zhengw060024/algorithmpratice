@@ -132,23 +132,23 @@ function numIndexSortObj<T extends DataObjWithKey>(arrayInput: Array<T>, nRangeM
 // 我之前的想法是错误的，基数排序最重要的特点是计数排序必须是稳定的，所以8-3还是只能用基数排序来实现。
 // 对于8-3的第二字符类的处理，采取桶排序方法处理。
 // 对从a-z的字符做桶排序
-function stringSort(arrayInput:Array<string>) {
-    stringSortHelp(arrayInput,0);
+function stringSort(arrayInput: Array<string>) {
+    stringSortHelp(arrayInput, 0);
 }
-function stringSortHelp(arrayInput:Array<string>,nIndexStart:number) {
-    const helpArray:Array<Array<string>> = [];
-    if(arrayInput.length <= 1) {
-        return ;
+function stringSortHelp(arrayInput: Array<string>, nIndexStart: number) {
+    const helpArray: Array<Array<string>> = [];
+    if (arrayInput.length <= 1) {
+        return;
     }
-    for(let i = 0; i < arrayInput.length; ++i) {
-        if(nIndexStart === arrayInput[i].length) {
-            if(!helpArray[0]) {
+    for (let i = 0; i < arrayInput.length; ++i) {
+        if (nIndexStart === arrayInput[i].length) {
+            if (!helpArray[0]) {
                 helpArray[0] = [];
             }
             helpArray[0].push(arrayInput[i]);
-        }else {
+        } else {
             let nIndex = arrayInput[i].charCodeAt(nIndexStart) - 'a'.charCodeAt(0) + 1;
-            if(!helpArray[nIndex]) {
+            if (!helpArray[nIndex]) {
                 helpArray[nIndex] = [];
             }
             helpArray[nIndex].push(arrayInput[i]);
@@ -156,16 +156,16 @@ function stringSortHelp(arrayInput:Array<string>,nIndexStart:number) {
 
     }
     ++nIndexStart;
-    for(let i = 1; i < helpArray.length; ++i) {
-        if(helpArray[i]) {
-            stringSortHelp(helpArray[i],nIndexStart);
+    for (let i = 1; i < helpArray.length; ++i) {
+        if (helpArray[i]) {
+            stringSortHelp(helpArray[i], nIndexStart);
         }
     }
     // const arrayOut = [];
     let k = 0;
-    for(let i = 0; i < helpArray.length; ++i) {
-        if(helpArray[i]) {
-            for(let j = 0; j < helpArray[i].length; ++j) {
+    for (let i = 0; i < helpArray.length; ++i) {
+        if (helpArray[i]) {
+            for (let j = 0; j < helpArray[i].length; ++j) {
                 arrayInput[k] = helpArray[i][j];
                 ++k;
             }
@@ -173,6 +173,106 @@ function stringSortHelp(arrayInput:Array<string>,nIndexStart:number) {
     }
     // return arrayInput[];
 }
+
+// 算法导论思考题8-4
+// n*n的算法很简单，考虑下n*lgn，使用类似快排的算法
+// 在第1次配对时，取一个红色的水壶将蓝色的水壶分成两队，比次红色水壶大的
+// 放右边，比它小的放左边。在将得到的对应的蓝色水壶红色水壶分成两队，然后在
+// 对左边和右边的子水壶队列重复这个过程。
+enum Kettle_Color {
+    red = 0,
+    blue
+}
+class Kettle {
+    constructor(volume: number, color: Kettle_Color) {
+        this.m_color = color;
+        this.m_volume = volume;
+
+    }
+    m_color: Kettle_Color
+    m_volume: number
+}
+function getKettlePairNN(arrayBlue: Array<Kettle>, arrayRed: Array<Kettle>) {
+    const arrayOut:Array<[Kettle,Kettle]> = [];
+    if(arrayBlue.length !== arrayRed.length) {
+        throw new Error('Error input!');
+    } else {
+        for(let i = 0; i < arrayBlue.length; ++i) {
+            for(let j = 0; j < arrayRed.length; ++j)
+            if(arrayBlue[i].m_volume === arrayRed[j].m_volume) {
+                arrayOut.push([arrayBlue[i],arrayRed[j]]);
+            }
+        }
+    }
+    return arrayOut;
+}
+function getKettlePairLGN(arrayBlue: Array<Kettle>, arrayRed: Array<Kettle>) {
+
+}
+// 该函数将对应的瓶子分成两组
+function departKetteLGN(arrayBlue: Array<Kettle>, arrayRed: Array<Kettle>
+    ,startIndex:number,endIndex:number) {
+        let bEqualHappen = false;
+        let radix = arrayRed[startIndex];
+        // j表示第一个大于radix的坐标
+        let j = startIndex;
+        //对蓝色瓶子进行划分
+        for(let i = startIndex; i <= endIndex; ++i) {
+            if(arrayBlue[i].m_volume  < radix.m_volume) {
+                if(bEqualHappen) {
+                    let nTemp = arrayBlue[i];
+                    arrayBlue[i] = arrayBlue[j];
+                    arrayBlue[j] = arrayBlue[j - 1];
+                    arrayBlue[j - 1] = nTemp;
+                }else {
+                    let nTemp = arrayBlue[i];
+                    arrayBlue[i] = arrayBlue[j];
+                    arrayBlue[j] = nTemp;
+                }
+                //这里有问题
+                ++j;
+            }else if(arrayBlue[i].m_volume  === radix.m_volume) {
+                const temp = arrayBlue[j];
+                arrayBlue[j] = arrayBlue[i];
+                arrayBlue[i] = temp;
+                bEqualHappen = true;
+                ++j;
+            }
+        }
+        // 对红色瓶子进行划分
+        radix = arrayBlue[j - 1];
+        j = startIndex;
+        for(let i = startIndex; i <= endIndex; ++i) {
+            if(arrayRed[i].m_volume  < radix.m_volume) {
+                if(bEqualHappen) {
+                    let nTemp = arrayRed[i];
+                    arrayRed[i] = arrayRed[j];
+                    arrayRed[j] = arrayRed[j - 1];
+                    arrayRed[j - 1] = nTemp;
+                }else {
+                    let nTemp = arrayRed[i];
+                    arrayRed[i] = arrayRed[j];
+                    arrayRed[j] = nTemp;
+                }
+                ++j;
+            }else if(arrayRed[i].m_volume  === radix.m_volume) {
+                const temp = arrayRed[j];
+                arrayRed[j] = arrayRed[i];
+                arrayRed[i] = temp;
+                bEqualHappen = true;
+                ++j;
+            }
+        }
+        return j - 1;
+}
+function getKettePairLGN_Imp(arrayBlue: Array<Kettle>, arrayRed: Array<Kettle>
+    ,startIndex:number,endIndex:number) {
+        if(startIndex < endIndex) {
+            let middle = departKetteLGN(arrayBlue,arrayRed,startIndex,endIndex);
+            getKettePairLGN_Imp(arrayBlue,arrayRed,startIndex,middle - 1);
+            getKettePairLGN_Imp(arrayBlue,arrayRed,middle + 1, endIndex);
+        }
+    }
 class TestTempItem implements DataObjWithKey {
     m_key: number;
     m_singleFlag: number;
@@ -256,6 +356,9 @@ class IndexSortTestCase2 {
     }
     testCaseWordsSort() {
         const arrayInput = [];
+        arrayInput.push('ab');
+        arrayInput.push('a');
+        arrayInput.push('b');
         arrayInput.push('fsdafsadf');
         arrayInput.push('xxxxxxxx');
         arrayInput.push('');
@@ -266,7 +369,7 @@ class IndexSortTestCase2 {
         arrayInput.push('hgdfdffds');
         let arrayTemp = arrayInput.concat();
         stringSort(arrayTemp);
-        
+
         console.log(`${arrayTemp}`);
     }
     runTestCase() {
