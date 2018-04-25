@@ -1,4 +1,5 @@
 import utilityTools from "./utilitytools";
+import { noConflict } from "q";
 // 算法导论思考题解答：
 //#计数排序，原址排序方法，这种方法不是稳定的！！！！
 function numIndexSort(arrayInput: Array<number>, nRangeMin: number, nRangeMax: number) {
@@ -193,88 +194,179 @@ class Kettle {
     m_volume: number
 }
 function getKettlePairNN(arrayBlue: Array<Kettle>, arrayRed: Array<Kettle>) {
-    const arrayOut:Array<[Kettle,Kettle]> = [];
-    if(arrayBlue.length !== arrayRed.length) {
+    const arrayOut: Array<[Kettle, Kettle]> = [];
+    if (arrayBlue.length !== arrayRed.length) {
         throw new Error('Error input!');
     } else {
-        for(let i = 0; i < arrayBlue.length; ++i) {
-            for(let j = 0; j < arrayRed.length; ++j)
-            if(arrayBlue[i].m_volume === arrayRed[j].m_volume) {
-                arrayOut.push([arrayBlue[i],arrayRed[j]]);
-            }
+        for (let i = 0; i < arrayBlue.length; ++i) {
+            for (let j = 0; j < arrayRed.length; ++j)
+                if (arrayBlue[i].m_volume === arrayRed[j].m_volume) {
+                    arrayOut.push([arrayBlue[i], arrayRed[j]]);
+                }
         }
     }
     return arrayOut;
 }
 function getKettlePairLGN(arrayBlue: Array<Kettle>, arrayRed: Array<Kettle>) {
-    getKettePairLGN_Imp(arrayBlue,arrayRed,0,arrayBlue.length - 1);
+    getKettePairLGN_Imp(arrayBlue, arrayRed, 0, arrayBlue.length - 1);
 }
 // 该函数将对应的瓶子分成两组
 function departKetteLGN(arrayBlue: Array<Kettle>, arrayRed: Array<Kettle>
-    ,startIndex:number,endIndex:number) {
-        let bEqualHappen = false;
-        let radix = arrayRed[startIndex];
-        // j表示第一个大于radix的坐标
-        let j = startIndex;
-        //对蓝色瓶子进行划分
-        for(let i = startIndex; i <= endIndex; ++i) {
-            if(arrayBlue[i].m_volume  < radix.m_volume) {
-                if(bEqualHappen) {
-                    let nTemp = arrayBlue[i];
-                    arrayBlue[i] = arrayBlue[j];
-                    arrayBlue[j] = arrayBlue[j - 1];
-                    arrayBlue[j - 1] = nTemp;
-                }else {
-                    let nTemp = arrayBlue[i];
-                    arrayBlue[i] = arrayBlue[j];
-                    arrayBlue[j] = nTemp;
-                }
-                //这里有问题
-                ++j;
-            }else if(arrayBlue[i].m_volume  === radix.m_volume) {
-                const temp = arrayBlue[j];
-                arrayBlue[j] = arrayBlue[i];
-                arrayBlue[i] = temp;
-                bEqualHappen = true;
-                ++j;
+    , startIndex: number, endIndex: number) {
+    let bEqualHappen = false;
+    let radix = arrayRed[startIndex];
+    // j表示第一个大于radix的坐标
+    let j = startIndex;
+    //对蓝色瓶子进行划分
+    for (let i = startIndex; i <= endIndex; ++i) {
+        if (arrayBlue[i].m_volume < radix.m_volume) {
+            if (bEqualHappen) {
+                let nTemp = arrayBlue[i];
+                arrayBlue[i] = arrayBlue[j];
+                arrayBlue[j] = arrayBlue[j - 1];
+                arrayBlue[j - 1] = nTemp;
+            } else {
+                let nTemp = arrayBlue[i];
+                arrayBlue[i] = arrayBlue[j];
+                arrayBlue[j] = nTemp;
             }
-        }
-        // 对红色瓶子进行划分
-        // console.log(j);
-        radix = arrayBlue[j - 1];
-        j = startIndex;
-        for(let i = startIndex; i <= endIndex; ++i) {
-            if(arrayRed[i].m_volume  < radix.m_volume) {
-                if(bEqualHappen) {
-                    let nTemp = arrayRed[i];
-                    arrayRed[i] = arrayRed[j];
-                    arrayRed[j] = arrayRed[j - 1];
-                    arrayRed[j - 1] = nTemp;
-                }else {
-                    let nTemp = arrayRed[i];
-                    arrayRed[i] = arrayRed[j];
-                    arrayRed[j] = nTemp;
-                }
-                ++j;
-            }else if(arrayRed[i].m_volume  === radix.m_volume) {
-                const temp = arrayRed[j];
-                arrayRed[j] = arrayRed[i];
-                arrayRed[i] = temp;
-                bEqualHappen = true;
-                ++j;
-            }
-        }
-        // console.log(j);
-        return j - 1;
-}
-function getKettePairLGN_Imp(arrayBlue: Array<Kettle>, arrayRed: Array<Kettle>
-    ,startIndex:number,endIndex:number) {
-        if(startIndex < endIndex) {
-            let middle = departKetteLGN(arrayBlue,arrayRed,startIndex,endIndex);
-            getKettePairLGN_Imp(arrayBlue,arrayRed,startIndex,middle - 1);
-            getKettePairLGN_Imp(arrayBlue,arrayRed,middle + 1, endIndex);
+            //这里有问题
+            ++j;
+        } else if (arrayBlue[i].m_volume === radix.m_volume) {
+            const temp = arrayBlue[j];
+            arrayBlue[j] = arrayBlue[i];
+            arrayBlue[i] = temp;
+            bEqualHappen = true;
+            ++j;
         }
     }
+    // 对红色瓶子进行划分
+    // console.log(j);
+    radix = arrayBlue[j - 1];
+    j = startIndex;
+    for (let i = startIndex; i <= endIndex; ++i) {
+        if (arrayRed[i].m_volume < radix.m_volume) {
+            if (bEqualHappen) {
+                let nTemp = arrayRed[i];
+                arrayRed[i] = arrayRed[j];
+                arrayRed[j] = arrayRed[j - 1];
+                arrayRed[j - 1] = nTemp;
+            } else {
+                let nTemp = arrayRed[i];
+                arrayRed[i] = arrayRed[j];
+                arrayRed[j] = nTemp;
+            }
+            ++j;
+        } else if (arrayRed[i].m_volume === radix.m_volume) {
+            const temp = arrayRed[j];
+            arrayRed[j] = arrayRed[i];
+            arrayRed[i] = temp;
+            bEqualHappen = true;
+            ++j;
+        }
+    }
+    // console.log(j);
+    return j - 1;
+}
+function getKettePairLGN_Imp(arrayBlue: Array<Kettle>, arrayRed: Array<Kettle>
+    , startIndex: number, endIndex: number) {
+    if (startIndex < endIndex) {
+        let middle = departKetteLGN(arrayBlue, arrayRed, startIndex, endIndex);
+        getKettePairLGN_Imp(arrayBlue, arrayRed, startIndex, middle - 1);
+        getKettePairLGN_Imp(arrayBlue, arrayRed, middle + 1, endIndex);
+    }
+}
+// 算法导论思考题8-5：证明过程很简单，将两边的系数乘以k就可以了。
+// 思路，按照k的间距，将数据分成k组，可以
+// 将每组数据拷贝到不同数组进行排序，然后在整合起来，
+// 也可以在原址上对每组进行排序，这样稍微有些复杂，中间要采用堆排序的方法，
+// 这种方法需要注意边界条件的处理。
+function averageSortSimple(arrayInput: Array<number>, k: number) {
+    const arrayHelp: Array<Array<number>> = [];
+    for (let i = 0; i < k; ++i) {
+        arrayHelp.push([]);
+    }
+    for (let i = 0; i < arrayInput.length; ++i) {
+        let nIndex = i % k;
+        arrayHelp[nIndex].push(arrayInput[i]);
+    }
+    arrayHelp.forEach(item => {
+        item.sort((a, b) => {
+            return a - b;
+        });
+    });
+    let nTotal = 0;
+    const arrayOut = [];
+    while (true) {
+        let t = 0;
+        for (let i = 0; i < arrayHelp.length; ++i) {
+            arrayOut.push(arrayHelp[i][t]);
+            ++nTotal;
+            if (nTotal === arrayInput.length) {
+                return arrayOut;
+            }
+        }
+        ++t;
+    }
+}
+// 原址的方法
+function averageSort(arrayInput: Array<number>,nKCount:number) {
+    let nNum =  Math.floor((arrayInput.length - 1)/nKCount);
+    let nMod = (arrayInput.length - 1) % nKCount;
+    for(let i = 0; i< nKCount; ++i) {
+        if(i <= nMod) {
+            heapSort(arrayInput,nNum + 1,nKCount,i);
+        } else {
+            heapSort(arrayInput,nNum,nKCount,i);
+        }
+    }
+}
+function getTrueIndex(index:number,kCount:number,modNum:number) {
+    return index * kCount + modNum;
+}
+function ajustMaxHeapNoRecur( arrayHeap: Array<number>,nStartIndex: number,nEndIndex:number,
+kCount:number,modNum:number) {
+    while (nStartIndex < nEndIndex) {
+        const leftChild = nStartIndex * 2 + 1;
+        const rightChild = nStartIndex * 2 + 2;
+        if (leftChild > nEndIndex) {
+            return;
+        }
+        let nNextIndex = leftChild;
+        if (rightChild <= nEndIndex) {
+            if (arrayHeap[getTrueIndex(rightChild,kCount,modNum)] > arrayHeap[getTrueIndex(leftChild,kCount,modNum)]) {
+                nNextIndex = rightChild;
+            }
+        }
+        if (arrayHeap[getTrueIndex(nStartIndex,kCount,modNum)] < arrayHeap[getTrueIndex(nNextIndex,kCount,modNum)]) {
+            const temp = arrayHeap[getTrueIndex(nStartIndex,kCount,modNum)];
+            arrayHeap[getTrueIndex(nStartIndex,kCount,modNum)] = arrayHeap[getTrueIndex(nNextIndex,kCount,modNum)];
+            arrayHeap[getTrueIndex(nNextIndex,kCount,modNum)] = temp;
+            nStartIndex = nNextIndex;
+        } else {
+            return;
+        }
+    }
+    
+}
+function makeMaxHeapNoRecur(arrayInput: Array<number>,nEndIndex:number,
+    kCount:number,modNum:number) {
+    const nStart = Math.floor((nEndIndex - 1) / 2);
+    for (let index = nStart; index >= 0; --index) {
+        ajustMaxHeapNoRecur(arrayInput,index,nEndIndex,kCount,modNum);
+    }
+}
+function heapSort(arrayInput:Array<number>,nEndIndex:number,
+    kCount:number,modNum:number) {
+    makeMaxHeapNoRecur(arrayInput,nEndIndex,kCount,modNum);
+    for (let i = nEndIndex; i > 0; --i) {
+        const Temp = arrayInput[getTrueIndex(0,kCount,modNum)];
+        arrayInput[getTrueIndex(0,kCount,modNum)] = arrayInput[getTrueIndex(i,kCount,modNum)];
+        arrayInput[getTrueIndex(i,kCount,modNum)] = Temp;
+        ajustMaxHeapNoRecur(arrayInput,0,i - 1,kCount,modNum);
+    }
+}
+
 class TestTempItem implements DataObjWithKey {
     m_key: number;
     m_singleFlag: number;
@@ -374,47 +466,47 @@ class IndexSortTestCase2 {
         console.log(`${arrayTemp}`);
     }
     testCaseKetteSort() {
-        
+
         // 生成0-1000中的10个不同的数字
         const arrayNum = [];
-        for(let i = 0; i < 1000; ++i) {
+        for (let i = 0; i < 1000; ++i) {
             arrayNum.push(i + 1);
         }
         const nTestNum = 10;
-        for(let i = 0; i< nTestNum; ++i) {
-            const nNum = utilityTools.generateRandom(i,999);
+        for (let i = 0; i < nTestNum; ++i) {
+            const nNum = utilityTools.generateRandom(i, 999);
             const nTemp = arrayNum[i];
             arrayNum[i] = arrayNum[nNum];
             arrayNum[nNum] = nTemp;
         }
         // const arrayInputRed = [];
-        const arrayInput = arrayNum.slice(0,nTestNum);
+        const arrayInput = arrayNum.slice(0, nTestNum);
         //
         const arrayBlue = [];
-        for(let i = 0; i < nTestNum; ++i) {
-            arrayBlue.push(new Kettle(arrayInput[i],Kettle_Color.blue));
+        for (let i = 0; i < nTestNum; ++i) {
+            arrayBlue.push(new Kettle(arrayInput[i], Kettle_Color.blue));
         }
-        for(let i = 0; i < nTestNum; ++i) {
-            const nNum = utilityTools.generateRandom(i,nTestNum - 1);
+        for (let i = 0; i < nTestNum; ++i) {
+            const nNum = utilityTools.generateRandom(i, nTestNum - 1);
             const nTemp = arrayInput[i];
             arrayInput[i] = arrayInput[nNum];
             arrayInput[nNum] = nTemp;
         }
         const arrayRed = [];
-        for(let i = 0; i< nTestNum; ++i) {
-            arrayRed.push(new Kettle(arrayInput[i],Kettle_Color.red));
+        for (let i = 0; i < nTestNum; ++i) {
+            arrayRed.push(new Kettle(arrayInput[i], Kettle_Color.red));
         }
-        const arrayResult = getKettlePairNN(arrayBlue,arrayRed);
-        for(let i = 0; i < arrayResult.length; ++i) {
+        const arrayResult = getKettlePairNN(arrayBlue, arrayRed);
+        for (let i = 0; i < arrayResult.length; ++i) {
             console.log(arrayResult[i]);
         }
         console.log('fdsafsadf');
-        getKettlePairLGN(arrayBlue,arrayRed);
-        for(let i = 0; i < arrayBlue.length; ++i) {
-            console.log([arrayBlue[i],arrayRed[i]]);
+        getKettlePairLGN(arrayBlue, arrayRed);
+        for (let i = 0; i < arrayBlue.length; ++i) {
+            console.log([arrayBlue[i], arrayRed[i]]);
         }
     }
-    
+
     runTestCase() {
         this.testCaseItem();
         this.testCaseObjItem();

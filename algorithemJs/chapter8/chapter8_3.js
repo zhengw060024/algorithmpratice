@@ -182,7 +182,7 @@ var Kettle_Color;
     Kettle_Color[Kettle_Color["red"] = 0] = "red";
     Kettle_Color[Kettle_Color["blue"] = 1] = "blue";
 })(Kettle_Color || (Kettle_Color = {}));
-var Kettle = /** @class */ (function () {
+var Kettle = (function () {
     function Kettle(volume, color) {
         this.m_color = color;
         this.m_volume = volume;
@@ -275,14 +275,14 @@ function getKettePairLGN_Imp(arrayBlue, arrayRed, startIndex, endIndex) {
         getKettePairLGN_Imp(arrayBlue, arrayRed, middle + 1, endIndex);
     }
 }
-var TestTempItem = /** @class */ (function () {
+var TestTempItem = (function () {
     function TestTempItem(key, id) {
         this.m_key = key;
         this.m_singleFlag = id;
     }
     return TestTempItem;
 }());
-var IndexSortTestCase2 = /** @class */ (function () {
+var IndexSortTestCase2 = (function () {
     function IndexSortTestCase2() {
     }
     IndexSortTestCase2.prototype.testCaseItem = function () {
