@@ -275,6 +275,95 @@ function getKettePairLGN_Imp(arrayBlue, arrayRed, startIndex, endIndex) {
         getKettePairLGN_Imp(arrayBlue, arrayRed, middle + 1, endIndex);
     }
 }
+// 算法导论思考题8-5：证明过程很简单，将两边的系数乘以k就可以了。
+// 思路，按照k的间距，将数据分成k组，可以
+// 将每组数据拷贝到不同数组进行排序，然后在整合起来，
+// 也可以在原址上对每组进行排序，这样稍微有些复杂，中间要采用堆排序的方法，
+// 这种方法需要注意边界条件的处理。
+function averageSortSimple(arrayInput, k) {
+    var arrayHelp = [];
+    for (var i = 0; i < k; ++i) {
+        arrayHelp.push([]);
+    }
+    for (var i = 0; i < arrayInput.length; ++i) {
+        var nIndex = i % k;
+        arrayHelp[nIndex].push(arrayInput[i]);
+    }
+    arrayHelp.forEach(function (item) {
+        item.sort(function (a, b) {
+            return a - b;
+        });
+    });
+    var nTotal = 0;
+    var arrayOut = [];
+    var t = 0;
+    while (true) {
+        for (var i = 0; i < arrayHelp.length; ++i) {
+            arrayOut.push(arrayHelp[i][t]);
+            ++nTotal;
+            if (nTotal === arrayInput.length) {
+                return arrayOut;
+            }
+        }
+        ++t;
+    }
+}
+// 原址的方法
+function averageSort(arrayInput, nKCount) {
+    var nNum = Math.floor((arrayInput.length - 1) / nKCount);
+    var nMod = (arrayInput.length - 1) % nKCount;
+    for (var i = 0; i < nKCount; ++i) {
+        if (i <= nMod) {
+            heapSort(arrayInput, nNum, nKCount, i);
+            // console.log(`${arrayInput}`);
+        }
+        else {
+            heapSort(arrayInput, nNum - 1, nKCount, i);
+        }
+    }
+}
+function getTrueIndex(index, kCount, modNum) {
+    return index * kCount + modNum;
+}
+function ajustMaxHeapNoRecur(arrayHeap, nStartIndex, nEndIndex, kCount, modNum) {
+    while (nStartIndex < nEndIndex) {
+        var leftChild = nStartIndex * 2 + 1;
+        var rightChild = nStartIndex * 2 + 2;
+        if (leftChild > nEndIndex) {
+            return;
+        }
+        var nNextIndex = leftChild;
+        if (rightChild <= nEndIndex) {
+            if (arrayHeap[getTrueIndex(rightChild, kCount, modNum)] > arrayHeap[getTrueIndex(leftChild, kCount, modNum)]) {
+                nNextIndex = rightChild;
+            }
+        }
+        if (arrayHeap[getTrueIndex(nStartIndex, kCount, modNum)] < arrayHeap[getTrueIndex(nNextIndex, kCount, modNum)]) {
+            var temp = arrayHeap[getTrueIndex(nStartIndex, kCount, modNum)];
+            arrayHeap[getTrueIndex(nStartIndex, kCount, modNum)] = arrayHeap[getTrueIndex(nNextIndex, kCount, modNum)];
+            arrayHeap[getTrueIndex(nNextIndex, kCount, modNum)] = temp;
+            nStartIndex = nNextIndex;
+        }
+        else {
+            return;
+        }
+    }
+}
+function makeMaxHeapNoRecur(arrayInput, nEndIndex, kCount, modNum) {
+    var nStart = Math.floor((nEndIndex - 1) / 2);
+    for (var index = nStart; index >= 0; --index) {
+        ajustMaxHeapNoRecur(arrayInput, index, nEndIndex, kCount, modNum);
+    }
+}
+function heapSort(arrayInput, nEndIndex, kCount, modNum) {
+    makeMaxHeapNoRecur(arrayInput, nEndIndex, kCount, modNum);
+    for (var i = nEndIndex; i > 0; --i) {
+        var Temp = arrayInput[getTrueIndex(0, kCount, modNum)];
+        arrayInput[getTrueIndex(0, kCount, modNum)] = arrayInput[getTrueIndex(i, kCount, modNum)];
+        arrayInput[getTrueIndex(i, kCount, modNum)] = Temp;
+        ajustMaxHeapNoRecur(arrayInput, 0, i - 1, kCount, modNum);
+    }
+}
 var TestTempItem = (function () {
     function TestTempItem(key, id) {
         this.m_key = key;
@@ -356,6 +445,34 @@ var IndexSortTestCase2 = (function () {
         console.log('array sorted right!!!');
         return true;
     };
+    // 测试算法导论思考题8-5
+    IndexSortTestCase2.prototype.testCaseAverageSort = function () {
+        var nCount = utilitytools_1["default"].generateRandom(10, 100);
+        var nK = utilitytools_1["default"].generateRandom(2, Math.floor(nCount / 2));
+        var arrayInput = utilitytools_1["default"].generateRandomArray(0, 1000, nCount);
+        console.log("nCount is " + nCount + ",nK is " + nK);
+        console.log("" + arrayInput);
+        var arrayOut = averageSortSimple(arrayInput, nK);
+        console.log("" + arrayOut);
+        var arrayTest = arrayInput.concat();
+        averageSort(arrayTest, nK);
+        console.log("" + arrayTest);
+        if (this.checkArrayAverageSort(arrayOut, nK)) {
+            console.log('arrayaverage sort simple is right!');
+        }
+        if (this.checkArrayAverageSort(arrayTest, nK)) {
+            console.log('arrayaverage sort right!');
+        }
+    };
+    IndexSortTestCase2.prototype.checkArrayAverageSort = function (arrayInput, kCount) {
+        for (var i = 0; i <= arrayInput.length - 1 - kCount; ++i) {
+            if (arrayInput[i] > arrayInput[kCount + i]) {
+                console.log('illegal order!!!');
+                return false;
+            }
+        }
+        return true;
+    };
     IndexSortTestCase2.prototype.testCaseWordsSort = function () {
         var arrayInput = [];
         arrayInput.push('ab');
@@ -421,4 +538,5 @@ var IndexSortTestCase2 = (function () {
 }());
 var tempCaseIndexSort = new IndexSortTestCase2();
 // tempCaseIndexSort.testCaseWordsSort();
-tempCaseIndexSort.testCaseKetteSort();
+// tempCaseIndexSort.testCaseKetteSort();
+tempCaseIndexSort.testCaseAverageSort();

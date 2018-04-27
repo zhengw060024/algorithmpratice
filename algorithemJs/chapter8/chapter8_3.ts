@@ -297,8 +297,9 @@ function averageSortSimple(arrayInput: Array<number>, k: number) {
     });
     let nTotal = 0;
     const arrayOut = [];
+    let t = 0;
     while (true) {
-        let t = 0;
+        
         for (let i = 0; i < arrayHelp.length; ++i) {
             arrayOut.push(arrayHelp[i][t]);
             ++nTotal;
@@ -315,9 +316,10 @@ function averageSort(arrayInput: Array<number>,nKCount:number) {
     let nMod = (arrayInput.length - 1) % nKCount;
     for(let i = 0; i< nKCount; ++i) {
         if(i <= nMod) {
-            heapSort(arrayInput,nNum + 1,nKCount,i);
-        } else {
             heapSort(arrayInput,nNum,nKCount,i);
+            // console.log(`${arrayInput}`);
+        } else {
+            heapSort(arrayInput,nNum - 1,nKCount,i);
         }
     }
 }
@@ -448,6 +450,34 @@ class IndexSortTestCase2 {
         console.log('array sorted right!!!')
         return true;
     }
+    // 测试算法导论思考题8-5
+    testCaseAverageSort() {
+        const nCount = utilityTools.generateRandom(10,100);
+        const nK = utilityTools.generateRandom(2,Math.floor(nCount / 2));
+        const arrayInput = utilityTools.generateRandomArray(0,1000,nCount);
+        console.log(`nCount is ${nCount},nK is ${nK}`);
+        console.log(`${arrayInput}`);
+        const arrayOut = averageSortSimple(arrayInput,nK);
+        console.log(`${arrayOut}`);
+        const arrayTest = arrayInput.concat();
+        averageSort(arrayTest,nK);
+        console.log(`${arrayTest}`);
+        if(this.checkArrayAverageSort(arrayOut,nK)) {
+            console.log('arrayaverage sort simple is right!');
+        }
+        if(this.checkArrayAverageSort(arrayTest,nK)) {
+            console.log('arrayaverage sort right!');
+        }
+    }
+    private checkArrayAverageSort(arrayInput:Array<number>,kCount:number) {
+        for(let i = 0; i <= arrayInput.length - 1 - kCount; ++i) {
+            if(arrayInput[i] > arrayInput[kCount + i]) {
+                console.log('illegal order!!!')
+                return false;
+            }
+        }
+        return true;
+    }
     testCaseWordsSort() {
         const arrayInput = [];
         arrayInput.push('ab');
@@ -515,4 +545,5 @@ class IndexSortTestCase2 {
 
 const tempCaseIndexSort = new IndexSortTestCase2();
 // tempCaseIndexSort.testCaseWordsSort();
-tempCaseIndexSort.testCaseKetteSort();
+// tempCaseIndexSort.testCaseKetteSort();
+tempCaseIndexSort.testCaseAverageSort();
