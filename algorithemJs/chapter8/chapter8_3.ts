@@ -1,5 +1,4 @@
 import utilityTools from "./utilitytools";
-import { noConflict } from "q";
 // 算法导论思考题解答：
 //#计数排序，原址排序方法，这种方法不是稳定的！！！！
 function numIndexSort(arrayInput: Array<number>, nRangeMin: number, nRangeMax: number) {
