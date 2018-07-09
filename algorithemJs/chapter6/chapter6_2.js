@@ -631,13 +631,13 @@ var DoubleList = /** @class */ (function () {
         this.m_sentinel.m_next = this.m_sentinel;
         this.m_sentinel.m_pre = this.m_sentinel;
     }
-    // 将一个元素插入到list前端
     DoubleList.prototype.getBegin = function () {
         return this.m_sentinel.m_next;
     };
     DoubleList.prototype.getEnd = function () {
         return this.m_sentinel;
     };
+    // 将一个元素插入到list前端
     DoubleList.prototype.insert = function (item) {
         var temp = {
             m_next: null,
