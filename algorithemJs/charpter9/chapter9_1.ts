@@ -61,3 +61,62 @@ function getMinMaxFromArray(arrayInput: Array<number>): MinMaxPair {
     }
     return resultTemp;
 }
+interface itemTemp {
+    num:number;
+    index:number;
+}
+interface FirstSecondItem {
+    first:number;
+    second:number;
+}
+// 算法导论第九章第一节习题1
+/**
+ * 思路，找到最小值，并记录其找最小值比较路径的路径，
+ * 而 。找最小值的方式采用锦标赛的方式，也就是2个一组，小的
+ * 晋级，最终次小值一定在最小值的比较路径上。
+ * @param arrayInput 
+ */
+function getSecondMinNum(arrayInput:Array<number>) :FirstSecondItem {
+    if(arrayInput.length < 2) throw new Error('Error Input!')
+    let nStartIndex = arrayInput.length - 1;
+    let arrayTemp: itemTemp[] = [];
+    let arrayCompareIndex = [];
+    for(let i = 0; i < arrayInput.length; ++i) {
+        arrayTemp.push({
+            num:arrayInput[i],
+            index:i
+        });
+        arrayCompareIndex.push([]);
+    }
+    while(arrayTemp.length > 1) {
+        let i = 0;
+        let arrayHelp = [];
+        for( i = 0; i < arrayTemp.length - 1; i+=2) {
+            if(arrayTemp[i].num < arrayTemp[i + 1].num) {
+                arrayHelp.push(arrayTemp[i]);
+                arrayCompareIndex[arrayTemp[i].index].push(arrayTemp[i + 1].index);
+            }else {
+                arrayHelp.push(arrayTemp[i + 1]);
+                arrayCompareIndex[arrayTemp[i + 1].index].push(arrayTemp[i].index);
+            }
+        }
+        if(i === arrayTemp.length -1) {
+            arrayHelp.push(arrayTemp[i]);
+        }
+        arrayTemp = arrayHelp.concat();
+    }
+    let nMinIndex = arrayTemp[0].index;
+    let nSecondMinIndex = arrayCompareIndex[nMinIndex][0];
+    let nSecondMin = arrayInput [nSecondMinIndex];
+    const arrayIndex = arrayCompareIndex[nMinIndex]
+    for(let i = 0; i < arrayIndex.length; ++i) {
+        if( nSecondMin > arrayInput[arrayIndex[i]]) {
+            nSecondMinIndex = arrayIndex[i];
+            nSecondMin = arrayInput[arrayIndex[i]]
+        }
+    }
+    return  {
+        first:nMinIndex,
+        second:nSecondMinIndex
+    }
+}
