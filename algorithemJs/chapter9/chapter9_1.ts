@@ -1,3 +1,4 @@
+import utilityTools from './utilitytools';
 function getMinNumFromArray(arrayInput: Array<number>) {
     if (arrayInput.length <= 0) throw new Error("Error input!");
     let nMin = arrayInput[0];
@@ -6,6 +7,7 @@ function getMinNumFromArray(arrayInput: Array<number>) {
             nMin = arrayInput[i];
         }
     }
+    return nMin;
 }
 function getMaxNumFromArray(arrayInput: Array<number>) {
     if (arrayInput.length <= 0) throw new Error("Error input!");
@@ -15,6 +17,7 @@ function getMaxNumFromArray(arrayInput: Array<number>) {
             nMax = arrayInput[i];
         }
     }
+    return nMax;
 }
 interface MinMaxPair {
     min: number;
@@ -118,5 +121,44 @@ function getSecondMinNum(arrayInput:Array<number>) :FirstSecondItem {
     return  {
         first:nMinIndex,
         second:nSecondMinIndex
+    }
+}
+class TestCase_1 {
+    constructor() {
+        
+    }
+    testCaseGetMinMax() {
+        const arrayLen = utilityTools.generateRandom(10,20);
+        let arrayTestCase =  utilityTools.generateRandomArray(1,12,arrayLen);
+        let nMin = getMinNumFromArray(arrayTestCase);
+        let nMax = getMaxNumFromArray(arrayTestCase);
+        let MinMaxPair = getMinMaxFromArray(arrayTestCase);
+        let MinSecondPair = getSecondMinNum(arrayTestCase);
+        let arrayTemp = arrayTestCase.concat();
+        arrayTemp.sort((a,b) => {
+            return a - b;
+        });
+        if(nMin === arrayTemp[0]) {
+            console.log('testcase get min item success!');
+        } else {
+            console.log('testcase get min item failed!');
+        }
+        if(nMax === arrayTemp[arrayTemp.length - 1]) {
+            console.log('testcase get max item success!');
+        } else {
+            console.log('testcase get max item failed');
+        }
+        if(MinMaxPair.max === arrayTemp[arrayTemp.length - 1] && 
+        MinMaxPair.min === arrayTemp[0]) {
+            console.log('testcase get minmax success!');
+        } else {
+            console.log('testcase get minmax failed!')
+        }
+        if(arrayTestCase[MinSecondPair.first]  === arrayTemp[0] &&
+        arrayTestCase[MinSecondPair.second] === arrayTemp[1]) {
+            console.log('testcase get second max success');
+        } else {
+            console.log('testcase get seconde min failed!');
+        }
     }
 }
