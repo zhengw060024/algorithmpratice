@@ -83,7 +83,7 @@ function getSecondMinNum(arrayInput:Array<number>) :FirstSecondItem {
     if(arrayInput.length < 2) throw new Error('Error Input!')
     let nStartIndex = arrayInput.length - 1;
     let arrayTemp: itemTemp[] = [];
-    let arrayCompareIndex = [];
+    let arrayCompareIndex:Array<Array<number>> = [];
     for(let i = 0; i < arrayInput.length; ++i) {
         arrayTemp.push({
             num:arrayInput[i],
@@ -129,7 +129,8 @@ class TestCase_1 {
     }
     testCaseGetMinMax() {
         const arrayLen = utilityTools.generateRandom(10,20);
-        let arrayTestCase =  utilityTools.generateRandomArray(1,12,arrayLen);
+        let arrayTestCase =  utilityTools.generateRandomArray(1,1000,arrayLen);
+        console.log(`origin number sequence is ${arrayTestCase}`)
         let nMin = getMinNumFromArray(arrayTestCase);
         let nMax = getMaxNumFromArray(arrayTestCase);
         let MinMaxPair = getMinMaxFromArray(arrayTestCase);
@@ -138,6 +139,9 @@ class TestCase_1 {
         arrayTemp.sort((a,b) => {
             return a - b;
         });
+        console.log(`min number is ${nMin}, max number is ${nMax}`);
+        console.log(`minMaxpair is: `,MinMaxPair);
+        console.log(`minSecondPairIndex is`,MinSecondPair);
         if(nMin === arrayTemp[0]) {
             console.log('testcase get min item success!');
         } else {
@@ -162,3 +166,5 @@ class TestCase_1 {
         }
     }
 }
+let testCaseDefaut  = new  TestCase_1();
+testCaseDefaut.testCaseGetMinMax();
