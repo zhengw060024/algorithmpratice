@@ -204,6 +204,8 @@ class quickSortTest {
         const arrayToSort = arrayTest.concat();
         console.time('zhengwei');
         quickSort123(arrayToSort, (a: number, b: number) => {
+            // 注意不能是 a >= b,因为这是划分算法决定的，如果是a >= b在划分时有可能会出现数组越界
+            // 的错误。
             return a > b;
         });
         console.timeEnd('zhengwei');
@@ -348,6 +350,8 @@ function quickSortDepartNoMidIndex(arrayInput: Array<number>,
     let i = startIndex;
     let j = endIndex;
     while (true) {
+        // 在这个划分中，如果cmp将 >= 作为true就会出现问题。
+        // 这里需要注意的是cmp函数不能将带==判断为true，否则会出现越界
         while (cmp(arrayInput[i], nTemp)) { ++i };
         while (cmp(nTemp, arrayInput[j])) { --j };
         if (i < j) {

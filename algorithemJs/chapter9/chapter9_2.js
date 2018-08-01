@@ -1,4 +1,6 @@
-import utilityTools from './utilitytools';
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var utilitytools_1 = require("./utilitytools");
 // 期望为线性事件的选择算法。原理，利用快排的划分算法。
 /**
  * 从arrayInput的返回[startIndex,endIndex]子数组中
@@ -8,24 +10,25 @@ import utilityTools from './utilitytools';
  * @param endIndex 子数组结束Index
  * @param kMax 子数组有序(升序)之后下标为kMax(相对于子数组)的数字
  */
-function randomMized_select(arrayInput: Array<number>,
-    startIndex: number, endIndex: number, kMin: number): number {
+function randomMized_select(arrayInput, startIndex, endIndex, kMin) {
     if (startIndex === endIndex) {
         return arrayInput[startIndex];
-    } else {
-        let nIndexDepart = randomDepart(arrayInput, startIndex, endIndex);
-        let nIndexGet = nIndexDepart - startIndex;
+    }
+    else {
+        var nIndexDepart = randomDepart(arrayInput, startIndex, endIndex);
+        var nIndexGet = nIndexDepart - startIndex;
         if (nIndexGet === kMin) {
             return arrayInput[nIndexDepart];
-        } else {
+        }
+        else {
             if (nIndexGet > kMin) {
-                return randomMized_select(arrayInput, startIndex,nIndexDepart - 1, kMin);
-            } else {
-                return randomMized_select(arrayInput, nIndexDepart + 1, endIndex, kMin - nIndexGet - 1)
+                return randomMized_select(arrayInput, startIndex, nIndexDepart - 1, kMin);
+            }
+            else {
+                return randomMized_select(arrayInput, nIndexDepart + 1, endIndex, kMin - nIndexGet - 1);
             }
         }
     }
-
 }
 /**
  * 分割arrayInput的范围在[startIndex,endIndex]的子数组，然后返回划分枢轴的下标
@@ -33,19 +36,18 @@ function randomMized_select(arrayInput: Array<number>,
  * @param startIndex 子数组起始下标
  * @param endIndex 子数组结束下标
  */
-function randomDepart(arrayInput: Array<number>,
-    startIndex: number, endIndex: number): number {
-    let nRandomIndex = utilityTools.generateRandom(startIndex, endIndex);
+function randomDepart(arrayInput, startIndex, endIndex) {
+    var nRandomIndex = utilitytools_1.default.generateRandom(startIndex, endIndex);
     // 交换 startIndex 和 nRandomIndex
     if (nRandomIndex !== startIndex) {
-        let nTemp = arrayInput[startIndex];
+        var nTemp = arrayInput[startIndex];
         arrayInput[startIndex] = arrayInput[nRandomIndex];
         arrayInput[nRandomIndex] = nTemp;
     }
-    let nDepartNum = arrayInput[startIndex];
+    var nDepartNum = arrayInput[startIndex];
     // i 表示枢轴位置。
     // 注意一下变量的作用域，不要将这部分代码写入循环中
-    let j = startIndex + 1, i = startIndex;
+    var j = startIndex + 1, i = startIndex;
     for (; j <= endIndex; ++j) {
         if (arrayInput[j] < nDepartNum) {
             arrayInput[i] = arrayInput[j];
@@ -56,45 +58,43 @@ function randomDepart(arrayInput: Array<number>,
     arrayInput[i] = nDepartNum;
     return i;
 }
-function randomKMin(arrayInput: Array<number>, kIndex: number) {
+function randomKMin(arrayInput, kIndex) {
     if (kIndex < 1 || kIndex > arrayInput.length) {
         throw new Error('Out of range!!!');
-    } else {
+    }
+    else {
         return randomMized_select(arrayInput, 0, arrayInput.length - 1, kIndex - 1);
     }
 }
-class RandomDepartGetKMinTest {
-    constructor() {
-
+var RandomDepartGetKMinTest = (function () {
+    function RandomDepartGetKMinTest() {
     }
-    testCase() {
-        const arrayInput = utilityTools.generateRandomArray(0, 1000, 40);
-        const kIndexNum = utilityTools.generateRandom(1,arrayInput.length);
-        console.log(`kIndex is ${kIndexNum}`);
-        console.log(`Origin array is ${arrayInput}`);
-
-        let nNumberRandom = randomKMin(arrayInput.concat(),kIndexNum);
-        let nTrueNumber = this.getKMinNumBySort(arrayInput.concat(),kIndexNum);
-        if(nNumberRandom === nTrueNumber) {
-            console.log(`Testcase RandomDepartGetKMinTest success!!! num is ${nNumberRandom}`);
-        } else {
-            console.log(`Testcase RandomDepartGetKMinTest failed!!!,True number is ${nTrueNumber},but get ${nNumberRandom}`);
+    RandomDepartGetKMinTest.prototype.testCase = function () {
+        var arrayInput = utilitytools_1.default.generateRandomArray(0, 1000, 40);
+        var kIndexNum = utilitytools_1.default.generateRandom(1, arrayInput.length);
+        console.log("kIndex is " + kIndexNum);
+        console.log("Origin array is " + arrayInput);
+        var nNumberRandom = randomKMin(arrayInput.concat(), kIndexNum);
+        var nTrueNumber = this.getKMinNumBySort(arrayInput.concat(), kIndexNum);
+        if (nNumberRandom === nTrueNumber) {
+            console.log("Testcase RandomDepartGetKMinTest success!!! num is " + nNumberRandom);
         }
-    }
-    getKMinNumBySort(arrayInput:Array<number>,kIndex:number) {
-        const arrayTemp = arrayInput.concat();
-        
-        arrayTemp.sort((a,b) => {
-            return a- b;
+        else {
+            console.log("Testcase RandomDepartGetKMinTest failed!!!,True number is " + nTrueNumber + ",but get " + nNumberRandom);
+        }
+    };
+    RandomDepartGetKMinTest.prototype.getKMinNumBySort = function (arrayInput, kIndex) {
+        var arrayTemp = arrayInput.concat();
+        arrayTemp.sort(function (a, b) {
+            return a - b;
         });
-        console.log(`sorted array is ${arrayTemp }`);
+        console.log("sorted array is " + arrayTemp);
         return arrayTemp[kIndex - 1];
-    }
-}
-
-const testCaseKMinRandom = new RandomDepartGetKMinTest();
+    };
+    return RandomDepartGetKMinTest;
+}());
+var testCaseKMinRandom = new RandomDepartGetKMinTest();
 testCaseKMinRandom.testCase();
-
 // function randomDepart2(arrayInput: Array<number>,
 //     startIndex: number, endIndex: number): number {
 //     let nRandomIndex = utilityTools.generateRandom(startIndex, endIndex);
@@ -120,4 +120,4 @@ testCaseKMinRandom.testCase();
 // const arrayTemp = utilityTools.generateRandomArray(0,100,10);
 // console.log(`${arrayTemp}`);
 // let i = randomDepart2(arrayTemp,0,arrayTemp.length - 1);
-// console.log(`${arrayTemp} i is  ${i}`);
+// console.log(`${arrayTemp} i is  ${i}`); 
