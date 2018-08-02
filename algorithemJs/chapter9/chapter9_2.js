@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var utilitytools_1 = require("./utilitytools");
+// import re;
 // 期望为线性事件的选择算法。原理，利用快排的划分算法。
 /**
  * 从arrayInput的返回[startIndex,endIndex]子数组中
@@ -66,6 +67,11 @@ function randomKMin(arrayInput, kIndex) {
         return randomMized_select(arrayInput, 0, arrayInput.length - 1, kIndex - 1);
     }
 }
+/**
+ * 习题9-2.3randmom-select的一个基于循环的版本
+ * @param arrayInput
+ * @param kIndex
+ */
 function randomKMinNocur(arrayInput, kIndex) {
     if (kIndex < 1 || kIndex > arrayInput.length) {
         throw new Error('Out of range!!!');
@@ -135,6 +141,11 @@ var RandomDepartGetKMinTest = (function () {
 var testCaseKMinRandom = new RandomDepartGetKMinTest();
 testCaseKMinRandom.testCase();
 testCaseKMinRandom.testCaseNoCur();
+var strTemp = "fdsafdsf{fdsafsd}fdsafdsaf";
+var strTemp2 = "fdsafdsf{我是谁}";
+var temp = RegExp('^(([^\{\}]*)(\{[a-zA-Z]+[_]*[a-zA-Z]+\})*)*$');
+console.log(temp.test(strTemp));
+console.log(temp.test(strTemp2));
 // function randomDepart2(arrayInput: Array<number>,
 //     startIndex: number, endIndex: number): number {
 //     let nRandomIndex = utilityTools.generateRandom(startIndex, endIndex);

@@ -1,4 +1,5 @@
 import utilityTools from './utilitytools';
+// import re;
 // 期望为线性事件的选择算法。原理，利用快排的划分算法。
 /**
  * 从arrayInput的返回[startIndex,endIndex]子数组中
@@ -138,6 +139,11 @@ class RandomDepartGetKMinTest {
 const testCaseKMinRandom = new RandomDepartGetKMinTest();
 testCaseKMinRandom.testCase();
 testCaseKMinRandom.testCaseNoCur();
+// let strTemp = "fdsafdsf{fdsafsd}fdsafdsaf"
+// let strTemp2 = "fdsafdsf{我是谁}"
+// let temp =  RegExp('^(([^\{\}]*)(\{[a-zA-Z]+[_]*[a-zA-Z]+\})*)*$')
+// console.log(temp.test(strTemp))
+// console.log(temp.test(strTemp2))
 
 // function randomDepart2(arrayInput: Array<number>,
 //     startIndex: number, endIndex: number): number {
