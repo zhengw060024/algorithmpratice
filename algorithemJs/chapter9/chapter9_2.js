@@ -66,6 +66,31 @@ function randomKMin(arrayInput, kIndex) {
         return randomMized_select(arrayInput, 0, arrayInput.length - 1, kIndex - 1);
     }
 }
+function randomKMinNocur(arrayInput, kIndex) {
+    if (kIndex < 1 || kIndex > arrayInput.length) {
+        throw new Error('Out of range!!!');
+    }
+    else {
+        var nStartIndex = 0;
+        var nEndIndex = arrayInput.length - 1;
+        var nPosReact = kIndex - 1;
+        while (nStartIndex < nEndIndex) {
+            var nDepart = randomDepart(arrayInput, nStartIndex, nEndIndex);
+            var nDepartReact = nDepart - nStartIndex;
+            if (nDepartReact === nPosReact) {
+                return arrayInput[nDepart];
+            }
+            else if (nDepartReact > nPosReact) {
+                nEndIndex = nDepart - 1;
+            }
+            else {
+                nStartIndex = nDepart + 1;
+                nPosReact = nPosReact - nDepartReact - 1;
+            }
+        }
+        return arrayInput[nStartIndex];
+    }
+}
 var RandomDepartGetKMinTest = (function () {
     function RandomDepartGetKMinTest() {
     }
@@ -75,6 +100,20 @@ var RandomDepartGetKMinTest = (function () {
         console.log("kIndex is " + kIndexNum);
         console.log("Origin array is " + arrayInput);
         var nNumberRandom = randomKMin(arrayInput.concat(), kIndexNum);
+        var nTrueNumber = this.getKMinNumBySort(arrayInput.concat(), kIndexNum);
+        if (nNumberRandom === nTrueNumber) {
+            console.log("Testcase RandomDepartGetKMinTest success!!! num is " + nNumberRandom);
+        }
+        else {
+            console.log("Testcase RandomDepartGetKMinTest failed!!!,True number is " + nTrueNumber + ",but get " + nNumberRandom);
+        }
+    };
+    RandomDepartGetKMinTest.prototype.testCaseNoCur = function () {
+        var arrayInput = utilitytools_1.default.generateRandomArray(0, 1000, 40);
+        var kIndexNum = utilitytools_1.default.generateRandom(1, arrayInput.length);
+        console.log("kIndex is " + kIndexNum);
+        console.log("Origin array is " + arrayInput);
+        var nNumberRandom = randomKMinNocur(arrayInput.concat(), kIndexNum);
         var nTrueNumber = this.getKMinNumBySort(arrayInput.concat(), kIndexNum);
         if (nNumberRandom === nTrueNumber) {
             console.log("Testcase RandomDepartGetKMinTest success!!! num is " + nNumberRandom);
@@ -95,6 +134,7 @@ var RandomDepartGetKMinTest = (function () {
 }());
 var testCaseKMinRandom = new RandomDepartGetKMinTest();
 testCaseKMinRandom.testCase();
+testCaseKMinRandom.testCaseNoCur();
 // function randomDepart2(arrayInput: Array<number>,
 //     startIndex: number, endIndex: number): number {
 //     let nRandomIndex = utilityTools.generateRandom(startIndex, endIndex);

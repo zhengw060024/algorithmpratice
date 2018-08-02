@@ -63,6 +63,35 @@ function randomKMin(arrayInput: Array<number>, kIndex: number) {
         return randomMized_select(arrayInput, 0, arrayInput.length - 1, kIndex - 1);
     }
 }
+/**
+ * 习题9-2.3randmom-select的一个基于循环的版本
+ * @param arrayInput 
+ * @param kIndex 
+ */
+function randomKMinNocur(arrayInput: Array<number>, kIndex: number){
+    if (kIndex < 1 || kIndex > arrayInput.length) {
+        throw new Error('Out of range!!!');
+    } else {
+        let nStartIndex = 0;
+        let nEndIndex = arrayInput.length -1;
+        let nPosReact = kIndex  -1;
+        while(nStartIndex < nEndIndex) {
+            let nDepart = randomDepart(arrayInput,nStartIndex,nEndIndex);
+            let nDepartReact = nDepart - nStartIndex;
+            if(nDepartReact === nPosReact) {
+                return arrayInput[nDepart];
+            }else if (nDepartReact > nPosReact) {
+                nEndIndex = nDepart - 1;
+            }else {
+                nStartIndex = nDepart + 1;
+                nPosReact = nPosReact - nDepartReact - 1;
+            }
+        }
+        return arrayInput[nStartIndex];
+    }
+    
+
+}
 class RandomDepartGetKMinTest {
     constructor() {
 
@@ -74,6 +103,20 @@ class RandomDepartGetKMinTest {
         console.log(`Origin array is ${arrayInput}`);
 
         let nNumberRandom = randomKMin(arrayInput.concat(),kIndexNum);
+        let nTrueNumber = this.getKMinNumBySort(arrayInput.concat(),kIndexNum);
+        if(nNumberRandom === nTrueNumber) {
+            console.log(`Testcase RandomDepartGetKMinTest success!!! num is ${nNumberRandom}`);
+        } else {
+            console.log(`Testcase RandomDepartGetKMinTest failed!!!,True number is ${nTrueNumber},but get ${nNumberRandom}`);
+        }
+    }
+    testCaseNoCur() {
+        const arrayInput = utilityTools.generateRandomArray(0, 1000, 40);
+        const kIndexNum = utilityTools.generateRandom(1,arrayInput.length);
+        console.log(`kIndex is ${kIndexNum}`);
+        console.log(`Origin array is ${arrayInput}`);
+
+        let nNumberRandom = randomKMinNocur(arrayInput.concat(),kIndexNum);
         let nTrueNumber = this.getKMinNumBySort(arrayInput.concat(),kIndexNum);
         if(nNumberRandom === nTrueNumber) {
             console.log(`Testcase RandomDepartGetKMinTest success!!! num is ${nNumberRandom}`);
@@ -94,6 +137,7 @@ class RandomDepartGetKMinTest {
 
 const testCaseKMinRandom = new RandomDepartGetKMinTest();
 testCaseKMinRandom.testCase();
+testCaseKMinRandom.testCaseNoCur();
 
 // function randomDepart2(arrayInput: Array<number>,
 //     startIndex: number, endIndex: number): number {
