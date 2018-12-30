@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 function generateRandom(min, max) {
     var range = max - min;
     var randNum = Math.floor(Math.random() * (1 + range)) + min;
@@ -25,4 +25,4 @@ var utilityTools = {
     generateRandomArray: generateRandomArray,
     generateRandomOldErr: generateRandomOldErr
 };
-exports.default = utilityTools;
+exports["default"] = utilityTools;

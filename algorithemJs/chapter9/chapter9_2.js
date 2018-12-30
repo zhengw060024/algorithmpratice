@@ -1,5 +1,5 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 var utilitytools_1 = require("./utilitytools");
 // import re;
 // 期望为线性事件的选择算法。原理，利用快排的划分算法。
@@ -38,7 +38,7 @@ function randomMized_select(arrayInput, startIndex, endIndex, kMin) {
  * @param endIndex 子数组结束下标
  */
 function randomDepart(arrayInput, startIndex, endIndex) {
-    var nRandomIndex = utilitytools_1.default.generateRandom(startIndex, endIndex);
+    var nRandomIndex = utilitytools_1["default"].generateRandom(startIndex, endIndex);
     // 交换 startIndex 和 nRandomIndex
     if (nRandomIndex !== startIndex) {
         var nTemp = arrayInput[startIndex];
@@ -69,6 +69,7 @@ function randomKMin(arrayInput, kIndex) {
 }
 /**
  * 习题9-2.3randmom-select的一个基于循环的版本
+ * 这个函数写的好像有点绕，没必要
  * @param arrayInput
  * @param kIndex
  */
@@ -97,12 +98,35 @@ function randomKMinNocur(arrayInput, kIndex) {
         return arrayInput[nStartIndex];
     }
 }
-var RandomDepartGetKMinTest = (function () {
+function randomKminNoCur2(arrayInput, nIndex) {
+    if (nIndex < 1 || nIndex > arrayInput.length) {
+        throw new Error('Out of range!!!');
+    }
+    else {
+        var nTruePos = nIndex - 1;
+        var nStartIndex = 0;
+        var nEndIndex = arrayInput.length - 1;
+        while (nStartIndex < nEndIndex) {
+            var nDepartpos = randomDepart(arrayInput, nStartIndex, nEndIndex);
+            if (nDepartpos < nTruePos) {
+                nStartIndex = nDepartpos + 1;
+            }
+            else if (nDepartpos > nTruePos) {
+                nEndIndex = nDepartpos - 1;
+            }
+            else {
+                return arrayInput[nDepartpos];
+            }
+        }
+        return arrayInput[nStartIndex];
+    }
+}
+var RandomDepartGetKMinTest = /** @class */ (function () {
     function RandomDepartGetKMinTest() {
     }
     RandomDepartGetKMinTest.prototype.testCase = function () {
-        var arrayInput = utilitytools_1.default.generateRandomArray(0, 1000, 40);
-        var kIndexNum = utilitytools_1.default.generateRandom(1, arrayInput.length);
+        var arrayInput = utilitytools_1["default"].generateRandomArray(0, 1000, 40);
+        var kIndexNum = utilitytools_1["default"].generateRandom(1, arrayInput.length);
         console.log("kIndex is " + kIndexNum);
         console.log("Origin array is " + arrayInput);
         var nNumberRandom = randomKMin(arrayInput.concat(), kIndexNum);
@@ -115,8 +139,8 @@ var RandomDepartGetKMinTest = (function () {
         }
     };
     RandomDepartGetKMinTest.prototype.testCaseNoCur = function () {
-        var arrayInput = utilitytools_1.default.generateRandomArray(0, 1000, 40);
-        var kIndexNum = utilitytools_1.default.generateRandom(1, arrayInput.length);
+        var arrayInput = utilitytools_1["default"].generateRandomArray(0, 1000, 40);
+        var kIndexNum = utilitytools_1["default"].generateRandom(1, arrayInput.length);
         console.log("kIndex is " + kIndexNum);
         console.log("Origin array is " + arrayInput);
         var nNumberRandom = randomKMinNocur(arrayInput.concat(), kIndexNum);
@@ -126,6 +150,20 @@ var RandomDepartGetKMinTest = (function () {
         }
         else {
             console.log("Testcase RandomDepartGetKMinTest failed!!!,True number is " + nTrueNumber + ",but get " + nNumberRandom);
+        }
+    };
+    RandomDepartGetKMinTest.prototype.testCaseNoCur2 = function () {
+        var arrayInput = utilitytools_1["default"].generateRandomArray(0, 1000, 40);
+        var kIndexNum = utilitytools_1["default"].generateRandom(1, arrayInput.length);
+        console.log("kIndex is " + kIndexNum);
+        console.log("Origin array is " + arrayInput);
+        var nNumberRandom = randomKminNoCur2(arrayInput.concat(), kIndexNum);
+        var nTrueNumber = this.getKMinNumBySort(arrayInput.concat(), kIndexNum);
+        if (nNumberRandom === nTrueNumber) {
+            console.log("Testcase RandomDepartGetKMinTest2 success!!! num is " + nNumberRandom);
+        }
+        else {
+            console.log("Testcase RandomDepartGetKMinTest2 failed!!!,True number is " + nTrueNumber + ",but get " + nNumberRandom);
         }
     };
     RandomDepartGetKMinTest.prototype.getKMinNumBySort = function (arrayInput, kIndex) {
@@ -141,11 +179,12 @@ var RandomDepartGetKMinTest = (function () {
 var testCaseKMinRandom = new RandomDepartGetKMinTest();
 testCaseKMinRandom.testCase();
 testCaseKMinRandom.testCaseNoCur();
-var strTemp = "fdsafdsf{fdsafsd}fdsafdsaf";
-var strTemp2 = "fdsafdsf{我是谁}";
-var temp = RegExp('^(([^\{\}]*)(\{[a-zA-Z]+[_]*[a-zA-Z]+\})*)*$');
-console.log(temp.test(strTemp));
-console.log(temp.test(strTemp2));
+testCaseKMinRandom.testCaseNoCur2();
+// let strTemp = "fdsafdsf{fdsafsd}fdsafdsaf"
+// let strTemp2 = "fdsafdsf{我是谁}"
+// let temp =  RegExp('^(([^\{\}]*)(\{[a-zA-Z]+[_]*[a-zA-Z]+\})*)*$')
+// console.log(temp.test(strTemp))
+// console.log(temp.test(strTemp2))
 // function randomDepart2(arrayInput: Array<number>,
 //     startIndex: number, endIndex: number): number {
 //     let nRandomIndex = utilityTools.generateRandom(startIndex, endIndex);
@@ -171,4 +210,4 @@ console.log(temp.test(strTemp2));
 // const arrayTemp = utilityTools.generateRandomArray(0,100,10);
 // console.log(`${arrayTemp}`);
 // let i = randomDepart2(arrayTemp,0,arrayTemp.length - 1);
-// console.log(`${arrayTemp} i is  ${i}`); 
+// console.log(`${arrayTemp} i is  ${i}`);
