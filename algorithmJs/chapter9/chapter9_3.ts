@@ -56,16 +56,47 @@ function findKItem( arrayInput:Array<number>,nIndex:number) {
     return nKSquenceNum;
 
 }
+/**
+ * 
+ * @param arrayInput 
+ * @param nBegin 
+ * @param nEnd 
+ * @param nNum 
+ */
 function departIndex(arrayInput:Array<number>,nBegin:number, nEnd:number,nNum:number) {
     // j表示第一个可能大于等于nNum的位置
     let i = nBegin;
     let j = nBegin;
+    let k = -1;
     for(; i <= nEnd; ++i) {
             if(arrayInput[i] < nNum ) {
                 // swap(pos[i],pos[j]) ++j;
                let nTemp = arrayInput[i];
                arrayInput[i] = arrayInput[j];
                arrayInput[j] = nTemp;
+               if(k === j) k = i;
+               ++j;
+            } else  if(arrayInput[i] == nNum){
+                k = i;
+            } 
+    }
+    let nTemp = arrayInput[j];
+    arrayInput[j] = arrayInput[k];
+    arrayInput[k] = nTemp;
+    return j;
+}
+function departIndex2(arrayInput:Array<number>,nBegin:number, nEnd:number,nNum:number) {
+    // j表示第一个可能大于等于nNum的位置
+    let i = nBegin;
+    let j = nBegin;
+
+    for(; i <= nEnd; ++i) {
+            if(arrayInput[i] < nNum ) {
+                // swap(pos[i],pos[j]) ++j;
+               let nTemp = arrayInput[i];
+               arrayInput[i] = arrayInput[j];
+               arrayInput[j] = nTemp;
+              
                ++j;
             } 
     }
@@ -95,22 +126,43 @@ function _findKItem_help(arrayInput:Array<number>,beginIndex:number,endIndex:num
     let nDepartNum= _findKItem_help(arrayTemp,0,arrayTemp.length - 1, 
         Math.floor((arrayTemp.length - 1) / 2));
     
+    // 如果要是采用这种分割方式得注意数轴，mid+1，mid-1的分割要求的是数轴必须
+    // 是当前分割的number
     let nDepartIndex = departIndex(arrayInput,beginIndex,endIndex,nDepartNum);
     if(nDepartIndex  <  nIndex) {
-       return  _findKItem_help(arrayInput,nDepartIndex + 1,nDepartIndex,nIndex);
+       return  _findKItem_help(arrayInput,nDepartIndex + 1,endIndex,nIndex);
 
     } else  if (nDepartIndex > nIndex){
         return _findKItem_help(arrayInput,beginIndex,nDepartIndex - 1,nIndex);
     }else {
-        return nDepartIndex;
+        return arrayInput[nDepartIndex];
     }
 }
 
 
 function runtest() {
     let arrayToTest = utilityTools.generateRandomArray(0,10,20);
+    console.log(arrayToTest);
     let arrayToCheck = arrayToTest.concat();
-    insertSort(arrayToCheck,0,19);
+    // let nIndex = departIndex(arrayToCheck,0,19,arrayToTest[0]);
+    // console.log(arrayToCheck);
+    // console.log(nIndex);
+    // console.log(arrayToCheck.concat().sort( (a,b) => {
+    //     return a- b;
+    // }));
+    // console.log(arrayToTest.concat().sort( (a,b) => {
+    //     return a- b;
+    // }));
+
+  
+    let kitem = findKItem(arrayToCheck.concat(),10);
+    arrayToCheck.sort((a,b) => {
+        return a - b;
+    });
+    console.log(kitem);
     console.log(arrayToCheck);
+    
+    console.log(arrayToCheck[10]);
 
 }
+runtest();
