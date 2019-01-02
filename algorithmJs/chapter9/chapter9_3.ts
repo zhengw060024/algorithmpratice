@@ -1,6 +1,6 @@
 import utilityTools from "./utilitytools";
 /**
- * 
+ * 辅助函数插入排序
  * @param arrayInput 
  * @param begin 
  * @param end 
@@ -73,7 +73,25 @@ function departIndex(arrayInput:Array<number>,nBegin:number, nEnd:number,nNum:nu
 }
 function _findKItem_help(arrayInput:Array<number>,beginIndex:number,endIndex:number,nIndex:number):number {
 
+    let nDepartFive = Math.floor((endIndex - beginIndex ) / 5) ;
+    if(nDepartFive === 0) {
+        insertSort(arrayInput, beginIndex,endIndex);
+        if(nIndex < beginIndex || nIndex > endIndex) {
+            let strTemp = "item" + nIndex;
+            throw new Error(" error index " + strTemp);
+        }
+        return arrayInput[nIndex];
+    }
     let arrayTemp:Array<number> = [];
+    for(let j = 0; j < nDepartFive; ++j) {
+        insertSort(arrayInput,j * 5 + beginIndex , (j + 1) * 5 - 1);
+        let nIdMid = j * 5 + beginIndex + 2;
+        arrayTemp.push(arrayInput[nIdMid]);
+    }
+    insertSort(arrayInput,nDepartFive * 5 + beginIndex,endIndex);
+    let nIdMid = Math.floor((endIndex + nDepartFive * 5+beginIndex) / 2);
+    arrayTemp.push(arrayInput[nIdMid] );
+    
     let nDepartNum= _findKItem_help(arrayTemp,0,arrayTemp.length - 1, 
         Math.floor((arrayTemp.length - 1) / 2));
     
@@ -86,4 +104,13 @@ function _findKItem_help(arrayInput:Array<number>,beginIndex:number,endIndex:num
     }else {
         return nDepartIndex;
     }
+}
+
+
+function runtest() {
+    let arrayToTest = utilityTools.generateRandomArray(0,10,20);
+    let arrayToCheck = arrayToTest.concat();
+    insertSort(arrayToCheck,0,19);
+    console.log(arrayToCheck);
+
 }
