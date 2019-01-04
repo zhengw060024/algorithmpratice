@@ -135,24 +135,19 @@ function _findKItem_help(arrayInput, beginIndex, endIndex, nIndex) {
     }
 }
 function runtest() {
-    var arrayToTest = utilitytools_1["default"].generateRandomArray(0, 10, 20);
+    var nNumTotal = 30;
+    var nMin = 0;
+    var nMax = 10;
+    var nK = 10;
+    var arrayToTest = utilitytools_1["default"].generateRandomArray(nMin, nMax, nNumTotal);
     console.log(arrayToTest);
     var arrayToCheck = arrayToTest.concat();
-    // let nIndex = departIndex(arrayToCheck,0,19,arrayToTest[0]);
-    // console.log(arrayToCheck);
-    // console.log(nIndex);
-    // console.log(arrayToCheck.concat().sort( (a,b) => {
-    //     return a- b;
-    // }));
-    // console.log(arrayToTest.concat().sort( (a,b) => {
-    //     return a- b;
-    // }));
-    var kitem = findKItem(arrayToCheck.concat(), 10);
+    var kitem = findKItem(arrayToCheck.concat(), nK);
     arrayToCheck.sort(function (a, b) {
         return a - b;
     });
     console.log(kitem);
     console.log(arrayToCheck);
-    console.log(arrayToCheck[10]);
+    console.log(arrayToCheck[nK]);
 }
 runtest();

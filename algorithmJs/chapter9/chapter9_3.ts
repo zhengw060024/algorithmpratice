@@ -141,28 +141,24 @@ function _findKItem_help(arrayInput:Array<number>,beginIndex:number,endIndex:num
 
 
 function runtest() {
-    let arrayToTest = utilityTools.generateRandomArray(0,10,20);
+    let nNumTotal = 30;
+    let nMin = 0;
+    let nMax = 10;
+    let nK = 10;
+    let arrayToTest = utilityTools.generateRandomArray(nMin,nMax,nNumTotal);
     console.log(arrayToTest);
     let arrayToCheck = arrayToTest.concat();
-    // let nIndex = departIndex(arrayToCheck,0,19,arrayToTest[0]);
-    // console.log(arrayToCheck);
-    // console.log(nIndex);
-    // console.log(arrayToCheck.concat().sort( (a,b) => {
-    //     return a- b;
-    // }));
-    // console.log(arrayToTest.concat().sort( (a,b) => {
-    //     return a- b;
-    // }));
+    
 
-  
-    let kitem = findKItem(arrayToCheck.concat(),10);
+
+    let kitem = findKItem(arrayToCheck.concat(),nK);
     arrayToCheck.sort((a,b) => {
         return a - b;
     });
     console.log(kitem);
     console.log(arrayToCheck);
     
-    console.log(arrayToCheck[10]);
+    console.log(arrayToCheck[nK]);
 
 }
 runtest();
